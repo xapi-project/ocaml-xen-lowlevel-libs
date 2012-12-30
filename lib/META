@@ -1,6 +1,6 @@
 # OASIS_START
-# DO NOT EDIT (digest: 692ea18427541972e4737f74f5994bb1)
-version = "1.2.0"
+# DO NOT EDIT (digest: d8612cafe637096452c0e08f860a8d67)
+version = "4.1.0"
 description = "Xen low-level bindings"
 archive(byte) = "xenctrl.cma"
 archive(byte, plugin) = "xenctrl.cma"
