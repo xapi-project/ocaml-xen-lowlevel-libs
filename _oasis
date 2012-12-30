@@ -1,0 +1,23 @@
+OASISFormat: 0.3
+Name:        xen-lowlevel-libs
+Version:     1.2.0
+Synopsis:    Xen low-level bindings
+Authors:     see xen-unstable.hg
+License:     LGPL-2.1 with OCaml linking exception
+Plugins:     META (0.3)
+BuildTools:  ocamlbuild
+
+Library xenmmap
+  CompiledObject:     best
+  Path:               mmap
+  Findlibname:        xenmmap
+  Modules:            Mmap
+  CSources:           mmap_stubs.c, mmap_stubs.h
+
+Library xenctrl
+  CompiledObject:     best
+  Path:               xc
+  Findlibname: 	      xenctrl
+  Modules:            Xc
+  CSources:           xc_stubs.c
+  BuildDepends:       uuidm
