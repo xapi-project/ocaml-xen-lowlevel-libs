@@ -7,17 +7,10 @@ License:     LGPL-2.1 with OCaml linking exception
 Plugins:     META (0.3)
 BuildTools:  ocamlbuild
 
-Library xenmmap
-  CompiledObject:     best
-  Path:               mmap
-  Findlibname:        xenmmap
-  Modules:            Mmap
-  CSources:           mmap_stubs.c, mmap_stubs.h
-
 Library xenctrl
   CompiledObject:     best
-  Path:               xc
+  Path:               lib
   Findlibname: 	      xenctrl
-  Modules:            Xc
-  CSources:           xc_stubs.c
+  Modules:            Mmap, Xc
+  CSources:           mmap_stubs.c, mmap_stubs.h, xc_stubs.c
   BuildDepends:       uuidm
