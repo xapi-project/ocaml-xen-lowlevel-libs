@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 5b1890c933722eec6adb1d84d69da441)
+# DO NOT EDIT (digest: cffc3125f1861f956d2fe18cb24d3b99)
 # Ignore VCS directories, you can use the same kind of rule outside 
 # OASIS_START/STOP if you want to exclude directories that contains 
 # useless stuff for the build process
@@ -15,5 +15,10 @@
 "_darcs": not_hygienic
 # Library xenctrl
 "lib/xenctrl.cmxs": use_xenctrl
+<lib/xenctrl.{cma,cmxa}>: oasis_library_xenctrl_cclib
+"lib/libxenctrl_stubs.lib": oasis_library_xenctrl_cclib
+"lib/dllxenctrl_stubs.dll": oasis_library_xenctrl_cclib
+"lib/libxenctrl_stubs.a": oasis_library_xenctrl_cclib
+"lib/dllxenctrl_stubs.so": oasis_library_xenctrl_cclib
 <lib/xenctrl.{cma,cmxa}>: use_libxenctrl_stubs
 # OASIS_STOP
