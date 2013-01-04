@@ -1,7 +1,6 @@
 # OASIS_START
-# DO NOT EDIT (digest: d0e94ef7ce20ba0d5604b82f404a073c)
-Mmap
-Xc
-Uuid
+# DO NOT EDIT (digest: b681eca0f933649fb2d9530bc2bb0c76)
+Xenmmap
+Xenctrl
 Xenguest
 # OASIS_STOP
