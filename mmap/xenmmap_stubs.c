@@ -28,7 +28,7 @@
 #include <caml/fail.h>
 #include <caml/callback.h>
 
-#define GET_C_STRUCT(a) ((struct mmap_interface *) a)
+#define Intf_val(a) ((struct mmap_interface *) a)
 
 static int mmap_interface_init(struct mmap_interface *intf,
                                int fd, int pflag, int mflag,
@@ -61,67 +61,61 @@ CAMLprim value stub_mmap_init(value fd, value pflag, value mflag,
 
 	result = caml_alloc(sizeof(struct mmap_interface), Abstract_tag);
 
-	if (mmap_interface_init(GET_C_STRUCT(result), Int_val(fd),
+	if (mmap_interface_init(Intf_val(result), Int_val(fd),
 	                        c_pflag, c_mflag,
 	                        Int_val(len), Int_val(offset)))
 		caml_failwith("mmap");
 	CAMLreturn(result);
 }
 
-CAMLprim value stub_mmap_final(value interface)
+CAMLprim value stub_mmap_final(value intf)
 {
-	CAMLparam1(interface);
-	struct mmap_interface *intf;
+	CAMLparam1(intf);
 
-	intf = GET_C_STRUCT(interface);
-	if (intf->addr != MAP_FAILED)
-		munmap(intf->addr, intf->len);
-	intf->addr = MAP_FAILED;
+	if (Intf_val(intf)->addr != MAP_FAILED)
+		munmap(Intf_val(intf)->addr, Intf_val(intf)->len);
+	Intf_val(intf)->addr = MAP_FAILED;
 
 	CAMLreturn(Val_unit);
 }
 
-CAMLprim value stub_mmap_read(value interface, value start, value len)
+CAMLprim value stub_mmap_read(value intf, value start, value len)
 {
-	CAMLparam3(interface, start, len);
+	CAMLparam3(intf, start, len);
 	CAMLlocal1(data);
-	struct mmap_interface *intf;
 	int c_start;
 	int c_len;
 
 	c_start = Int_val(start);
 	c_len = Int_val(len);
-	intf = GET_C_STRUCT(interface);
 
-	if (c_start > intf->len)
+	if (c_start > Intf_val(intf)->len)
 		caml_invalid_argument("start invalid");
-	if (c_start + c_len > intf->len)
+	if (c_start + c_len > Intf_val(intf)->len)
 		caml_invalid_argument("len invalid");
 
 	data = caml_alloc_string(c_len);
-	memcpy((char *) data, intf->addr + c_start, c_len);
+	memcpy((char *) data, Intf_val(intf)->addr + c_start, c_len);
 
 	CAMLreturn(data);
 }
 
-CAMLprim value stub_mmap_write(value interface, value data,
+CAMLprim value stub_mmap_write(value intf, value data,
                                value start, value len)
 {
-	CAMLparam4(interface, data, start, len);
-	struct mmap_interface *intf;
+	CAMLparam4(intf, data, start, len);
 	int c_start;
 	int c_len;
 
 	c_start = Int_val(start);
 	c_len = Int_val(len);
-	intf = GET_C_STRUCT(interface);
 
-	if (c_start > intf->len)
+	if (c_start > Intf_val(intf)->len)
 		caml_invalid_argument("start invalid");
-	if (c_start + c_len > intf->len)
+	if (c_start + c_len > Intf_val(intf)->len)
 		caml_invalid_argument("len invalid");
 
-	memcpy(intf->addr + c_start, (char *) data, c_len);
+	memcpy(Intf_val(intf)->addr + c_start, (char *) data, c_len);
 
 	CAMLreturn(Val_unit);
 }
