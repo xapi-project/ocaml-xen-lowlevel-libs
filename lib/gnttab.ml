@@ -29,7 +29,6 @@ type mapping = contents
 
 let contents x = x
 
-type permission = READ | WRITE
 external map_exn: handle -> int32 -> int32 -> int -> contents =
     "stub_xc_gnttab_map_grant_ref"
 external mapv_exn: handle -> int32 array -> int -> contents =
@@ -38,25 +37,25 @@ external unmap_exn: handle -> contents -> unit =
     "stub_xc_gnttab_unmap"
 
 (* Look up the values of PROT_{READ,WRITE} from the C headers. *)
-external get_perm: permission -> int =
+type perm = PROT_READ | PROT_WRITE
+external get_perm: perm -> int =
     "stub_xc_gnttab_get_perm"
-let _PROT_READ = get_perm READ
-let _PROT_WRITE = get_perm WRITE
+let _PROT_READ = get_perm PROT_READ
+let _PROT_WRITE = get_perm PROT_WRITE
+
+type permission = RO | RW
 
 let int_of_permission = function
-| READ -> _PROT_READ
-| WRITE -> _PROT_WRITE
+| RO -> _PROT_READ
+| RW -> _PROT_READ lor _PROT_WRITE
 
-(* Convert a list of permissions to ints and or them together *)
-let int_of_permissions ps = List.fold_left (lor) 0 (List.map int_of_permission ps)
-
-let map h g ps =
+let map h g p =
     try
-        Some (map_exn h g.domid g.reference (int_of_permissions ps))
+        Some (map_exn h g.domid g.reference (int_of_permission p))
     with _ ->
         None
 
-let mapv h gs ps =
+let mapv h gs p =
     try
         let count = List.length gs in
         let grant_array = Array.create (count * 2) 0l in
@@ -65,6 +64,6 @@ let mapv h gs ps =
             grant_array.(i * 2 + 1) <- g.reference;
             i + 1
         ) 0 gs in
-        Some (mapv_exn h grant_array (int_of_permissions ps))
+        Some (mapv_exn h grant_array (int_of_permission p))
     with _ ->
         None

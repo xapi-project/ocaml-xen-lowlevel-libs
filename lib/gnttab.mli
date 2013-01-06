@@ -60,15 +60,15 @@ type mapping
 (** A memory region associated with one or more mapped grant reference *)
 
 type permission =
-| READ   (** contents may be read *)
-| WRITE  (** contents may be written *)
+| RO  (** contents may only be read *)
+| RW  (** contents may be read and written *)
 (** Permissions associated with each mapping. *)
 
-val map: handle -> grant -> permission list -> mapping option
+val map: handle -> grant -> permission -> mapping option
 (** Create a single mapping from a grant using a given list of permissions.
     On error this function returns None. Diagnostic details will be logged. *) 
 
-val mapv: handle -> grant list -> permission list -> mapping option
+val mapv: handle -> grant list -> permission -> mapping option
 (** Create a single contiguous mapping from a list of grants using a common
     list of permissions. Note the grant list can involve grants from multiple
     domains. On error this function returns None. Diagnostic details will
