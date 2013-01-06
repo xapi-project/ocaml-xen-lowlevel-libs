@@ -21,10 +21,9 @@
 #include <errno.h>
 #include <stdint.h>
 #include <sys/ioctl.h>
-#include <xen/sysctl.h>
+#include <xenctrl.h>
 #include <xen/xen.h>
 #include <xen/sys/evtchn.h>
-#include <xenctrl.h>
 
 #define CAML_NAME_SPACE
 #include <caml/mlvalues.h>
