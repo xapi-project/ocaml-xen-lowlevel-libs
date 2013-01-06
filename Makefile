@@ -25,6 +25,9 @@ doc: setup.data setup.bin
 install: setup.bin
 	@./setup.bin -install
 
+uninstall:
+	@ocamlfind remove xenctrl || true
+
 test: setup.bin build
 	@./setup.bin -test
 
