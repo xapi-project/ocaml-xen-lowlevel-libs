@@ -11,6 +11,6 @@ Library xenctrl
   CompiledObject:     best
   Path:               lib
   Findlibname: 	      xenctrl
-  Modules:            Eventchn, Mmap, Xc, Uuid, Xenguest
-  CSources:           eventchn_stubs.c, mmap_stubs.c, mmap_stubs.h, xc_stubs.c, xenguest_stubs.c
+  Modules:            Gnttab, Eventchn, Mmap, Xc, Uuid, Xenguest
+  CSources:           gnttab_stubs.c, eventchn_stubs.c, mmap_stubs.c, mmap_stubs.h, xc_stubs.c, xenguest_stubs.c
   CCLib:              -lxenctrl -lxenguest -lxenstore

@@ -1,5 +1,6 @@
 # OASIS_START
-# DO NOT EDIT (digest: 350290d9858735d978e530eb76511ef8)
+# DO NOT EDIT (digest: 003dc3bb2641deff10dd6c46d37b7d5c)
+gnttab_stubs.o
 eventchn_stubs.o
 mmap_stubs.o
 xc_stubs.o
