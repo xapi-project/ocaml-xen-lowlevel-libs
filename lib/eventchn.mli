@@ -31,3 +31,4 @@ val unbind : handle -> t -> unit
 val pending : handle -> t
 val unmask : handle -> t -> unit
 
+val to_int: t -> int
