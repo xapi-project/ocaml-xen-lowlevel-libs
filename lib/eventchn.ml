@@ -20,6 +20,9 @@ type handle
 
 external init: unit -> handle = "stub_eventchn_init"
 external fd: handle -> Unix.file_descr = "stub_eventchn_fd"
+
+type t = int
+
 external notify: handle -> int -> unit = "stub_eventchn_notify"
 external bind_interdomain: handle -> int -> int -> int = "stub_eventchn_bind_interdomain"
 external bind_dom_exc_virq: handle -> int = "stub_eventchn_bind_dom_exc_virq"

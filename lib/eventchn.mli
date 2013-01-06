@@ -21,11 +21,13 @@ type handle
 val init : unit -> handle
 val fd: handle -> Unix.file_descr
 
-val notify : handle -> int -> unit
-val bind_interdomain : handle -> int -> int -> int
+type t
 
-val bind_dom_exc_virq : handle -> int
-val unbind : handle -> int -> unit
-val pending : handle -> int
-val unmask : handle -> int -> unit
+val notify : handle -> t -> unit
+val bind_interdomain : handle -> int -> int -> t
+
+val bind_dom_exc_virq : handle -> t
+val unbind : handle -> t -> unit
+val pending : handle -> t
+val unmask : handle -> t -> unit
 
