@@ -47,7 +47,9 @@
 #warning missing viridian parameter
 #endif
 
+#if __XEN_INTERFACE_VERSION__ >= 0x00040200
 #define XENGUEST_4_2
+#endif
 
 #include <stdio.h>
 
