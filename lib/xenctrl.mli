@@ -52,6 +52,7 @@ type physinfo = {
   free_pages       : nativeint;
   scrub_pages      : nativeint;
   capabilities     : physinfo_cap_flag list;
+  max_nr_cpus      : int; (** compile-time max possible number of nr_cpus *)
 }
 type version = { major : int; minor : int; extra : string; }
 type compile_info = {
@@ -74,12 +75,8 @@ external interface_open : unit -> handle = "stub_xc_interface_open"
 external is_fake : unit -> bool = "stub_xc_interface_is_fake"
 external interface_close : handle -> unit = "stub_xc_interface_close"
 val with_intf : (handle -> 'a) -> 'a
-external _domain_create : handle -> int32 -> domain_create_flag list -> int array -> domid
-  = "stub_xc_domain_create"
-val domain_create : handle -> int32 -> domain_create_flag list -> 'a Uuid.t -> domid
-external _domain_sethandle : handle -> domid -> int array -> unit
-  = "stub_xc_domain_sethandle"
-val domain_sethandle : handle -> domid -> 'a Uuid.t -> unit
+val domain_create : handle -> int32 -> domain_create_flag list -> string -> domid
+val domain_sethandle : handle -> domid -> string -> unit
 external domain_max_vcpus : handle -> domid -> int -> unit
   = "stub_xc_domain_max_vcpus"
 external domain_pause : handle -> domid -> unit = "stub_xc_domain_pause"
@@ -132,7 +129,7 @@ external domain_memory_increase_reservation :
   handle -> domid -> int64 -> unit
   = "stub_xc_domain_memory_increase_reservation"
 external map_foreign_range :
-  handle -> domid -> int -> nativeint -> Mmap.mmap_interface
+  handle -> domid -> int -> nativeint -> Xenmmap.mmap_interface
   = "stub_map_foreign_range"
 external domain_get_pfn_list :
   handle -> domid -> nativeint -> nativeint array

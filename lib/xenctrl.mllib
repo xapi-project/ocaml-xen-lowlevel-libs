@@ -1,9 +1,8 @@
 # OASIS_START
-# DO NOT EDIT (digest: ae80446ee9526b2d6beb05ee2c3a077b)
+# DO NOT EDIT (digest: 4de63a1e0d255c1a3ee5deec903441a6)
 Gnttab
 Eventchn
-Mmap
-Xc
-Uuid
+Xenmmap
+Xenctrl
 Xenguest
 # OASIS_STOP

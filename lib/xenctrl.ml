@@ -70,6 +70,7 @@ type physinfo =
 	scrub_pages      : nativeint;
 	(* XXX hw_cap *)
 	capabilities     : physinfo_cap_flag list;
+	max_nr_cpus      : int;
 }
 
 type version =
@@ -118,14 +119,23 @@ let with_intf f =
 external _domain_create: handle -> int32 -> domain_create_flag list -> int array -> domid
        = "stub_xc_domain_create"
 
+let int_array_of_uuid_string s =
+	try
+		Scanf.sscanf s
+			"%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x"
+			(fun a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 a12 a13 a14 a15 ->
+				[| a0; a1; a2; a3; a4; a5; a6; a7;
+				   a8; a9; a10; a11; a12; a13; a14; a15 |])
+	with _ -> invalid_arg ("Xc.int_array_of_uuid_string: " ^ s)
+
 let domain_create handle n flags uuid =
-	_domain_create handle n flags (Uuid.int_array_of_uuid uuid)
+	_domain_create handle n flags (int_array_of_uuid_string uuid)
 
 external _domain_sethandle: handle -> domid -> int array -> unit
                           = "stub_xc_domain_sethandle"
 
 let domain_sethandle handle n uuid =
-	_domain_sethandle handle n (Uuid.int_array_of_uuid uuid)
+	_domain_sethandle handle n (int_array_of_uuid_string uuid)
 
 external domain_max_vcpus: handle -> domid -> int -> unit
        = "stub_xc_domain_max_vcpus"
@@ -214,7 +224,7 @@ external cpuid_check: handle -> (int64 * (int64 option)) -> string option array 
        = "stub_xc_cpuid_check"
 
 external map_foreign_range: handle -> domid -> int
-                         -> nativeint -> Mmap.mmap_interface
+                         -> nativeint -> Xenmmap.mmap_interface
        = "stub_map_foreign_range"
 
 external domain_get_pfn_list: handle -> domid -> nativeint -> nativeint array
@@ -306,12 +316,12 @@ let coredump xch domid fd =
 	if Array.length pfns <> Nativeint.to_int nrpages then
 		failwith "could not get the page frame list";
 
-	let page_size = Mmap.getpagesize () in
+	let page_size = Xenmmap.getpagesize () in
 	for i = 0 to Nativeint.to_int nrpages - 1
 	do
 		let page = map_foreign_range xch domid page_size pfns.(i) in
-		let data = Mmap.read page 0 page_size in
-		Mmap.unmap page;
+		let data = Xenmmap.read page 0 page_size in
+		Xenmmap.unmap page;
 		dump data
 	done
 
