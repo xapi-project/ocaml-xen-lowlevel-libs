@@ -21,7 +21,6 @@
 
 #include <xenctrl.h>
 #include <xenguest.h>
-#include <xenstore.h>
 #include <xen/hvm/hvm_info_table.h>
 #include <xen/hvm/params.h>
 #include <xen/hvm/e820.h>
@@ -49,6 +48,9 @@
 
 #if __XEN_INTERFACE_VERSION__ >= 0x00040200
 #define XENGUEST_4_2
+#include <xenstore.h>
+#else
+#include <xs.h>
 #endif
 
 #include <stdio.h>
@@ -380,13 +382,14 @@ CAMLprim value stub_xc_linux_build_native(value xc_handle, value domid,
 	                       c_image_name, c_ramdisk_name, c_flags,
 	                       c_store_evtchn, &store_mfn,
 	                       c_console_evtchn, &console_mfn);
+#ifdef XENGUEST_4_2
 	if (r == 0)
 	  r = xc_dom_gnttab_seed(xch, c_domid,
 							 console_mfn,
 							 store_mfn,
 							 Int_val(console_domid),
 							 Int_val(store_domid));
-
+#endif
 	caml_leave_blocking_section();
 
 #ifndef XEN_UNSTABLE
@@ -521,9 +524,9 @@ CAMLprim value stub_xc_hvm_build_native(value xc_handle, value domid,
                            Int_val(console_evtchn), &console_mfn, f);
 	if (r)
 		failwith_oss_xc(xch, "hvm_build_params");
-
+#ifdef XENGUEST_4_2
     xc_dom_gnttab_hvm_seed(xch, _D(domid), console_mfn, store_mfn, Int_val(console_domid), Int_val(store_domid));
-
+#endif
 
   result = caml_alloc_tuple(2);
   Store_field(result, 0, caml_copy_nativeint(store_mfn));
