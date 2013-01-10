@@ -23,17 +23,11 @@ type grant = {
     reference: int32;
 }
 
-type contents = (char, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t
-
-type mapping = contents
-
-let contents x = x
-
-external map_exn: handle -> int32 -> int32 -> int -> contents =
+external map_exn: handle -> int32 -> int32 -> int -> Gntcommon.mapping =
     "stub_xc_gnttab_map_grant_ref"
-external mapv_exn: handle -> int32 array -> int -> contents =
+external mapv_exn: handle -> int32 array -> int -> Gntcommon.mapping =
     "stub_xc_gnttab_map_grant_refs"
-external unmap_exn: handle -> contents -> unit =
+external unmap_exn: handle -> Gntcommon.mapping -> unit =
     "stub_xc_gnttab_unmap"
 
 (* Look up the values of PROT_{READ,WRITE} from the C headers. *)
