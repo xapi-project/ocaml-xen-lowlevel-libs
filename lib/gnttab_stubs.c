@@ -134,7 +134,7 @@ CAMLprim value stub_xc_gnttab_map_grant_refs(
 	}
 
 	contents = caml_ba_alloc_dims(XC_GNTTAB_BIGARRAY, 1,
-		map, 1 << XC_PAGE_SHIFT);
+		map, count << XC_PAGE_SHIFT);
 	CAMLreturn(contents);
 }
 
