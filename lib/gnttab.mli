@@ -56,30 +56,20 @@ type grant = {
     to us out-of-band, usually either via xenstore during device setup or
     via a shared memory ring structure. *)
 
-type mapping
-(** A memory region associated with one or more mapped grant reference *)
-
 type permission =
 | RO  (** contents may only be read *)
 | RW  (** contents may be read and written *)
 (** Permissions associated with each mapping. *)
 
-val map: handle -> grant -> permission -> mapping option
+val map: handle -> grant -> permission -> Gntcommon.mapping option
 (** Create a single mapping from a grant using a given list of permissions.
     On error this function returns None. Diagnostic details will be logged. *) 
 
-val mapv: handle -> grant list -> permission -> mapping option
+val mapv: handle -> grant list -> permission -> Gntcommon.mapping option
 (** Create a single contiguous mapping from a list of grants using a common
     list of permissions. Note the grant list can involve grants from multiple
     domains. On error this function returns None. Diagnostic details will
     be logged. *)
 
-val unmap_exn: handle -> mapping -> unit
+val unmap_exn: handle -> Gntcommon.mapping -> unit
 (** Unmap a single mapping (which may involve multiple grants) *)
-
-type contents = (char, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t
-(** Raw mapped memory *)
-
-val contents: mapping -> contents
-(** Expose the contents of a mapped memory region as a bigarray *)
-
