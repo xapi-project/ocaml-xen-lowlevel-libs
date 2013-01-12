@@ -26,13 +26,28 @@
 #include <sys/mman.h>
 #include <stdint.h>
 #include <string.h>
+#include <assert.h>
 
 #include <xenctrl.h>
+
+#if __XEN_INTERFACE_VERSION__ >= 0x00040200
+#define HAVE_GNTSHR 1
+#endif
+
+static void gntshr_missing()
+{
+	value *v = caml_named_value("gntshr.missing");
+	/* if v is NULL then it's either an error in gntshr.ml or a
+	   linking error */ 
+	assert (v != NULL);
+	caml_raise_constant(*v);
+}
 
 #define _G(__g) ((xc_gntshr *)(__g))
 
 #define XC_GNTTAB_BIGARRAY (CAML_BA_UINT8 | CAML_BA_C_LAYOUT | CAML_BA_EXTERNAL)
 
+#ifdef HAVE_GNTSHR
 #define ERROR_STRLEN 1024
 static void failwith_xc(xc_interface *xch)
 {
@@ -51,36 +66,45 @@ static void failwith_xc(xc_interface *xch)
         }
         caml_raise_with_string(*caml_named_value("xc.error"), error_str);
 }
+#endif
 
 CAMLprim value stub_xenctrlext_gntshr_open(void)
 {
 	CAMLparam0();
+	CAMLlocal1(result);
+#ifdef HAVE_GNTSHR
 	xc_gntshr *xgh;
 
 	xgh = xc_gntshr_open(NULL, 0);
 	if (NULL == xgh)
 		failwith_xc(NULL);
-	CAMLreturn((value)xgh);
+	result = (value)xgh;
+#else
+	gntshr_missing();
+#endif
+	CAMLreturn(result);
 }
 
 CAMLprim value stub_xenctrlext_gntshr_close(value xgh)
 {
 	CAMLparam1(xgh);
-
+#ifdef HAVE_GNTSHR
 	xc_gntshr_close(_G(xgh));
-
+#else
+	gntshr_missing();
+#endif
 	CAMLreturn(Val_unit);
 }
 
 CAMLprim value stub_xenctrlext_gntshr_share_pages(value xgh, value domid, value count, value writeable) {
 	CAMLparam4(xgh, domid, count, writeable);
 	CAMLlocal4(result, ml_refs, ml_refs_cons, ml_map);
+#ifdef HAVE_GNTSHR
 	void *map;
 	uint32_t *refs;
 	uint32_t c_domid;
 	int c_count;
 	int i;
-
 	c_count = Int_val(count);
 	c_domid = Int32_val(domid);
 	result = caml_alloc(2, 0);
@@ -111,13 +135,16 @@ CAMLprim value stub_xenctrlext_gntshr_share_pages(value xgh, value domid, value 
 	Store_field(result, 1, ml_map);
 
 	free(refs);
+#else
+	gntshr_missing();
+#endif
 	CAMLreturn(result);
 }
 
 CAMLprim value stub_xenctrlext_gntshr_munmap(value xgh, value share) {
 	CAMLparam2(xgh, share);
 	CAMLlocal1(ml_map);
-
+#ifdef HAVE_GNTSHR
 	ml_map = Field(share, 1);
 
 	int size = Caml_ba_array_val(ml_map)->dim[0];
@@ -125,6 +152,8 @@ CAMLprim value stub_xenctrlext_gntshr_munmap(value xgh, value share) {
 	int result = xc_gntshr_munmap(_G(xgh), Caml_ba_data_val(ml_map), pages);
 	if(result != 0)
 		failwith_xc(_G(xgh));
-
+#else
+	gntshr_missing();
+#endif
 	CAMLreturn(Val_unit);
 }
