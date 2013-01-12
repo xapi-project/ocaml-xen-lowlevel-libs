@@ -26,3 +26,7 @@ external share_pages : handle -> int32 -> int -> bool -> share =
 	"stub_xenctrlext_gntshr_share_pages"
 external munmap : handle -> share -> unit =
 	"stub_xenctrlext_gntshr_munmap"
+
+exception Need_xen_4_2_or_later
+
+let () = Callback.register_exception "gntshr.missing" Need_xen_4_2_or_later

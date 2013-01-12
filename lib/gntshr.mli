@@ -19,6 +19,9 @@ type share = {
 	(** Mapping to the shared memory. *)
 }
 
+exception Need_xen_4_2_or_later
+(** The needed low-level functions are only in xen >= 4.2 *)
+
 type handle
 
 external interface_open : unit -> handle = "stub_xenctrlext_gntshr_open"
