@@ -19,8 +19,12 @@
 type handle
 (** An initialised event channel interface. *)
 
-type t = int
+type t
 (** A local event channel. *)
+
+val to_int: t -> int
+
+val of_int: int -> t
 
 val init: unit -> handle
 (** Return an initialised event channel interface. On error it
