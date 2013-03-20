@@ -25,19 +25,14 @@ doc: setup.data setup.bin
 install: setup.bin
 	@./setup.bin -install
 
-uninstall:
-	@ocamlfind remove xenctrl || true
-
 test: setup.bin build
 	@./setup.bin -test
 
 reinstall: setup.bin
-	@ocamlfind remove mmap || true
 	@ocamlfind remove xenctrl || true
 	@./setup.bin -reinstall
 
 uninstall:
-	@ocamlfind remove mmap || true
 	@ocamlfind remove xenctrl || true
 
 clean:
