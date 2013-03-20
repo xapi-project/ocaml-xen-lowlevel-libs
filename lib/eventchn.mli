@@ -22,7 +22,7 @@ type handle
 type t = int
 (** A local event channel. *)
 
-val init : unit -> handle
+val init: unit -> handle
 (** Return an initialised event channel interface. On error it
     will throw a Failure exception. *)
 
