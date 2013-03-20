@@ -27,6 +27,3 @@ external bind_dom_exc_virq: handle -> int = "stub_eventchn_bind_dom_exc_virq"
 external unbind: handle -> int -> unit = "stub_eventchn_unbind"
 external pending: handle -> int = "stub_eventchn_pending"
 external unmask: handle -> int -> unit = "stub_eventchn_unmask"
-
-let to_int x = x
-let of_int x = x
