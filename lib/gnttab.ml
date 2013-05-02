@@ -12,22 +12,35 @@
  * GNU Lesser General Public License for more details.
  *)
 
-type handle
+type buf = (char, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t
 
-external interface_open: unit -> handle = "stub_xc_gnttab_open"
+type interface
 
-external interface_close: handle -> unit = "stub_xc_gnttab_close"
+external interface_open: unit -> interface = "stub_xc_gnttab_open"
+
+external interface_close: interface -> unit = "stub_xc_gnttab_close"
+
+type grant_table_index = int32
+let grant_table_index_of_int32 x = x
+let int32_of_grant_table_index x = x
+let string_of_grant_table_index = Int32.to_string
 
 type grant = {
-    domid: int32;
-    reference: int32;
+    domid: int;
+    ref: grant_table_index;
 }
 
-external map_exn: handle -> int32 -> int32 -> int -> Gntcommon.mapping =
+module Local_mapping = struct
+  type t = buf 
+
+  let to_buf t = t
+end
+
+external map_exn: interface -> int32 -> int32 -> int -> Local_mapping.t =
     "stub_xc_gnttab_map_grant_ref"
-external mapv_exn: handle -> int32 array -> int -> Gntcommon.mapping =
+external mapv_exn: interface -> int32 array -> int -> Local_mapping.t =
     "stub_xc_gnttab_map_grant_refs"
-external unmap_exn: handle -> Gntcommon.mapping -> unit =
+external unmap_exn: interface -> Local_mapping.t -> unit =
     "stub_xc_gnttab_unmap"
 
 (* Look up the values of PROT_{READ,WRITE} from the C headers. *)
@@ -45,7 +58,7 @@ let int_of_permission = function
 
 let map h g p =
     try
-        Some (map_exn h g.domid g.reference (int_of_permission p))
+        Some (map_exn h (Int32.of_int g.domid) g.ref (int_of_permission p))
     with _ ->
         None
 
@@ -54,8 +67,8 @@ let mapv h gs p =
         let count = List.length gs in
         let grant_array = Array.create (count * 2) 0l in
         let (_: int) = List.fold_left (fun i g ->
-            grant_array.(i * 2 + 0) <- g.domid;
-            grant_array.(i * 2 + 1) <- g.reference;
+            grant_array.(i * 2 + 0) <- Int32.of_int g.domid;
+            grant_array.(i * 2 + 1) <- g.ref;
             i + 1
         ) 0 gs in
         Some (mapv_exn h grant_array (int_of_permission p))

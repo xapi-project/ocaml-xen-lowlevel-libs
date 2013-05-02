@@ -35,20 +35,31 @@
 (** {0 This is a low-level, unsafe API}
     This is a one-to-one mapping of the underlying C functions. *)
 
-type handle
+type buf = (char, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t
+
+type interface
 (** A connection to the grant device, needed for mapping/unmapping *)
 
-val interface_open: unit -> handle
+val interface_open: unit -> interface
 (** Open a connection to the grant device. This must be done before any
     calls to map or unmap. *)
 
-val interface_close: handle -> unit
+val interface_close: interface -> unit
 (** Close a connection to the grant device. Any future calls to map or
     unmap will fail. *)
 
+type grant_table_index
+(** Abstract type of grant table index. *)
+
+val grant_table_index_of_int32: int32 -> grant_table_index
+val int32_of_grant_table_index: grant_table_index -> int32
+val string_of_grant_table_index: grant_table_index -> string
+
 type grant = {
-    domid: int32;     (** foreign domain who is exporting memory *)
-    reference: int32; (** id which identifies the specific export in the foreign domain *)
+    domid: int;
+      (** foreign domain who is exporting memory *)
+    ref: grant_table_index;
+      (** id which identifies the specific export in the foreign domain *)
 }
 (** A foreign domain must explicitly "grant" us memory and send us the
     "reference". The pair of (foreign domain id, reference) uniquely
@@ -61,15 +72,22 @@ type permission =
 | RW  (** contents may be read and written *)
 (** Permissions associated with each mapping. *)
 
-val map: handle -> grant -> permission -> Gntcommon.mapping option
+module Local_mapping : sig 
+  type t
+  (** Abstract type representing a locally-mapped shared memory page *)
+
+  val to_buf: t -> buf
+end 
+
+val map: interface -> grant -> permission -> Local_mapping.t option
 (** Create a single mapping from a grant using a given list of permissions.
     On error this function returns None. Diagnostic details will be logged. *) 
 
-val mapv: handle -> grant list -> permission -> Gntcommon.mapping option
+val mapv: interface -> grant list -> permission -> Local_mapping.t option
 (** Create a single contiguous mapping from a list of grants using a common
     list of permissions. Note the grant list can involve grants from multiple
     domains. On error this function returns None. Diagnostic details will
     be logged. *)
 
-val unmap_exn: handle -> Gntcommon.mapping -> unit
+val unmap_exn: interface -> Local_mapping.t -> unit
 (** Unmap a single mapping (which may involve multiple grants) *)
