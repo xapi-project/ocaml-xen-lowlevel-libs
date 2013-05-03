@@ -90,6 +90,20 @@ CAMLprim value stub_eventchn_bind_interdomain(value xce, value domid,
 	CAMLreturn(port);
 }
 
+CAMLprim value stub_eventchn_bind_unbound_port(value xce, value remote_domid)
+{
+	CAMLparam2(xce, remote_domid);
+	CAMLlocal1(port);
+	evtchn_port_or_error_t rc;
+
+	rc = xc_evtchn_bind_unbound_port(_H(xce), Int_val(remote_domid));
+	if (rc == -1)
+		caml_failwith("evtchn bind_unbound_port failed");
+	port = Val_int(rc);
+
+	CAMLreturn(port);
+}
+
 CAMLprim value stub_eventchn_bind_dom_exc_virq(value xce)
 {
 	CAMLparam1(xce);

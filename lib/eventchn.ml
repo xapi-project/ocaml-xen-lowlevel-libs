@@ -23,6 +23,7 @@ type t = int
 
 external notify: handle -> int -> unit = "stub_eventchn_notify"
 external bind_interdomain: handle -> int -> int -> int = "stub_eventchn_bind_interdomain"
+external bind_unbound_port: handle -> int -> int = "stub_eventchn_bind_unbound_port"
 external bind_dom_exc_virq: handle -> int = "stub_eventchn_bind_dom_exc_virq"
 external unbind: handle -> int -> unit = "stub_eventchn_unbind"
 external pending: handle -> int = "stub_eventchn_pending"

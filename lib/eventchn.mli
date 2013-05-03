@@ -44,6 +44,11 @@ val bind_interdomain : handle -> int -> int -> t
     channel connected to domid:remote_port. On error it will
     throw a Failure exception. *)
 
+val bind_unbound_port : handle -> int -> t
+(** [bind_unbound_port h remote_domid] returns a new event channel
+    awaiting an interdomain connection from [remote_domid]. On error
+    it will throw a Failure exception. *)
+
 val bind_dom_exc_virq : handle -> t
 (** Binds a local event channel to the VIRQ_DOM_EXC
     (domain exception VIRQ). On error it will throw a Failure
