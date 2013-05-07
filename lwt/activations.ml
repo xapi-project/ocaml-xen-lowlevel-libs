@@ -9,21 +9,21 @@ let wait port =
   th
 
 let wake port =
+  let port = Eventchn.to_int port in
 	Lwt_sequence.iter_node_l (fun node ->
 		let u = Lwt_sequence.get node in
 		Lwt_sequence.remove node;
-		Lwt.wakeup u ()
+		Lwt.wakeup_later u ()
     ) event_cb.(port)
 
 (* Go through the event mask and activate any events, potentially spawning
    new threads *)
-let run () =
-	let xe = Eventchn.init () in
+let run xe =
 	let fd = Lwt_unix.of_unix_file_descr ~blocking:false ~set_flags:true (Eventchn.fd xe) in
 	let rec inner () =
 		lwt () = Lwt_unix.wait_read fd in
 	    let port = Eventchn.pending xe in
-		wake (Eventchn.to_int port);
+		wake port;
 		Eventchn.unmask xe port;
         inner ()
    in inner ()

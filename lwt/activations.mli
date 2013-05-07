@@ -14,10 +14,14 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *)
 
+val wake : Eventchn.t -> unit
+(** If the work associated with an event channel interrupt is not
+    complete, this will wake up any waiting threads. *)
+
 val wait : Eventchn.t -> unit Lwt.t
 (** For a given event channel, create a thread which completes when
     the event channel is signalled. *)
 
-val run : unit -> unit Lwt.t
+val run : Eventchn.handle -> unit Lwt.t
 (** Start a background thread which monitors the state of every event
     channel and wakes up any sleeping threads. *)
