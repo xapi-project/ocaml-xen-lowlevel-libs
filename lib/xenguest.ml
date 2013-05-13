@@ -49,6 +49,6 @@ external domain_save : handle -> Unix.file_descr -> domid
                     -> unit
        = "stub_xc_domain_save_bytecode" "stub_xc_domain_save"
 
-(** opensource xc dumpcore *)
-external dumpcore : handle -> domid -> string -> unit
-       = "stub_xc_domain_dumpcore"
+external dumpcore : handle -> domid -> string -> unit = "stub_xc_domain_dumpcore"
+(** [dumpcore xch domid filename] will dump the core of [domid] into
+    [filename]. *)

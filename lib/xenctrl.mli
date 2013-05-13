@@ -139,7 +139,7 @@ val domain_sethandle : handle -> domid -> string -> unit
 
 external domain_max_vcpus : handle -> domid -> int -> unit = "stub_xc_domain_max_vcpus"
 (** [domain_max_vcpus xch domid max] sets [max] to be the maximum
-    number of vcpus available for [domid]. *)
+    number of vcpus that [domid] may create. *)
 
 external domain_getinfo : handle -> domid -> domaininfo = "stub_xc_domain_getinfo"
 (** [domain_getinfo xch domid] is the [domaininfo] record for
