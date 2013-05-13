@@ -28,3 +28,5 @@
 <lwt/*.ml{,i}>: pkg_lwt.unix
 # OASIS_STOP
 <lwt/*.ml{,i}>: syntax_camlp4o, pkg_lwt.syntax
+<lib>: include
+<lwt>: include
