@@ -160,9 +160,9 @@ let domain_getinfolist handle first_domain =
 		in
 	List.rev (__getlist first_domain)
 
-external domain_getinfo: handle -> domid -> domaininfo= "stub_xc_domain_getinfo"
+external domain_getinfo: handle -> domid -> domaininfo = "stub_xc_domain_getinfo"
 
-external domain_get_vcpuinfo: handle -> int -> int -> vcpuinfo
+external domain_get_vcpuinfo: handle -> domid -> int -> vcpuinfo
        = "stub_xc_vcpu_getinfo"
 
 external domain_ioport_permission: handle -> domid -> int -> int -> bool -> unit
