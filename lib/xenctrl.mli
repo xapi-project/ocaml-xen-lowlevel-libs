@@ -167,9 +167,6 @@ external domain_get_pfn_list : handle -> domid -> nativeint -> nativeint array =
 (** DEPRECATED.  Avoid using this, as it does not correctly account
     for PFNs without a backing MFN. *)
 
-external watchdog : handle -> domid -> int32 -> int = "stub_xc_watchdog"
-(** [watchdog xch domid timeout] turns on the watchdog for domain
-    [domid] with timeout [timeout]. *)
 
 
 (** {3 Domain lifecycle ops} *)
@@ -177,10 +174,35 @@ external watchdog : handle -> domid -> int32 -> int = "stub_xc_watchdog"
 type shutdown_reason = Poweroff | Reboot | Suspend | Crash | Halt
 
 external domain_pause : handle -> domid -> unit = "stub_xc_domain_pause"
+(** [domain_pause xch domid] pauses [domid]. A paused domain still
+    exists in memory however it does not receive any timeslices from
+    the hypervisor. *)
+
 external domain_unpause : handle -> domid -> unit = "stub_xc_domain_unpause"
-external domain_resume_fast : handle -> domid -> unit = "stub_xc_domain_resume_fast"
-external domain_destroy : handle -> domid -> unit = "stub_xc_domain_destroy"
+(** [domain_unpause xch domid] unpauses [domid]. The domain should
+    have been previously paused. *)
+
 external domain_shutdown : handle -> domid -> shutdown_reason -> unit = "stub_xc_domain_shutdown"
+(** [domain_shutdown xch domid reason] shutdowns [domid] with
+    [reason]. This is intended for use in fully-virtualized domains where
+    this operation is analogous to the [sched_op] operations in a
+    paravirtualized domain. The caller is expected to give the reason for
+    the shutdown. *)
+
+external domain_resume_fast : handle -> domid -> unit = "stub_xc_domain_resume_fast"
+(** [domain_resume_fast xch domid] resumes [domid]. The domain should
+    have been previously suspended. *)
+
+external domain_destroy : handle -> domid -> unit = "stub_xc_domain_destroy"
+(** [domain_destroy xch domid] destroys [domid]. Destroying a domain
+    removes the domain completely from memory. This function should be
+    called after sending the domain a SHUTDDOWN control message to free up
+    the domain resources. *)
+
+
+external watchdog : handle -> domid -> int32 -> int = "stub_xc_watchdog"
+(** [watchdog xch domid timeout] turns on the watchdog for domain
+    [domid] with timeout [timeout]. *)
 
 (** {3 Domain scheduling} *)
 
@@ -217,7 +239,7 @@ external vcpu_affinity_set : handle -> domid -> int -> bool array -> unit = "stu
 external vcpu_context_get : handle -> domid -> int -> string = "stub_xc_vcpu_context_get"
 
 
-(** {3 Domain PCI passthrough management} *)
+(** {3 HVM guest pass-through management} *)
 
 external domain_ioport_permission: handle -> domid -> int -> int -> bool -> unit = "stub_xc_domain_ioport_permission"
 external domain_iomem_permission: handle -> domid -> nativeint -> nativeint -> bool -> unit = "stub_xc_domain_iomem_permission"
