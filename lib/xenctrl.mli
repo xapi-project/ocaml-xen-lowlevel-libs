@@ -21,6 +21,9 @@
 type handle
 (** Type of a libxc handle. Corresponding to libxc's [xc_interface*] *)
 
+(** General error exception *)
+exception Error of string
+
 external interface_open : unit -> handle = "stub_xc_interface_open"
 (** This function opens a handle to the hypervisor interface.  This
     function can be called multiple times within a single process.
@@ -107,6 +110,14 @@ external sched_id : handle -> int = "stub_xc_sched_id"
 
 type domid = int
 (** Type of a domain id. *)
+
+type vcpuinfo = {
+  online : bool;
+  blocked : bool;
+  running : bool;
+  cputime : int64;
+  cpumap : int32;
+}
 
 type domaininfo = {
   domid : domid;
@@ -213,13 +224,6 @@ external sched_credit_domain_get : handle -> domid -> sched_control = "stub_sche
 
 (** {3 Domain VCPU management} *)
 
-type vcpuinfo = {
-  online : bool;
-  blocked : bool;
-  running : bool;
-  cputime : int64;
-  cpumap : int32;
-}
 
 external domain_get_vcpuinfo : handle -> domid -> int -> vcpuinfo = "stub_xc_vcpu_getinfo"
 (** [domain_get_vcpuinfo xch domid v] is the [vcpuinfo] record for
