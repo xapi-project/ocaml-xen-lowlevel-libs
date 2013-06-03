@@ -1,0 +1,16 @@
+We require the following dependencies:
+
+  * OCaml
+  * findlib
+  * xen-devel headers
+
+Note this code conflicts with the OCaml libraries packaged with xen.
+
+To build:
+
+    make
+
+To install:
+
+    make install
+
