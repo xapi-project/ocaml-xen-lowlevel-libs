@@ -24,6 +24,7 @@ type grant_table_index = int32
 let grant_table_index_of_int32 x = x
 let int32_of_grant_table_index x = x
 let string_of_grant_table_index = Int32.to_string
+let grant_table_index_of_string = Int32.of_string
 
 type grant = {
     domid: int;
