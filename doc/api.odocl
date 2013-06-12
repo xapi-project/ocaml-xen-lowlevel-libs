@@ -1,3 +1,5 @@
+# OASIS_START
+# DO NOT EDIT (digest: 7d73671737a911c99b0dbf635c0e5a3a)
 Eventchn
 Gntcommon
 Gntshr
@@ -5,3 +7,5 @@ Gnttab
 Xenctrl
 Xenguest
 Xenmmap
+Activations
+# OASIS_STOP
