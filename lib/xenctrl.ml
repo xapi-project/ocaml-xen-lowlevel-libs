@@ -48,6 +48,18 @@ type domaininfo =
 	handle            : int array;
 }
 
+type runstateinfo = {
+	state : int32;
+	missed_changes: int32;
+	state_entry_time : int64;
+	time0 : int64;
+	time1 : int64;
+	time2 : int64;
+	time3 : int64;
+	time4 : int64;
+	time5 : int64;
+}
+
 type sched_control =
 {
 	weight : int;
@@ -236,6 +248,9 @@ external domain_deassign_device: handle -> domid -> (int * int * int * int) -> u
        = "stub_xc_domain_deassign_device"
 external domain_test_assign_device: handle -> domid -> (int * int * int * int) -> bool
        = "stub_xc_domain_test_assign_device"
+
+external domain_get_runstate_info : handle -> int -> runstateinfo
+       = "stub_xc_get_runstate_info"
 
 external version: handle -> version = "stub_xc_version_version"
 external version_compile_info: handle -> compile_info
