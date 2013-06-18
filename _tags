@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 9c3f07768779c21e7824bff20b379e13)
+# DO NOT EDIT (digest: e548a8c7710caa6f4d8b776752f6d0d6)
 # Ignore VCS directories, you can use the same kind of rule outside 
 # OASIS_START/STOP if you want to exclude directories that contains 
 # useless stuff for the build process
@@ -21,11 +21,19 @@
 "lib/libxenctrl_stubs.a": oasis_library_xenctrl_cclib
 "lib/dllxenctrl_stubs.so": oasis_library_xenctrl_cclib
 <lib/xenctrl.{cma,cmxa}>: use_libxenctrl_stubs
+<lib/*.ml{,i}>: pkg_unix
+"lib/gntshr_stubs.c": pkg_unix
+"lib/gnttab_stubs.c": pkg_unix
+"lib/eventchn_stubs.c": pkg_unix
+"lib/xenmmap_stubs.c": pkg_unix
+"lib/xenctrl_stubs.c": pkg_unix
+"lib/xenguest_stubs.c": pkg_unix
 # Library xenctrl_lwt
 "lwt/xenctrl_lwt.cmxs": use_xenctrl_lwt
 <lwt/*.ml{,i}>: use_xenctrl
 <lwt/*.ml{,i}>: pkg_lwt
 <lwt/*.ml{,i}>: pkg_lwt.unix
+<lwt/*.ml{,i}>: pkg_unix
 # OASIS_STOP
 <lwt/*.ml{,i}>: syntax_camlp4o, pkg_lwt.syntax
 <lib>: include
