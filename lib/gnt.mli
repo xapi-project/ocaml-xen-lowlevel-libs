@@ -75,17 +75,38 @@ end
 
 module Gntshr : sig
 	type interface
+	(** A connection to the gntshr device, needed for sharing/unmapping *)
 
-	external interface_open: unit -> interface = "stub_xc_gntshr_open"
-	external interface_close: interface -> unit = "stub_xc_gntshr_close"
+	val interface_open: unit -> interface
+	(** Open a connection to the gntshr device. This must be done before any
+	    calls to share or unmap. *)
+
+	val interface_close: interface -> unit
+	(** Close a connection to the gntshr device. Any future calls to share or
+	    unmap will fail. *)
 
 	type share = {
 		refs: grant_table_index list;
+		(** List of grant references which have been shared with a foreign domain. *)
 		mapping: Local_mapping.t;
+		(** Mapping of the shared memory. *)
 	}
+	(** When sharing a number of pages with another domain, we receive back both the
+	    list of grant references shared and actually mapped page(s). The foreign
+	    domain can map the same shared memory, after being notified (e.g. via xenstore)
+	    of our domid and list of references. *)
 
-	external share_pages: interface -> int32 -> int -> bool -> share =
-		"stub_xc_gntshr_share_pages"
-	external munmap : interface -> share -> unit =
-		"stub_xc_gntshr_munmap"
+	val share_pages_exn: interface -> int -> int -> bool -> share
+	(** [share_pages_exn if domid count writeable] shares [count] pages with foreign
+	    domain [domid]. [writeable] determines whether or not the foreign domain can
+	    write to the shared memory. *)
+
+	val share_pages: interface -> int -> int -> bool -> share option
+	(** [share_pages if domid count writeable] shares [count] pages with foreign domain
+	    [domid]. [writeable] determines whether or not the foreign domain can write to
+	    the shared memory.
+	    On error this function returns None. Diagnostic details will be logged. *)
+
+	val munmap_exn : interface -> share -> unit
+	(** Unmap a single mapping (which may involve multiple grants) *)
 end

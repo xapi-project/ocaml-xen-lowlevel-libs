@@ -89,12 +89,20 @@ module Gntshr = struct
 		mapping: Local_mapping.t;
 	}
 
-	external share_pages: interface -> int32 -> int -> bool -> share =
+	external share_pages_exn: interface -> int32 -> int -> bool -> share =
 		"stub_xc_gntshr_share_pages"
-	external munmap: interface -> share -> unit =
+	external munmap_exn: interface -> share -> unit =
 		"stub_xc_gntshr_munmap"
 
 	exception Need_xen_4_2_or_later
 
 	let () = Callback.register_exception "gntshr.missing" Need_xen_4_2_or_later
+
+	let share_pages_exn interface domid count writeable =
+		let domid32 = Int32.of_int domid in
+		share_pages_exn interface domid32 count writeable
+
+	let share_pages interface domid count writeable =
+		try Some (share_pages_exn interface domid count writeable)
+		with _ -> None
 end
