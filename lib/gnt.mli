@@ -76,8 +76,8 @@ end
 module Gntshr : sig
 	type interface
 
-	external interface_open: unit -> interface = "stub_xenctrlext_gntshr_open"
-	external interface_close: interface -> unit = "stub_xenctrlext_gntshr_close"
+	external interface_open: unit -> interface = "stub_xc_gntshr_open"
+	external interface_close: interface -> unit = "stub_xc_gntshr_close"
 
 	type share = {
 		refs: grant_table_index list;
@@ -85,7 +85,7 @@ module Gntshr : sig
 	}
 
 	external share_pages: interface -> int32 -> int -> bool -> share =
-		"stub_xenctrlext_gntshr_share_pages"
+		"stub_xc_gntshr_share_pages"
 	external munmap : interface -> share -> unit =
-		"stub_xenctrlext_gntshr_munmap"
+		"stub_xc_gntshr_munmap"
 end
