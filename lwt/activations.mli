@@ -14,6 +14,8 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *)
 
+(** React to incoming events. *)
+
 val wake : Eventchn.t -> unit
 (** If the work associated with an event channel interrupt is not
     complete, this will wake up any waiting threads. *)

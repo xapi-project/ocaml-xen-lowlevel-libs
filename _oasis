@@ -24,9 +24,10 @@ Library xenctrl_lwt
   Modules:            Activations
   BuildDepends:       lwt, lwt.unix, xenctrl
 
-#Document api
-#  Title: Xen low level bindings' documentation and API reference
-#  Type: ocamlbuild (0.3)
-#  BuildTools+: ocamldoc
-#  XOCamlbuildLibraries: xenctrl
-#  XOcamlbuildPath: doc
+Document api
+  Title: Xen low level bindings' documentation and API reference
+  Type: ocamlbuild (0.3)
+  BuildTools+: ocamldoc
+  XOcamlbuildModules: Eventchn, Gntcommon, Gntshr, Gnttab, Xenctrl, Xenguest, Xenmmap, Activations
+  XOcamlbuildPath: doc
+  Install: false
