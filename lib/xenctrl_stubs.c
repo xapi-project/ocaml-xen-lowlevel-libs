@@ -404,6 +404,9 @@ CAMLprim value stub_xc_vcpu_context_get(value xch, value domid,
 
 	ret = xc_vcpu_getcontext(_H(xch), _D(domid), Int_val(cpu), &ctxt);
 
+	if (ret < 0)
+		failwith_xc(_H(xch));
+
 	context = caml_alloc_string(sizeof(ctxt));
 	memcpy(String_val(context), (char *) &ctxt.c, sizeof(ctxt.c));
 
@@ -1152,8 +1155,8 @@ CAMLprim value stub_xc_domain_deassign_device(value xch, value domid, value desc
 
 CAMLprim value stub_xc_get_runstate_info(value xch, value domid)
 {
-	CAMLparam2(xch, domid);
 #if defined(XENCTRL_HAS_GET_RUNSTATE_INFO)
+	CAMLparam2(xch, domid);
 	CAMLlocal1(result);
 	xc_runstate_info_t info;
 	int retval;
