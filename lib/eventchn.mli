@@ -14,7 +14,7 @@
  * GNU Lesser General Public License for more details.
  *)
 
-(** Event channel bindings: see tools/libxc/xenctrl.h *)
+(** Event channels interface. *)
 
 type handle
 (** An initialised event channel interface. *)

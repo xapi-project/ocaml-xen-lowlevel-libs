@@ -45,6 +45,6 @@ Document api
   Title: Xen low level bindings' documentation and API reference
   Type: ocamlbuild (0.3)
   BuildTools+: ocamldoc
-  XOcamlbuildModules: Eventchn, Gntcommon, Gntshr, Gnttab, Xenctrl, Xenguest, Xenmmap, Activations
+  XOcamlbuildModules: Gnt, Eventchn, Xenctrl, Xenguest, Xenmmap, Activations
   XOcamlbuildPath: doc
   Install: false

@@ -12,6 +12,8 @@
  * GNU Lesser General Public License for more details.
  *)
 
+(** Grant tables interface. *)
+
 type buf = (char, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t
 
 type grant_table_index
