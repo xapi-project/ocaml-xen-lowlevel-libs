@@ -26,89 +26,86 @@ val grant_table_index_of_string: string -> grant_table_index
 val string_of_grant_table_index: grant_table_index -> string
 
 module Local_mapping : sig
-	type t
-	(** Abstract type representing a locally-mapped shared memory page *)
+  type t
+  (** Abstract type representing a locally-mapped shared memory page *)
 
-	val to_buf: t -> buf
+  val to_buf: t -> buf
 end
 
 module Gnttab : sig
-	type interface
-	(** A connection to the grant device, needed for mapping/unmapping *)
+  type interface
+  (** A connection to the grant device, needed for mapping/unmapping *)
 
-	val interface_open: unit -> interface
-	(** Open a connection to the grant device. This must be done before any
+  val interface_open: unit -> interface
+  (** Open a connection to the grant device. This must be done before any
 	    calls to map or unmap. *)
 
-	val interface_close: interface -> unit
-	(** Close a connection to the grant device. Any future calls to map or
+  val interface_close: interface -> unit
+  (** Close a connection to the grant device. Any future calls to map or
 	    unmap will fail. *)
 
-	type grant = {
-		domid: int;
-		(** foreign domain who is exporting memory *)
-		ref: grant_table_index;
-		(** id which identifies the specific export in the foreign domain *)
-	}
-	(** A foreign domain must explicitly "grant" us memory and send us the
-	    "reference". The pair of (foreign domain id, reference) uniquely
-	    identifies the block of memory. This pair ("grant") is transmitted
-	    to us out-of-band, usually either via xenstore during device setup or
-	    via a shared memory ring structure. *)
+  type grant = {
+   domid: int;
+   (** foreign domain who is exporting memory *)
+   ref: grant_table_index;
+   (** id which identifies the specific export in the foreign domain *)
+  }
+  (** A foreign domain must explicitly "grant" us memory and send us the
+      "reference". The pair of (foreign domain id, reference) uniquely
+      identifies the block of memory. This pair ("grant") is transmitted
+      to us out-of-band, usually either via xenstore during device setup or
+      via a shared memory ring structure. *)
 
-	type permission =
-		| RO (** contents may only be read *)
-		| RW (** contents may be read and written *)
-		(** Permissions associated with each mapping. *)
+  val map: interface -> grant -> bool -> Local_mapping.t option
+  (** [map if grant writable] creates a single mapping from [grant]
+      that will be writable if [writable] is [true].  On error this
+      function returns None. Diagnostic details will be logged. *)
 
-	val map: interface -> grant -> permission -> Local_mapping.t option
-	(** Create a single mapping from a grant using a given list of permissions.
-	    On error this function returns None. Diagnostic details will be logged. *) 
+  val mapv: interface -> grant list -> bool -> Local_mapping.t option
+  (** [mapv if grants writable] creates a single contiguous mapping
+      from a list of grants that will be writable if [writable] is
+      [true]. Note the grant list can involve grants from multiple
+      domains. On error this function returns None. Diagnostic details
+      will be logged. *)
 
-	val mapv: interface -> grant list -> permission -> Local_mapping.t option
-	(** Create a single contiguous mapping from a list of grants using a common
-	    list of permissions. Note the grant list can involve grants from multiple
-	    domains. On error this function returns None. Diagnostic details will
-	    be logged. *)
-
-	val unmap_exn: interface -> Local_mapping.t -> unit
-	(** Unmap a single mapping (which may involve multiple grants) *)
+  val unmap_exn: interface -> Local_mapping.t -> unit
+  (** Unmap a single mapping (which may involve multiple grants) *)
 end
 
 module Gntshr : sig
-	type interface
-	(** A connection to the gntshr device, needed for sharing/unmapping *)
+  type interface
+  (** A connection to the gntshr device, needed for sharing/unmapping *)
 
-	val interface_open: unit -> interface
-	(** Open a connection to the gntshr device. This must be done before any
-	    calls to share or unmap. *)
+  val interface_open: unit -> interface
+  (** Open a connection to the gntshr device. This must be done before any
+      calls to share or unmap. *)
 
-	val interface_close: interface -> unit
-	(** Close a connection to the gntshr device. Any future calls to share or
-	    unmap will fail. *)
+  val interface_close: interface -> unit
+  (** Close a connection to the gntshr device. Any future calls to share or
+      unmap will fail. *)
 
-	type share = {
-		refs: grant_table_index list;
-		(** List of grant references which have been shared with a foreign domain. *)
-		mapping: Local_mapping.t;
-		(** Mapping of the shared memory. *)
-	}
-	(** When sharing a number of pages with another domain, we receive back both the
-	    list of grant references shared and actually mapped page(s). The foreign
-	    domain can map the same shared memory, after being notified (e.g. via xenstore)
-	    of our domid and list of references. *)
+  type share = {
+    refs: grant_table_index list;
+    (** List of grant references which have been shared with a foreign domain. *)
+    mapping: Local_mapping.t;
+    (** Mapping of the shared memory. *)
+  }
+  (** When sharing a number of pages with another domain, we receive back both the
+      list of grant references shared and actually mapped page(s). The foreign
+      domain can map the same shared memory, after being notified (e.g. via xenstore)
+      of our domid and list of references. *)
 
-	val share_pages_exn: interface -> int -> int -> bool -> share
-	(** [share_pages_exn if domid count writeable] shares [count] pages with foreign
-	    domain [domid]. [writeable] determines whether or not the foreign domain can
-	    write to the shared memory. *)
+  val share_pages_exn: interface -> int -> int -> bool -> share
+  (** [share_pages_exn if domid count writeable] shares [count] pages with foreign
+      domain [domid]. [writeable] determines whether or not the foreign domain can
+      write to the shared memory. *)
 
-	val share_pages: interface -> int -> int -> bool -> share option
+  val share_pages: interface -> int -> int -> bool -> share option
 	(** [share_pages if domid count writeable] shares [count] pages with foreign domain
-	    [domid]. [writeable] determines whether or not the foreign domain can write to
-	    the shared memory.
-	    On error this function returns None. Diagnostic details will be logged. *)
+     [domid]. [writeable] determines whether or not the foreign domain can write to
+     the shared memory.
+     On error this function returns None. Diagnostic details will be logged. *)
 
-	val munmap_exn : interface -> share -> unit
-	(** Unmap a single mapping (which may involve multiple grants) *)
+  val munmap_exn : interface -> share -> unit
+  (** Unmap a single mapping (which may involve multiple grants) *)
 end

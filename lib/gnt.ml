@@ -52,15 +52,10 @@ module Gnttab = struct
 	let _PROT_READ = get_perm PROT_READ
 	let _PROT_WRITE = get_perm PROT_WRITE
 
-	type permission = RO | RW
-
-	let int_of_permission = function
-		| RO -> _PROT_READ
-		| RW -> _PROT_READ lor _PROT_WRITE
-
 	let map h g p =
 		try
-			Some (map_exn h (Int32.of_int g.domid) g.ref (int_of_permission p))
+			Some (map_exn h (Int32.of_int g.domid) g.ref
+           (_PROT_READ lor (if p then _PROT_WRITE else 0)))
 		with _ ->
 			None
 
@@ -73,7 +68,8 @@ module Gnttab = struct
 				grant_array.(i * 2 + 1) <- g.ref;
 				i+1
 			) 0 gs in
-			Some (mapv_exn h grant_array (int_of_permission p))
+			Some (mapv_exn h grant_array
+           (_PROT_READ lor (if p then _PROT_WRITE else 0)))
 		with _ ->
 			None
 end
