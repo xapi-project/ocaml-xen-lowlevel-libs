@@ -22,11 +22,6 @@ let int32_of_grant_table_index x = x
 let grant_table_index_of_string = Int32.of_string
 let string_of_grant_table_index = Int32.to_string
 
-module Local_mapping = struct
-	type t = buf
-	let to_buf t = t
-end
-
 module Gnttab = struct
 	type interface
 
@@ -38,7 +33,12 @@ module Gnttab = struct
 		ref: grant_table_index;
 	}
 
-	external map_exn: interface -> int32 -> int32 -> int -> Local_mapping.t =
+ module Local_mapping = struct
+	 type t = buf
+	 let to_buf t = t
+ end
+
+ external map_exn: interface -> int32 -> int32 -> int -> Local_mapping.t =
 		"stub_xc_gnttab_map_grant_ref"
 	external mapv_exn: interface -> int32 array -> int -> Local_mapping.t =
 		"stub_xc_gnttab_map_grant_refs"
@@ -82,7 +82,7 @@ module Gntshr = struct
 
 	type share = {
 		refs: grant_table_index list;
-		mapping: Local_mapping.t;
+		mapping: buf;
 	}
 
 	external share_pages_exn: interface -> int32 -> int -> bool -> share =

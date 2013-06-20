@@ -25,13 +25,6 @@ val int32_of_grant_table_index: grant_table_index -> int32
 val grant_table_index_of_string: string -> grant_table_index
 val string_of_grant_table_index: grant_table_index -> string
 
-module Local_mapping : sig
-  type t
-  (** Abstract type representing a locally-mapped shared memory page *)
-
-  val to_buf: t -> buf
-end
-
 module Gnttab : sig
   type interface
   (** A connection to the grant device, needed for mapping/unmapping *)
@@ -55,6 +48,13 @@ module Gnttab : sig
       identifies the block of memory. This pair ("grant") is transmitted
       to us out-of-band, usually either via xenstore during device setup or
       via a shared memory ring structure. *)
+
+  module Local_mapping : sig
+    type t
+    (** Abstract type representing a locally-mapped shared memory page *)
+
+    val to_buf: t -> buf
+  end
 
   val map: interface -> grant -> bool -> Local_mapping.t option
   (** [map if grant writable] creates a single mapping from [grant]
@@ -87,7 +87,7 @@ module Gntshr : sig
   type share = {
     refs: grant_table_index list;
     (** List of grant references which have been shared with a foreign domain. *)
-    mapping: Local_mapping.t;
+    mapping: buf;
     (** Mapping of the shared memory. *)
   }
   (** When sharing a number of pages with another domain, we receive back both the
