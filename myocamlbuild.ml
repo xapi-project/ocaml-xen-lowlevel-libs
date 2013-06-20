@@ -1,7 +1,7 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: cba1a255345f40e3dba71d820696e469) *)
+(* DO NOT EDIT (digest: 326f0de1cd9d0407806a32091ff2796d) *)
 module OASISGettext = struct
-(* # 21 "/home/vb/.opam/system/build/oasis.0.3.0/src/oasis/OASISGettext.ml" *)
+(* # 21 "/local/scratch/.opam/4.00.1/build/oasis.0.3.0/src/oasis/OASISGettext.ml" *)
 
   let ns_ str =
     str
@@ -24,7 +24,7 @@ module OASISGettext = struct
 end
 
 module OASISExpr = struct
-(* # 21 "/home/vb/.opam/system/build/oasis.0.3.0/src/oasis/OASISExpr.ml" *)
+(* # 21 "/local/scratch/.opam/4.00.1/build/oasis.0.3.0/src/oasis/OASISExpr.ml" *)
 
 
 
@@ -116,7 +116,7 @@ end
 
 # 117 "myocamlbuild.ml"
 module BaseEnvLight = struct
-(* # 21 "/home/vb/.opam/system/build/oasis.0.3.0/src/base/BaseEnvLight.ml" *)
+(* # 21 "/local/scratch/.opam/4.00.1/build/oasis.0.3.0/src/base/BaseEnvLight.ml" *)
 
   module MapString = Map.Make(String)
 
@@ -214,7 +214,7 @@ end
 
 # 215 "myocamlbuild.ml"
 module MyOCamlbuildFindlib = struct
-(* # 21 "/home/vb/.opam/system/build/oasis.0.3.0/src/plugins/ocamlbuild/MyOCamlbuildFindlib.ml" *)
+(* # 21 "/local/scratch/.opam/4.00.1/build/oasis.0.3.0/src/plugins/ocamlbuild/MyOCamlbuildFindlib.ml" *)
 
   (** OCamlbuild extension, copied from 
     * http://brion.inria.fr/gallium/index.php/Using_ocamlfind_with_ocamlbuild
@@ -323,7 +323,7 @@ module MyOCamlbuildFindlib = struct
 end
 
 module MyOCamlbuildBase = struct
-(* # 21 "/home/vb/.opam/system/build/oasis.0.3.0/src/plugins/ocamlbuild/MyOCamlbuildBase.ml" *)
+(* # 21 "/local/scratch/.opam/4.00.1/build/oasis.0.3.0/src/plugins/ocamlbuild/MyOCamlbuildBase.ml" *)
 
   (** Base functions for writing myocamlbuild.ml
       @author Sylvain Le Gall
@@ -339,7 +339,7 @@ module MyOCamlbuildBase = struct
   type name = string 
   type tag = string 
 
-(* # 56 "/home/vb/.opam/system/build/oasis.0.3.0/src/plugins/ocamlbuild/MyOCamlbuildBase.ml" *)
+(* # 56 "/local/scratch/.opam/4.00.1/build/oasis.0.3.0/src/plugins/ocamlbuild/MyOCamlbuildBase.ml" *)
 
   type t =
       {
@@ -478,8 +478,18 @@ open Ocamlbuild_plugin;;
 let package_default =
   {
      MyOCamlbuildBase.lib_ocaml =
-       [("xenctrl", ["lib"]); ("xenctrl_lwt", ["lwt"])];
-     lib_c = [("xenctrl", "lib", ["lib/mmap_stubs.h"])];
+       [
+          ("xenctrl", ["lib"]);
+          ("xenctrl_lwt", ["lwt"]);
+          ("xenlight", ["xenlight"]);
+          ("xentoollog", ["xenlight"])
+       ];
+     lib_c =
+       [
+          ("xenctrl", "lib", ["lib/mmap_stubs.h"]);
+          ("xenlight", "xenlight", ["xenlight/caml_xentoollog.h"]);
+          ("xentoollog", "xenlight", ["xenlight/caml_xentoollog.h"])
+       ];
      flags =
        [
           (["oasis_library_xenctrl_cclib"; "link"],
@@ -499,7 +509,32 @@ let package_default =
             [
                (OASISExpr.EBool true,
                  S [A "-lxenctrl"; A "-lxenguest"; A "-lxenstore"])
-            ])
+            ]);
+          (["oasis_library_xenlight_cclib"; "link"],
+            [
+               (OASISExpr.EBool true,
+                 S
+                   [
+                      A "-cclib";
+                      A "-lxenlight";
+                      A "-cclib";
+                      A "-lxenctrl";
+                      A "-cclib";
+                      A "-lxenguest"
+                   ])
+            ]);
+          (["oasis_library_xenlight_cclib"; "ocamlmklib"; "c"],
+            [
+               (OASISExpr.EBool true,
+                 S [A "-lxenlight"; A "-lxenctrl"; A "-lxenguest"])
+            ]);
+          (["oasis_library_xentoollog_cclib"; "link"],
+            [
+               (OASISExpr.EBool true,
+                 S [A "-cclib"; A "-lxenctrl"; A "-cclib"; A "-lxenguest"])
+            ]);
+          (["oasis_library_xentoollog_cclib"; "ocamlmklib"; "c"],
+            [(OASISExpr.EBool true, S [A "-lxenctrl"; A "-lxenguest"])])
        ];
      includes = [("lwt", ["lib"])];
      }
@@ -507,6 +542,6 @@ let package_default =
 
 let dispatch_default = MyOCamlbuildBase.dispatch_default package_default;;
 
-# 511 "myocamlbuild.ml"
+# 546 "myocamlbuild.ml"
 (* OASIS_STOP *)
 Ocamlbuild_plugin.dispatch dispatch_default;;

@@ -24,6 +24,23 @@ Library xenctrl_lwt
   Modules:            Activations
   BuildDepends:       lwt, lwt.unix, xenctrl
 
+Library xenlight
+  CompiledObject:     best
+  Path:               xenlight
+  Findlibname:        xenlight
+  Modules:            Xenlight
+  CSources:           xenlight_stubs.c, caml_xentoollog.h
+  CCLib:              -lxenlight -lxenctrl -lxenguest
+
+Library xentoollog
+  CompiledObject:     best
+  Path:               xenlight
+  Findlibname:        xentoollog
+  Findlibparent:      xenlight
+  Modules:            Xentoollog
+  CSources:           xentoollog_stubs.c, caml_xentoollog.h
+  CCLib:              -lxenctrl -lxenguest
+
 Document api
   Title: Xen low level bindings' documentation and API reference
   Type: ocamlbuild (0.3)
