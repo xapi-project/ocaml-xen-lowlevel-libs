@@ -30,10 +30,12 @@ test: setup.bin build
 
 reinstall: setup.bin
 	@ocamlfind remove xenctrl || true
+	@ocamlfind remove xenlight || true
 	@./setup.bin -reinstall
 
 uninstall:
 	@ocamlfind remove xenctrl || true
+	@ocamlfind remove xenlight || true
 
 clean:
 	@ocamlbuild -clean

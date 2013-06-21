@@ -34,8 +34,6 @@
 
 #include "caml_xentoollog.h"
 
-#ifdef OCAML_READY
-
 #define Ctx_val(x)(*((libxl_ctx **) Data_custom_val(x)))
 #define CTX ((libxl_ctx *) Ctx_val(ctx))
 
@@ -431,7 +429,9 @@ static int device_model_version_val (libxl_ctx *ctx, libxl_device_model_version 
 	CAMLparam1(v);
 
 	switch(Int_val(v)) {
+#ifdef OCAML_READY
 	    case 0: *c_val = LIBXL_DEVICE_MODEL_VERSION_UNKNOWN; break;
+#endif
 	    case 1: *c_val = LIBXL_DEVICE_MODEL_VERSION_QEMU_XEN_TRADITIONAL; break;
 	    case 2: *c_val = LIBXL_DEVICE_MODEL_VERSION_QEMU_XEN; break;
 	    default: failwith_xl(ERROR_FAIL, "cannot convert value to libxl_device_model_version"); break;
@@ -445,7 +445,9 @@ static value Val_device_model_version (libxl_device_model_version device_model_v
 	CAMLparam0();
 	CAMLlocal1(device_model_version_ocaml);
 	switch(device_model_version_c) {
+#ifdef OCAML_READY
 	    case LIBXL_DEVICE_MODEL_VERSION_UNKNOWN: device_model_version_ocaml = Val_int(0); break;
+#endif
 	    case LIBXL_DEVICE_MODEL_VERSION_QEMU_XEN_TRADITIONAL: device_model_version_ocaml = Val_int(1); break;
 	    case LIBXL_DEVICE_MODEL_VERSION_QEMU_XEN: device_model_version_ocaml = Val_int(2); break;
 	    default: failwith_xl(ERROR_FAIL, "cannot convert value from libxl_device_model_version"); break;
@@ -459,7 +461,9 @@ static int console_type_val (libxl_ctx *ctx, libxl_console_type *c_val, value v)
 	CAMLparam1(v);
 
 	switch(Int_val(v)) {
+#ifdef OCAML_READY
 	    case 0: *c_val = LIBXL_CONSOLE_TYPE_UNKNOWN; break;
+#endif
 	    case 1: *c_val = LIBXL_CONSOLE_TYPE_SERIAL; break;
 	    case 2: *c_val = LIBXL_CONSOLE_TYPE_PV; break;
 	    default: failwith_xl(ERROR_FAIL, "cannot convert value to libxl_console_type"); break;
@@ -473,7 +477,9 @@ static value Val_console_type (libxl_console_type console_type_c)
 	CAMLparam0();
 	CAMLlocal1(console_type_ocaml);
 	switch(console_type_c) {
+#ifdef OCAML_READY
 	    case LIBXL_CONSOLE_TYPE_UNKNOWN: console_type_ocaml = Val_int(0); break;
+#endif
 	    case LIBXL_CONSOLE_TYPE_SERIAL: console_type_ocaml = Val_int(1); break;
 	    case LIBXL_CONSOLE_TYPE_PV: console_type_ocaml = Val_int(2); break;
 	    default: failwith_xl(ERROR_FAIL, "cannot convert value from libxl_console_type"); break;
@@ -551,7 +557,9 @@ static int nic_type_val (libxl_ctx *ctx, libxl_nic_type *c_val, value v)
 	CAMLparam1(v);
 
 	switch(Int_val(v)) {
+#ifdef OCAML_READY
 	    case 0: *c_val = LIBXL_NIC_TYPE_UNKNOWN; break;
+#endif
 	    case 1: *c_val = LIBXL_NIC_TYPE_VIF_IOEMU; break;
 	    case 2: *c_val = LIBXL_NIC_TYPE_VIF; break;
 	    default: failwith_xl(ERROR_FAIL, "cannot convert value to libxl_nic_type"); break;
@@ -565,7 +573,9 @@ static value Val_nic_type (libxl_nic_type nic_type_c)
 	CAMLparam0();
 	CAMLlocal1(nic_type_ocaml);
 	switch(nic_type_c) {
+#ifdef OCAML_READY
 	    case LIBXL_NIC_TYPE_UNKNOWN: nic_type_ocaml = Val_int(0); break;
+#endif
 	    case LIBXL_NIC_TYPE_VIF_IOEMU: nic_type_ocaml = Val_int(1); break;
 	    case LIBXL_NIC_TYPE_VIF: nic_type_ocaml = Val_int(2); break;
 	    default: failwith_xl(ERROR_FAIL, "cannot convert value from libxl_nic_type"); break;
@@ -679,7 +689,9 @@ static int timer_mode_val (libxl_ctx *ctx, libxl_timer_mode *c_val, value v)
 	CAMLparam1(v);
 
 	switch(Int_val(v)) {
+#ifdef OCAML_READY
 	    case 0: *c_val = LIBXL_TIMER_MODE_UNKNOWN; break;
+#endif
 	    case 1: *c_val = LIBXL_TIMER_MODE_DELAY_FOR_MISSED_TICKS; break;
 	    case 2: *c_val = LIBXL_TIMER_MODE_NO_DELAY_FOR_MISSED_TICKS; break;
 	    case 3: *c_val = LIBXL_TIMER_MODE_NO_MISSED_TICKS_PENDING; break;
@@ -695,7 +707,9 @@ static value Val_timer_mode (libxl_timer_mode timer_mode_c)
 	CAMLparam0();
 	CAMLlocal1(timer_mode_ocaml);
 	switch(timer_mode_c) {
+#ifdef OCAML_READY
 	    case LIBXL_TIMER_MODE_UNKNOWN: timer_mode_ocaml = Val_int(0); break;
+#endif
 	    case LIBXL_TIMER_MODE_DELAY_FOR_MISSED_TICKS: timer_mode_ocaml = Val_int(1); break;
 	    case LIBXL_TIMER_MODE_NO_DELAY_FOR_MISSED_TICKS: timer_mode_ocaml = Val_int(2); break;
 	    case LIBXL_TIMER_MODE_NO_MISSED_TICKS_PENDING: timer_mode_ocaml = Val_int(3); break;
@@ -711,7 +725,9 @@ static int bios_type_val (libxl_ctx *ctx, libxl_bios_type *c_val, value v)
 	CAMLparam1(v);
 
 	switch(Int_val(v)) {
+#ifdef OCAML_READY
 	    case 0: *c_val = LIBXL_BIOS_TYPE_UNKNOWN; break;
+#endif
 	    case 1: *c_val = LIBXL_BIOS_TYPE_ROMBIOS; break;
 	    case 2: *c_val = LIBXL_BIOS_TYPE_SEABIOS; break;
 	    case 3: *c_val = LIBXL_BIOS_TYPE_OVMF; break;
@@ -726,7 +742,9 @@ static value Val_bios_type (libxl_bios_type bios_type_c)
 	CAMLparam0();
 	CAMLlocal1(bios_type_ocaml);
 	switch(bios_type_c) {
+#ifdef OCAML_READY
 	    case LIBXL_BIOS_TYPE_UNKNOWN: bios_type_ocaml = Val_int(0); break;
+#endif
 	    case LIBXL_BIOS_TYPE_ROMBIOS: bios_type_ocaml = Val_int(1); break;
 	    case LIBXL_BIOS_TYPE_SEABIOS: bios_type_ocaml = Val_int(2); break;
 	    case LIBXL_BIOS_TYPE_OVMF: bios_type_ocaml = Val_int(3); break;
@@ -773,7 +791,9 @@ static int shutdown_reason_val (libxl_ctx *ctx, libxl_shutdown_reason *c_val, va
 	CAMLparam1(v);
 
 	switch(Int_val(v)) {
+#ifdef OCAML_READY
 	    case 0: *c_val = LIBXL_SHUTDOWN_REASON_UNKNOWN; break;
+#endif
 	    case 1: *c_val = LIBXL_SHUTDOWN_REASON_POWEROFF; break;
 	    case 2: *c_val = LIBXL_SHUTDOWN_REASON_REBOOT; break;
 	    case 3: *c_val = LIBXL_SHUTDOWN_REASON_SUSPEND; break;
@@ -790,7 +810,9 @@ static value Val_shutdown_reason (libxl_shutdown_reason shutdown_reason_c)
 	CAMLparam0();
 	CAMLlocal1(shutdown_reason_ocaml);
 	switch(shutdown_reason_c) {
+#ifdef OCAML_READY
 	    case LIBXL_SHUTDOWN_REASON_UNKNOWN: shutdown_reason_ocaml = Val_int(0); break;
+#endif
 	    case LIBXL_SHUTDOWN_REASON_POWEROFF: shutdown_reason_ocaml = Val_int(1); break;
 	    case LIBXL_SHUTDOWN_REASON_REBOOT: shutdown_reason_ocaml = Val_int(2); break;
 	    case LIBXL_SHUTDOWN_REASON_SUSPEND: shutdown_reason_ocaml = Val_int(3); break;
@@ -1134,7 +1156,9 @@ static value Val_dominfo (libxl_dominfo *dominfo_c)
 		dominfo_field = caml_copy_int32(dominfo_c->cpupool);
 		Store_field(dominfo_ocaml, 16, dominfo_field);
 	
+#ifdef OCAML_READY
 		dominfo_field = Val_domain_type(dominfo_c->domain_type);
+#endif
 		Store_field(dominfo_ocaml, 17, dominfo_field);
 	}
 	CAMLreturn(dominfo_ocaml);
@@ -3693,8 +3717,6 @@ value stub_libxl_evenable_domain_death(value ctx, value domid, value user)
 
 	CAMLreturn(Val_unit);
 }
-
-#endif /* OCAML_READY */
 
 /*
  * Local variables:
