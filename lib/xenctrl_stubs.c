@@ -1201,6 +1201,24 @@ CAMLprim value stub_xc_watchdog(value xch, value domid, value timeout)
 	CAMLreturn(Val_int(ret));
 }
 
+CAMLprim value stub_xen_mb()
+{
+	xen_mb();
+	return Val_unit;
+}
+
+CAMLprim value stub_xen_rmb()
+{
+	xen_rmb();
+	return Val_unit;
+}
+
+CAMLprim value stub_xen_wmb()
+{
+	xen_wmb();
+	return Val_unit;
+}
+
 /*
  * Local variables:
  *  indent-tabs-mode: t

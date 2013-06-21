@@ -300,6 +300,11 @@ external sizeof_core_header : unit -> int = "stub_sizeof_core_header"
 external sizeof_vcpu_guest_context : unit -> int = "stub_sizeof_vcpu_guest_context"
 external sizeof_xen_pfn : unit -> int = "stub_sizeof_xen_pfn"
 
+(** {3 Memory barriers} *)
+
+external xen_mb : unit -> unit = "stub_xen_mb" "noalloc"
+external xen_rmb : unit -> unit = "stub_xen_rmb" "noalloc"
+external xen_wmb : unit -> unit = "stub_xen_wmb" "noalloc"
 
 (** {2 Domain debugging functions} *)
 

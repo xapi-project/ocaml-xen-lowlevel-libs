@@ -348,4 +348,9 @@ let coredump xch domid fd =
 external pages_to_kib : int64 -> int64 = "stub_pages_to_kib"
 let pages_to_mib pages = Int64.div (pages_to_kib pages) 1024L
 
+(* Memory barriers *)
+external xen_mb : unit -> unit = "stub_xen_mb" "noalloc"
+external xen_rmb : unit -> unit = "stub_xen_rmb" "noalloc"
+external xen_wmb : unit -> unit = "stub_xen_wmb" "noalloc"
+
 let _ = Callback.register_exception "xc.error" (Error "register_callback")
