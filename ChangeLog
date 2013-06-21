@@ -1,3 +1,6 @@
+0.9.3 (21-Jun-2013):
+* remove linking error on standard xen systems when using libxl
+
 0.9.2 (21-Jun-2013):
 * add experimental libxl bindings
 
