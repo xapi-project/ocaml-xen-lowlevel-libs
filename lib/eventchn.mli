@@ -14,7 +14,7 @@
  * GNU Lesser General Public License for more details.
  *)
 
-(** Event channel bindings: see tools/libxc/xenctrl.h *)
+(** Event channels interface. *)
 
 type handle
 (** An initialised event channel interface. *)
@@ -23,17 +23,14 @@ type t
 (** A local event channel. *)
 
 val to_int: t -> int
+(** [to_int evtchn] is the port number of [evtchn]. *)
 
 val of_int: int -> t
+(** [of_int n] is the [n]th event channel. *)
 
 val init: unit -> handle
 (** Return an initialised event channel interface. On error it
     will throw a Failure exception. *)
-
-val fd: handle -> Unix.file_descr
-(** Return a file descriptor suitable for Unix.select. When
-    the descriptor becomes readable, it is safe to call 'pending'.
-    On error it will throw a Failure exception. *)
 
 val notify : handle -> t -> unit
 (** Notify the given event channel. On error it will throw a
@@ -58,10 +55,18 @@ val unbind : handle -> t -> unit
 (** Unbinds the given event channel. On error it will throw a
     Failure exception. *)
 
+val unmask : handle -> t -> unit
+(** Unmasks the given event channel. On error it will throw a
+    Failure exception. *)
+
+(** {2 Unix specific functions}. *)
+
+val fd: handle -> Unix.file_descr
+(** Return a file descriptor suitable for Unix.select. When
+    the descriptor becomes readable, it is safe to call 'pending'.
+    On error it will throw a Failure exception. *)
+
 val pending : handle -> t
 (** Returns the next event channel to become pending. On error it
     will throw a Failure exception. *)
 
-val unmask : handle -> t -> unit
-(** Unmasks the given event channel. On error it will throw a
-    Failure exception. *)

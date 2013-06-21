@@ -68,7 +68,7 @@ static void failwith_xc(xc_interface *xch)
 }
 #endif
 
-CAMLprim value stub_xenctrlext_gntshr_open(void)
+CAMLprim value stub_xc_gntshr_open(void)
 {
 	CAMLparam0();
 	CAMLlocal1(result);
@@ -85,7 +85,7 @@ CAMLprim value stub_xenctrlext_gntshr_open(void)
 	CAMLreturn(result);
 }
 
-CAMLprim value stub_xenctrlext_gntshr_close(value xgh)
+CAMLprim value stub_xc_gntshr_close(value xgh)
 {
 	CAMLparam1(xgh);
 #ifdef HAVE_GNTSHR
@@ -96,7 +96,7 @@ CAMLprim value stub_xenctrlext_gntshr_close(value xgh)
 	CAMLreturn(Val_unit);
 }
 
-CAMLprim value stub_xenctrlext_gntshr_share_pages(value xgh, value domid, value count, value writeable) {
+CAMLprim value stub_xc_gntshr_share_pages(value xgh, value domid, value count, value writeable) {
 	CAMLparam4(xgh, domid, count, writeable);
 	CAMLlocal4(result, ml_refs, ml_refs_cons, ml_map);
 #ifdef HAVE_GNTSHR
@@ -141,7 +141,7 @@ CAMLprim value stub_xenctrlext_gntshr_share_pages(value xgh, value domid, value 
 	CAMLreturn(result);
 }
 
-CAMLprim value stub_xenctrlext_gntshr_munmap(value xgh, value share) {
+CAMLprim value stub_xc_gntshr_munmap(value xgh, value share) {
 	CAMLparam2(xgh, share);
 	CAMLlocal1(ml_map);
 #ifdef HAVE_GNTSHR

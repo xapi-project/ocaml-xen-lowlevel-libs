@@ -1,8 +1,6 @@
 # OASIS_START
-# DO NOT EDIT (digest: 0f1a06a1077d71ed4a40ce436c6ef8f1)
-Gntcommon
-Gntshr
-Gnttab
+# DO NOT EDIT (digest: ab458be866446ac1cd9d68b960f7c74c)
+Gnt
 Eventchn
 Xenmmap
 Xenctrl

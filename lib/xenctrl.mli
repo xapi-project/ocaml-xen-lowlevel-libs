@@ -14,7 +14,7 @@
  * GNU Lesser General Public License for more details.
  *)
 
-(** Bindings to libxc *)
+(** Other bindings to libxc. *)
 
 (** {2 Initialization functions} *)
 

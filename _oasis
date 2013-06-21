@@ -10,8 +10,8 @@ BuildTools:  ocamlbuild
 Library xenctrl
   CompiledObject:     best
   Path:               lib
-  Findlibname: 	      xenctrl
-  Modules:            Gntcommon, Gntshr, Gnttab, Eventchn, Xenmmap, Xenctrl, Xenguest
+  Findlibname:        xenctrl
+  Modules:            Gnt, Eventchn, Xenmmap, Xenctrl, Xenguest
   CSources:           gntshr_stubs.c,gnttab_stubs.c, eventchn_stubs.c, xenmmap_stubs.c, mmap_stubs.h, xenctrl_stubs.c, xenguest_stubs.c
   CCLib:              -lxenctrl -lxenguest -lxenstore
   BuildDepends:       unix
@@ -45,6 +45,6 @@ Document api
   Title: Xen low level bindings' documentation and API reference
   Type: ocamlbuild (0.3)
   BuildTools+: ocamldoc
-  XOcamlbuildModules: Eventchn, Gntcommon, Gntshr, Gnttab, Xenctrl, Xenguest, Xenmmap, Activations
+  XOcamlbuildModules: Gnt, Eventchn, Xenctrl, Xenguest, Xenmmap, Activations
   XOcamlbuildPath: doc
   Install: false

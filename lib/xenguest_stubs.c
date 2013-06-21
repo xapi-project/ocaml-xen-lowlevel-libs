@@ -12,12 +12,16 @@
  * GNU Lesser General Public License for more details.
  */
 
+#define _GNU_SOURCE
+#include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <errno.h>
 #include <string.h>
 #include <stdarg.h>
 #include <syslog.h>
+#include <err.h>
+#include <inttypes.h>
 
 #include <xenctrl.h>
 #include <xenguest.h>
@@ -53,7 +57,6 @@
 #include <xs.h>
 #endif
 
-#include <stdio.h>
 
 /* The following boolean flags are all set by their value
    in the platform area of xenstore. The only value that
@@ -129,7 +132,6 @@ static char *
 xenstore_getsv(int domid, const char *fmt, va_list ap)
 {
     char *path = NULL, *s;
-    uint64_t value = 0;
     struct xs_handle *xsh = NULL;
 	int n, m;
 	char key[1024];
@@ -194,7 +196,7 @@ xenstore_get(int domid, const char *fmt, ...)
     if (s) {
        if (!strcasecmp(s, "true"))
            value = 1;
-       else if (sscanf(s, "%Ld", &value) != 1)
+       else if (sscanf(s, "%"SCNu64, &value) != 1)
            value = 0;
        free(s);
     }
@@ -479,7 +481,6 @@ CAMLprim value stub_xc_hvm_build_native(value xc_handle, value domid,
 	CAMLlocal1(result);
 
 	char *image_name_c = strdup(String_val(image_name));
-	char *error[256];
 	xc_interface *xch;
 
 	unsigned long store_mfn=0;
@@ -685,7 +686,7 @@ CAMLprim value stub_xc_domain_restore(value handle, value fd, value domid,
 		if (written < size)
 			r = xenstore_puts(_D(domid), c_vm_generationid_addr_s, GENERATION_ID_ADDRESS);
 		else {
-			syslog(LOG_ERR|LOG_DAEMON,"Failed to write %s (%d >= %d)", GENERATION_ID_ADDRESS, written, size);
+			syslog(LOG_ERR|LOG_DAEMON,"Failed to write %s (%zd >= %zd)", GENERATION_ID_ADDRESS, written, size);
 			r = 1;
 		}
 	}

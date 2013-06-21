@@ -11,6 +11,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *)
+
+(** Bindings to xenguest. *)
+
 type suspend_flags = Debug | Live
 
 type handle
