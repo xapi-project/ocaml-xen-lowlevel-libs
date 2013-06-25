@@ -792,7 +792,9 @@ static int shutdown_reason_val (libxl_ctx *ctx, libxl_shutdown_reason *c_val, va
 
 	switch(Int_val(v)) {
 #ifdef OCAML_READY
-	    case 0: *c_val = LIBXL_SHUTDOWN_REASON_UNKNOWN; break;
+	    case 0:
+	    case -1:
+	    case -255: *c_val = LIBXL_SHUTDOWN_REASON_UNKNOWN; break;
 #endif
 	    case 1: *c_val = LIBXL_SHUTDOWN_REASON_POWEROFF; break;
 	    case 2: *c_val = LIBXL_SHUTDOWN_REASON_REBOOT; break;
