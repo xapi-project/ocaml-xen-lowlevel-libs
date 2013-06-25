@@ -23,55 +23,50 @@ let grant_table_index_of_string = Int32.of_string
 let string_of_grant_table_index = Int32.to_string
 
 module Gnttab = struct
-	type interface
+  type interface
 
-	external interface_open: unit -> interface = "stub_xc_gnttab_open"
-	external interface_close: interface -> unit = "stub_xc_gnttab_close"
+  external interface_open: unit -> interface = "stub_xc_gnttab_open"
+  external interface_close: interface -> unit = "stub_xc_gnttab_close"
 
-	type grant = {
-		domid: int;
-		ref: grant_table_index;
-	}
+  type grant = {
+    domid: int;
+    ref: grant_table_index;
+  }
 
- module Local_mapping = struct
-	 type t = buf
-	 let to_buf t = t
- end
+  module Local_mapping = struct
+    type t = buf
+    let to_buf t = t
+  end
 
- external map_exn: interface -> int32 -> int32 -> int -> Local_mapping.t =
-		"stub_xc_gnttab_map_grant_ref"
-	external mapv_exn: interface -> int32 array -> int -> Local_mapping.t =
-		"stub_xc_gnttab_map_grant_refs"
-	external unmap_exn: interface -> Local_mapping.t -> unit =
-		"stub_xc_gnttab_unmap"
+  external map_exn: interface -> int -> int32 -> int -> Local_mapping.t =
+    "stub_xc_gnttab_map_grant_ref"
+  external mapv_exn: interface -> int32 array -> int -> Local_mapping.t =
+    "stub_xc_gnttab_map_grant_refs"
+  external unmap_exn: interface -> Local_mapping.t -> unit =
+    "stub_xc_gnttab_unmap"
 
-	(* Look up the values of PROT_{READ,WRITE} from the C headers. *)
-	type perm = PROT_READ | PROT_WRITE
-	external get_perm: perm -> int =
-		"stub_xc_gnttab_get_perm"
-	let _PROT_READ = get_perm PROT_READ
-	let _PROT_WRITE = get_perm PROT_WRITE
+  (* Look up the values of PROT_{READ,WRITE} from the C headers. *)
+  type perm = PROT_NONE | PROT_READ | PROT_WRITE | PROT_RDWR
 
-	let map h g p =
-		try
-			Some (map_exn h (Int32.of_int g.domid) g.ref
-           (_PROT_READ lor (if p then _PROT_WRITE else 0)))
-		with _ ->
-			None
+  external int_of_perm: perm -> int = "stub_xc_gnttab_get_perm"
 
-	let mapv h gs p =
-		try
-			let count = List.length gs in
-			let grant_array = Array.create (count * 2) 0l in
-			let (_: int) = List.fold_left (fun i g ->
-				grant_array.(i * 2 + 0) <- Int32.of_int g.domid;
-				grant_array.(i * 2 + 1) <- g.ref;
-				i+1
-			) 0 gs in
-			Some (mapv_exn h grant_array
-           (_PROT_READ lor (if p then _PROT_WRITE else 0)))
-		with _ ->
-			None
+  let map_exn h g p =
+    map_exn h g.domid g.ref
+      (int_of_perm (if p then PROT_RDWR else PROT_READ))
+
+  let map h g p = try Some (map_exn h g p) with _ -> None
+
+  let mapv_exn h gs p =
+    let count = List.length gs in
+    let grant_array = Array.create (count * 2) 0l in
+    let (_: int) = List.fold_left (fun i g ->
+        grant_array.(i * 2 + 0) <- Int32.of_int g.domid;
+        grant_array.(i * 2 + 1) <- g.ref;
+        i+1
+      ) 0 gs in
+    mapv_exn h grant_array (int_of_perm (if p then PROT_RDWR else PROT_READ))
+
+  let mapv h gs p = try Some (mapv_exn h gs p) with _ -> None
 end
 
 module Gntshr = struct

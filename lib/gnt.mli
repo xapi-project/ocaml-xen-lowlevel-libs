@@ -56,17 +56,23 @@ module Gnttab : sig
     val to_buf: t -> buf
   end
 
-  val map: interface -> grant -> bool -> Local_mapping.t option
-  (** [map if grant writable] creates a single mapping from [grant]
-      that will be writable if [writable] is [true].  On error this
-      function returns None. Diagnostic details will be logged. *)
+  val map_exn : interface -> grant -> bool -> Local_mapping.t
+  (** [map_exn if grant writable] creates a single mapping from
+      [grant] that will be writable if [writable] is [true]. *)
 
-  val mapv: interface -> grant list -> bool -> Local_mapping.t option
+  val map : interface -> grant -> bool -> Local_mapping.t option
+  (** Like the above but wraps the result in an option instead of
+      raising an exception. *)
+
+  val mapv_exn : interface -> grant list -> bool -> Local_mapping.t
   (** [mapv if grants writable] creates a single contiguous mapping
       from a list of grants that will be writable if [writable] is
       [true]. Note the grant list can involve grants from multiple
-      domains. On error this function returns None. Diagnostic details
-      will be logged. *)
+      domains. *)
+
+  val mapv: interface -> grant list -> bool -> Local_mapping.t option
+  (** Like the above but wraps the result in an option instead of
+      raising an exception. *)
 
   val unmap_exn: interface -> Local_mapping.t -> unit
   (** Unmap a single mapping (which may involve multiple grants) *)
