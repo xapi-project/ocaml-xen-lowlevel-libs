@@ -13,7 +13,12 @@
  */
 
 #include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
 #include <errno.h>
+
+/* For PROT_READ | PROT_WRITE */
+#include <sys/mman.h>
 
 #define CAML_NAME_SPACE
 #include <caml/alloc.h>
@@ -23,19 +28,9 @@
 #include <caml/callback.h>
 #include <caml/bigarray.h>
 
-#include <sys/mman.h>
-#include <stdint.h>
-#include <string.h>
-
 #include <xenctrl.h>
 
-#define PAGE_SHIFT		12
-#define PAGE_SIZE               (1UL << PAGE_SHIFT)
-#define PAGE_MASK               (~(PAGE_SIZE-1))
-
 #define _G(__g) ((xc_gnttab *)(__g))
-
-#define Val_none (Val_int(0))
 
 CAMLprim value stub_xc_gnttab_open(void)
 {
@@ -60,16 +55,19 @@ CAMLprim value stub_xc_gnttab_get_perm(value perm)
 {
 	CAMLparam1(perm);
 	int result;
-	switch (Int_val(perm)){
+	switch (Int_val(perm)) {
 	case 0:
-		result = PROT_READ;
-		break;
-	case 1:
-		result = PROT_WRITE;
-		break;
-	default:
 		result = PROT_NONE;
 		break;
+	case 1:
+		result = PROT_READ;
+		break;
+	case 2:
+		result = PROT_WRITE;
+		break;
+  case 3:
+    result = PROT_READ | PROT_WRITE;
+    break;
 	}
 	CAMLreturn(Val_int(result));
 }
@@ -88,7 +86,7 @@ CAMLprim value stub_xc_gnttab_map_grant_ref(
 	uint32_t c_domid, c_reference;
 	int c_perm;
 
-	c_domid = Int32_val(domid);
+	c_domid = Int_val(domid);
 	c_reference = Int32_val(reference);
 	c_perm = Int_val(perms);
 
