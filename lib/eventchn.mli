@@ -32,6 +32,9 @@ val init: unit -> handle
 (** Return an initialised event channel interface. On error it
     will throw a Failure exception. *)
 
+val close: handle -> int
+(** Close an event channel interface and return the status code. *)
+
 val notify : handle -> t -> unit
 (** Notify the given event channel. On error it will throw a
     Failure exception. *)
