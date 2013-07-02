@@ -7,6 +7,10 @@ License:     LGPL-2.1 with OCaml linking exception
 Plugins:     META (0.3)
 BuildTools:  ocamlbuild
 
+Flag xenlight
+  Description:        build the xenlight bindings
+  Default:            true
+
 Library xenctrl
   CompiledObject:     best
   Path:               lib
@@ -25,6 +29,7 @@ Library xenctrl_lwt
   BuildDepends:       lwt, lwt.unix, xenctrl
 
 Library xenlight
+  Build$:             flag(xenlight)
   CompiledObject:     best
   Path:               xenlight
   Findlibname:        xenlight
@@ -33,6 +38,7 @@ Library xenlight
   CCLib:              -lxenlight -lxenctrl -lxenguest
 
 Library xentoollog
+  Build$:             flag(xenlight)
   CompiledObject:     best
   Path:               xenlight
   Findlibname:        xentoollog

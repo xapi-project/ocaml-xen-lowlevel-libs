@@ -3,6 +3,8 @@ all: build doc
 
 J=4
 
+include config.mk
+
 BINDIR ?= /usr/bin
 SBINDIR ?= /usr/sbin
 DESTDIR ?= /
@@ -14,7 +16,7 @@ setup.bin: setup.ml
 	@rm -f setup.cmx setup.cmi setup.o setup.cmo
 
 setup.data: setup.bin
-	@./setup.bin -configure
+	@./setup.bin -configure $(ENABLE_XENLIGHT)
 
 build: setup.data setup.bin
 	@./setup.bin -build -j $(J)
