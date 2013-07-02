@@ -1,6 +1,6 @@
 # OASIS_START
-# DO NOT EDIT (digest: 6d368917616b5c3de4e0e31b42e099fc)
-version = "0.9.3"
+# DO NOT EDIT (digest: 0bb36428263ec0c9ba342a0acef0d6b9)
+version = "0.9.6"
 description = "Xen low-level bindings"
 requires = "unix"
 archive(byte) = "xenctrl.cma"
@@ -9,7 +9,7 @@ archive(native) = "xenctrl.cmxa"
 archive(native, plugin) = "xenctrl.cmxs"
 exists_if = "xenctrl.cma"
 package "lwt" (
- version = "0.9.3"
+ version = "0.9.6"
  description = "Xen low-level bindings"
  requires = "lwt lwt.unix xenctrl"
  archive(byte) = "xenctrl_lwt.cma"
