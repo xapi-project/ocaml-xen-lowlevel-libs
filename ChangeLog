@@ -1,3 +1,6 @@
+0.9.6 (2-Jul-2013):
+* conditionally compile xenlight library
+
 0.9.3 (21-Jun-2013):
 * remove linking error on standard xen systems when using libxl
 
