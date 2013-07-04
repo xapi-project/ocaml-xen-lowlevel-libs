@@ -36,7 +36,7 @@ let find_header verbose name =
 
 let configure verbose =
   let xenctrl  = find_header verbose "xenctrl.h" in
-  let xenlight = find_header verbose "xl.h" in
+  let xenlight = find_header verbose "libxl.h" in
   if not xenctrl then begin
     Printf.fprintf stderr "Failure: we can't build anything without xenctrl.h\n";
     exit 1;
