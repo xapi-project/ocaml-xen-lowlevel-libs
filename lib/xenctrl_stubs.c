@@ -1219,6 +1219,29 @@ CAMLprim value stub_xen_wmb()
 	return Val_unit;
 }
 
+CAMLprim value stub_xc_hvm_check_pvdriver(value xch, value domid)
+{
+	CAMLparam2(xch, domid);
+	int ret;
+	unsigned long irq = 0;
+	xc_domaininfo_t info;
+
+	ret = xc_domain_getinfolist(_H(xch), _D(domid), 1, &info);
+	if (ret != 1 || info.domain != _D(domid)) {
+		caml_failwith("Domain does not exist.");
+	}
+
+	if (!(info.flags & XEN_DOMINF_hvm_guest)) {
+		caml_failwith("Domain is not HVM guest.");
+	}
+
+	xc_get_hvm_param(_H(xch), _D(domid), HVM_PARAM_CALLBACK_IRQ, &irq);
+	if (irq != 0)
+		CAMLreturn(Val_true);
+	else
+		CAMLreturn(Val_false);
+}
+
 /*
  * Local variables:
  *  indent-tabs-mode: t

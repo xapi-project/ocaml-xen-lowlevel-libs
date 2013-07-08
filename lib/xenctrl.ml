@@ -353,4 +353,6 @@ external xen_mb : unit -> unit = "stub_xen_mb" "noalloc"
 external xen_rmb : unit -> unit = "stub_xen_rmb" "noalloc"
 external xen_wmb : unit -> unit = "stub_xen_wmb" "noalloc"
 
+external hvm_check_pvdriver : handle -> domid -> bool = "stub_xc_hvm_check_pvdriver"
+
 let _ = Callback.register_exception "xc.error" (Error "register_callback")
