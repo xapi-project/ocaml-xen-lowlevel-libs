@@ -47,6 +47,14 @@ Library xentoollog
   CSources:           xentoollog_stubs.c, caml_xentoollog.h
   CCLib:              -lxenctrl -lxenguest
 
+Executable test_hvm_check_pvdriver
+  CompiledObject:     best
+  Path:               test
+  MainIs:             test_hvm_check_pvdriver.ml
+  Custom:             true
+  Install:            false
+  BuildDepends:       xenctrl
+
 Document api
   Title: Xen low level bindings' documentation and API reference
   Type: ocamlbuild (0.3)

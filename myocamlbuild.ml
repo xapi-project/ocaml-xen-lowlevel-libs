@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: ae464db4d96105d0e2a24af484e36a08) *)
+(* DO NOT EDIT (digest: ce45e1cdb9f6a6b742a8ece4de9b4fb5) *)
 module OASISGettext = struct
 (* # 21 "src/oasis/OASISGettext.ml" *)
 
@@ -536,7 +536,7 @@ let package_default =
           (["oasis_library_xentoollog_cclib"; "ocamlmklib"; "c"],
             [(OASISExpr.EBool true, S [A "-lxenctrl"; A "-lxenguest"])])
        ];
-     includes = [("lwt", ["lib"])];
+     includes = [("test", ["lib"]); ("lwt", ["lib"])];
      }
   ;;
 
