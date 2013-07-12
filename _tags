@@ -70,3 +70,4 @@
 <lwt/*.ml{,i}>: syntax_camlp4o, pkg_lwt.syntax
 <lib>: include
 <lwt>: include
+<xenlight>: include
