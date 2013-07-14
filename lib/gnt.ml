@@ -96,4 +96,6 @@ module Gntshr = struct
 	let share_pages interface domid count writeable =
 		try Some (share_pages_exn interface domid count writeable)
 		with _ -> None
+
+	let get_n _ = Lwt.fail (Failure "Gntshr.get_n unimplemented")
 end

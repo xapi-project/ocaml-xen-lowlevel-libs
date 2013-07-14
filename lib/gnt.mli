@@ -114,4 +114,7 @@ module Gntshr : sig
 
   val munmap_exn : interface -> share -> unit
   (** Unmap a single mapping (which may involve multiple grants) *)
+
+  val get_n : int -> grant_table_index list Lwt.t
+  (** Allocate a block of n grant table indices *)
 end
