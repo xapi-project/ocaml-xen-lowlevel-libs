@@ -4,6 +4,11 @@ all: build doc
 J=4
 
 include config.mk
+config.mk: configure
+	./configure
+
+configure: configure.ml
+	ocamlfind ocamlopt -package "cmdliner" -linkpkg $< -o $@
 
 BINDIR ?= /usr/bin
 SBINDIR ?= /usr/sbin
