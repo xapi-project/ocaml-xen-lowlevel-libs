@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: ce45e1cdb9f6a6b742a8ece4de9b4fb5) *)
+(* DO NOT EDIT (digest: 19a4c2f0e2b3006f3ba7899282ec24ed) *)
 module OASISGettext = struct
 (* # 21 "src/oasis/OASISGettext.ml" *)
 
@@ -492,6 +492,19 @@ let package_default =
        ];
      flags =
        [
+          (["oasis_library_xenctrl_ccopt"; "compile"],
+            [
+               (OASISExpr.EBool true,
+                 S
+                   [
+                      A "-ccopt";
+                      A "-Wno-unused-function";
+                      A "-ccopt";
+                      A "-g";
+                      A "-ccopt";
+                      A "-ggdb"
+                   ])
+            ]);
           (["oasis_library_xenctrl_cclib"; "link"],
             [
                (OASISExpr.EBool true,
@@ -542,6 +555,6 @@ let package_default =
 
 let dispatch_default = MyOCamlbuildBase.dispatch_default package_default;;
 
-# 546 "myocamlbuild.ml"
+# 559 "myocamlbuild.ml"
 (* OASIS_STOP *)
 Ocamlbuild_plugin.dispatch dispatch_default;;

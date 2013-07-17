@@ -1,8 +1,8 @@
 # OASIS_START
-# DO NOT EDIT (digest: 54aa9d1657f3cec158d075321047991e)
+# DO NOT EDIT (digest: 84ca34acef78207f7fee9f70ae81f37e)
 version = "0.9.7"
 description = "Xen low-level bindings"
-requires = "unix lwt"
+requires = "unix lwt bigarray"
 archive(byte) = "xenctrl.cma"
 archive(byte, plugin) = "xenctrl.cma"
 archive(native) = "xenctrl.cmxa"
