@@ -78,13 +78,9 @@ CAMLprim value stub_xc_gnttab_map_grant_ref(
 {
 	CAMLparam4(xgh, domid, reference, perms);
 	CAMLlocal1(contents);
-	uint32_t c_domid, c_reference;
-
-	c_domid = Int_val(domid);
-	c_reference = Int32_val(reference);
 
 	void *map =
-    xc_gnttab_map_grant_ref(_G(xgh), c_domid, c_reference,
+    xc_gnttab_map_grant_ref(_G(xgh), Int_val(domid), Int_val(reference),
                             caml_perms_to_c_perms(Int_val(perms)));
 
 	if(map==NULL) {

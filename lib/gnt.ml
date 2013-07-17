@@ -15,7 +15,6 @@
 type buf = (char, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t
 
 type gntref = int
-type domid = int
 
 module Gnttab = struct
   type interface
