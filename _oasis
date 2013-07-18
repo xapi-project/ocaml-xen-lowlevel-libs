@@ -63,6 +63,12 @@ Executable test_gntshr
   Install:            false
   BuildDepends:       xenctrl
 
+Executable test_events
+  CompiledObject:     best
+  Path:               test
+  MainIs:             test_events.ml
+  BuildDepends:       lwt, lwt.unix, xenctrl
+
 Document api
   Title: Xen low level bindings' documentation and API reference
   Type: ocamlbuild (0.3)
