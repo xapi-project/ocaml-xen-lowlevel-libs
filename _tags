@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 82587106945e2fc2f2960fef99c7739d)
+# DO NOT EDIT (digest: d75ed0456590fad6628baa97bfcfc7cf)
 # Ignore VCS directories, you can use the same kind of rule outside 
 # OASIS_START/STOP if you want to exclude directories that contains 
 # useless stuff for the build process
@@ -81,8 +81,10 @@
 # Executable test_gntshr
 <test/test_gntshr.{native,byte}>: use_xenctrl
 <test/test_gntshr.{native,byte}>: pkg_lwt
+<test/test_gntshr.{native,byte}>: pkg_cstruct
 <test/test_gntshr.{native,byte}>: pkg_unix
 <test/test_gntshr.{native,byte}>: pkg_bigarray
+<test/*.ml{,i}>: pkg_cstruct
 # Executable test_events
 <test/test_events.{native,byte}>: use_xenctrl
 <test/test_events.{native,byte}>: pkg_lwt
