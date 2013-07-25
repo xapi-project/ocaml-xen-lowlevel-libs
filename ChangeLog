@@ -1,3 +1,7 @@
+0.9.7 (25-Jul-2013):
+* add function to check if an HVM guest has PV drivers
+* fix PCI passthrough on xen 4.2
+
 0.9.6 (2-Jul-2013):
 * conditionally compile xenlight library
 
