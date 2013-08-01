@@ -680,6 +680,7 @@ module Domain = struct
 	external suspend : ctx -> domid -> Unix.file_descr -> ?async:'a -> unit -> unit = "stub_libxl_domain_suspend"
 	external pause : ctx -> domid -> unit = "stub_libxl_domain_pause"
 	external unpause : ctx -> domid -> unit = "stub_libxl_domain_unpause"
+	external setmaxmem : ctx -> domid -> int32 -> unit = "stub_libxl_domain_setmaxmem"
 
 	external send_trigger : ctx -> domid -> trigger -> int -> unit = "stub_xl_send_trigger"
 	external send_sysrq : ctx -> domid -> char -> unit = "stub_xl_send_sysrq"
@@ -746,6 +747,7 @@ module Async = functor (S: EVENT_USERS) -> struct
 		Callback.register "libxl_event_disaster_callback" event_disaster_callback;
 		event_users := EventSet.add user !event_users;
 		event_register_callbacks' ctx user
+
 end
 
 let _ =

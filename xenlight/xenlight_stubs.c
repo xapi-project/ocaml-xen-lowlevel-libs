@@ -3014,6 +3014,18 @@ value stub_libxl_domain_unpause(value ctx, value domid)
 	CAMLreturn(Val_unit);
 }
 
+value stub_libxl_domain_setmaxmem(value ctx, value domid, value max)
+{
+	CAMLparam3(ctx, domid, max);
+	int ret;
+
+	ret = libxl_domain_setmaxmem(CTX, Int_val(domid), Int_val(max));
+	if (ret != 0)
+		failwith_xl(ret, "domain_setmaxmem");
+
+	CAMLreturn(Val_unit);
+}
+
 #define _STRINGIFY(x) #x
 #define STRINGIFY(x) _STRINGIFY(x)
 
