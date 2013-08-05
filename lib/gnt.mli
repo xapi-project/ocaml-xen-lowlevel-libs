@@ -16,14 +16,9 @@
 
 type buf = (char, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t
 
-type grant_table_index
-(** Abstract type of grant table index. *)
-
-val grant_table_index_of_int32: int32 -> grant_table_index
-val int32_of_grant_table_index: grant_table_index -> int32
-
-val grant_table_index_of_string: string -> grant_table_index
-val string_of_grant_table_index: grant_table_index -> string
+type gntref = int
+(** Type of a grant table index, called a grant reference in
+    Xen's terminology. *)
 
 module Gnttab : sig
   type interface
@@ -40,7 +35,7 @@ module Gnttab : sig
   type grant = {
    domid: int;
    (** foreign domain who is exporting memory *)
-   ref: grant_table_index;
+   ref: gntref;
    (** id which identifies the specific export in the foreign domain *)
   }
   (** A foreign domain must explicitly "grant" us memory and send us the
@@ -91,7 +86,7 @@ module Gntshr : sig
       unmap will fail. *)
 
   type share = {
-    refs: grant_table_index list;
+    refs: gntref list;
     (** List of grant references which have been shared with a foreign domain. *)
     mapping: buf;
     (** Mapping of the shared memory. *)
@@ -115,6 +110,6 @@ module Gntshr : sig
   val munmap_exn : interface -> share -> unit
   (** Unmap a single mapping (which may involve multiple grants) *)
 
-  val get_n : int -> grant_table_index list Lwt.t
+  val get_n : int -> gntref list Lwt.t
   (** Allocate a block of n grant table indices *)
 end

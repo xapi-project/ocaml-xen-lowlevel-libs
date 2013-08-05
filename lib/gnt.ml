@@ -14,13 +14,7 @@
 
 type buf = (char, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t
 
-type grant_table_index = int32
-
-let grant_table_index_of_int32 x = x
-let int32_of_grant_table_index x = x
-
-let grant_table_index_of_string = Int32.of_string
-let string_of_grant_table_index = Int32.to_string
+type gntref = int
 
 module Gnttab = struct
   type interface
@@ -30,7 +24,7 @@ module Gnttab = struct
 
   type grant = {
     domid: int;
-    ref: grant_table_index;
+    ref: gntref;
   }
 
   module Local_mapping = struct
@@ -51,7 +45,7 @@ module Gnttab = struct
   external int_of_perm: perm -> int = "stub_xc_gnttab_get_perm"
 
   let map_exn h g p =
-    map_exn h g.domid g.ref
+    map_exn h g.domid (Int32.of_int g.ref)
       (int_of_perm (if p then PROT_RDWR else PROT_READ))
 
   let map h g p = try Some (map_exn h g p) with _ -> None
@@ -61,7 +55,7 @@ module Gnttab = struct
     let grant_array = Array.create (count * 2) 0l in
     let (_: int) = List.fold_left (fun i g ->
         grant_array.(i * 2 + 0) <- Int32.of_int g.domid;
-        grant_array.(i * 2 + 1) <- g.ref;
+        grant_array.(i * 2 + 1) <- Int32.of_int g.ref;
         i+1
       ) 0 gs in
     mapv_exn h grant_array (int_of_perm (if p then PROT_RDWR else PROT_READ))
@@ -76,7 +70,7 @@ module Gntshr = struct
 	external interface_close: interface -> unit = "stub_xc_gntshr_close"
 
 	type share = {
-		refs: grant_table_index list;
+		refs: gntref list;
 		mapping: buf;
 	}
 
