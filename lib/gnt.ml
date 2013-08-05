@@ -15,6 +15,7 @@
 type buf = (char, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t
 
 type gntref = int
+type domid = int
 
 module Gnttab = struct
   type interface
@@ -23,7 +24,7 @@ module Gnttab = struct
   external interface_close: interface -> unit = "stub_xc_gnttab_close"
 
   type grant = {
-    domid: int;
+    domid: domid;
     ref: gntref;
   }
 
@@ -35,7 +36,7 @@ module Gnttab = struct
   (* Look up the values of PROT_{READ,WRITE} from the C headers. *)
   type perm = PROT_NONE | PROT_READ | PROT_WRITE | PROT_RDWR
 
-  external map_exn: interface -> domid -> grant_table_index -> perm -> Local_mapping.t =
+  external map_exn: interface -> domid -> gntref -> perm -> Local_mapping.t =
     "stub_xc_gnttab_map_grant_ref"
   external mapv_exn: interface -> int array -> perm -> Local_mapping.t =
     "stub_xc_gnttab_map_grant_refs"

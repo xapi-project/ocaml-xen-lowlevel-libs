@@ -5,7 +5,7 @@ open Gnt
 let main shr_h dev_h =
   let share = Gntshr.share_pages_exn shr_h 0 1 true in
   let io_page_shr_side = Gntshr.(share.mapping) |> Cstruct.of_bigarray in
-  List.iter (fun r -> Printf.printf "Shared a page with gntref = %d\n%!" (int_of_grant_table_index r)) Gntshr.(share.refs);
+  List.iter (fun r -> Printf.printf "Shared a page with gntref = %d\n%!" r) Gntshr.(share.refs);
   Printf.printf "Shared page(s) OK. Now trying to map.\n%!";
   let local_mapping = Gnttab.map_exn dev_h Gnttab.({domid=0; ref=List.hd Gntshr.(share.refs)}) true in
   let io_page_map_side = Gnttab.Local_mapping.(to_buf local_mapping) |> Cstruct.of_bigarray in
