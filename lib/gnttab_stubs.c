@@ -51,25 +51,20 @@ CAMLprim value stub_xc_gnttab_close(value xgh)
 	CAMLreturn(Val_unit);
 }
 
-CAMLprim value stub_xc_gnttab_get_perm(value perm)
+int caml_perms_to_c_perms(int perm)
 {
-	CAMLparam1(perm);
-	int result;
-	switch (Int_val(perm)) {
+	switch (perm) {
 	case 0:
-		result = PROT_NONE;
-		break;
+		return PROT_NONE;
 	case 1:
-		result = PROT_READ;
-		break;
+		return PROT_READ;
 	case 2:
-		result = PROT_WRITE;
-		break;
+		return PROT_WRITE;
   case 3:
-    result = PROT_READ | PROT_WRITE;
-    break;
+    return PROT_READ | PROT_WRITE;
 	}
-	CAMLreturn(Val_int(result));
+
+  return -1;
 }
 
 #define XC_GNTTAB_BIGARRAY (CAML_BA_UINT8 | CAML_BA_C_LAYOUT | CAML_BA_EXTERNAL)
@@ -83,15 +78,10 @@ CAMLprim value stub_xc_gnttab_map_grant_ref(
 {
 	CAMLparam4(xgh, domid, reference, perms);
 	CAMLlocal1(contents);
-	uint32_t c_domid, c_reference;
-	int c_perm;
 
-	c_domid = Int_val(domid);
-	c_reference = Int32_val(reference);
-	c_perm = Int_val(perms);
-
-	void *map = xc_gnttab_map_grant_ref(_G(xgh),
-		c_domid, c_reference, c_perm);
+	void *map =
+    xc_gnttab_map_grant_ref(_G(xgh), Int_val(domid), Int_val(reference),
+                            caml_perms_to_c_perms(Int_val(perms)));
 
 	if(map==NULL) {
 		caml_failwith("Failed to map grant ref");
@@ -109,22 +99,21 @@ CAMLprim value stub_xc_gnttab_map_grant_refs(
 {
 	CAMLparam3(xgh, array, perms);
 	CAMLlocal3(domid, reference, contents);
-	int c_perms = Int_val(perms);
 	int count = Wosize_val(array) / 2;
 	uint32_t domids[count];
 	uint32_t refs[count];
 	int i;
 
 	for (i = 0; i < count; i++){
-		domids[i] = Int32_val(Field(array, i * 2 + 0));
-		refs[i] = Int32_val(Field(array, i * 2 + 1));
+		domids[i] = Int_val(Field(array, i * 2 + 0));
+		refs[i] = Int_val(Field(array, i * 2 + 1));
 	}
-	void *map = xc_gnttab_map_grant_refs(
-		_G(xgh),
-		count,
-		domids,
-		refs,
-		c_perms
+	void *map =
+    xc_gnttab_map_grant_refs(_G(xgh),
+                             count,
+                             domids,
+                             refs,
+                             caml_perms_to_c_perms(Int_val(perms))
 	);
 
 	if(map==NULL) {

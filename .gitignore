@@ -8,6 +8,8 @@
 *.cmxs
 *.cmxa
 *.swp
+*.native
+*.byte
 _build
 setup.bin
 setup.data

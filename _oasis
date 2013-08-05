@@ -18,7 +18,8 @@ Library xenctrl
   Modules:            Gnt, Eventchn, Xenmmap, Xenctrl, Xenguest
   CSources:           gntshr_stubs.c,gnttab_stubs.c, eventchn_stubs.c, xenmmap_stubs.c, mmap_stubs.h, xenctrl_stubs.c, xenguest_stubs.c
   CCLib:              -lxenctrl -lxenguest -lxenstore
-  BuildDepends:       unix, lwt
+  CCOpt:              -Wno-unused-function -g -ggdb
+  BuildDepends:       unix, lwt, bigarray
 
 Library xenctrl_lwt
   CompiledObject:     best
@@ -55,10 +56,24 @@ Executable test_hvm_check_pvdriver
   Install:            false
   BuildDepends:       xenctrl
 
+Executable test_gntshr
+  CompiledObject:     best
+  Path:               test
+  MainIs:             test_gntshr.ml
+  Install:            false
+  BuildDepends:       xenctrl, cstruct
+
+Executable test_events
+  CompiledObject:     best
+  Path:               test
+  MainIs:             test_events.ml
+  Install:            false
+  BuildDepends:       lwt, lwt.unix, xenctrl
+
 Document api
   Title: Xen low level bindings' documentation and API reference
   Type: ocamlbuild (0.3)
   BuildTools+: ocamldoc
-  XOcamlbuildModules: Gnt, Eventchn, Xenctrl, Xenguest, Xenmmap, Activations
+  XOcamlbuildModules: Gnt, Eventchn, Xenctrl, Xenguest, Xenmmap, Activations, Xenlight, Xentoollog
   XOcamlbuildPath: doc
   Install: false

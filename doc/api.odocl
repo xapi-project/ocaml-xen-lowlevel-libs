@@ -1,9 +1,11 @@
 # OASIS_START
-# DO NOT EDIT (digest: d1312b013bd88e8d4f695d7992e40c8a)
+# DO NOT EDIT (digest: 29ca3a61011c9988a3fec85b0665a6d8)
 Gnt
 Eventchn
 Xenctrl
 Xenguest
 Xenmmap
 Activations
+Xenlight
+Xentoollog
 # OASIS_STOP
