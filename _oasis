@@ -11,7 +11,12 @@ Flag xenlight
   Description:        build the xenlight bindings
   Default:            true
 
+Flag xenctrl
+  Description:        build the xenctrl bindings
+  Default:            true
+
 Library xenctrl
+  Build$:             flag(xenctrl)
   CompiledObject:     best
   Path:               lib
   Findlibname:        xenctrl
@@ -22,6 +27,7 @@ Library xenctrl
   BuildDepends:       unix, lwt, bigarray
 
 Library xenctrl_lwt
+  Build$:             flag(xenctrl)
   CompiledObject:     best
   Path:               lwt
   Findlibname:        lwt
@@ -49,6 +55,7 @@ Library xentoollog
   CCLib:              -lxenctrl -lxenguest
 
 Executable test_hvm_check_pvdriver
+  Build$:             flag(xenctrl)
   CompiledObject:     best
   Path:               test
   MainIs:             test_hvm_check_pvdriver.ml
@@ -57,6 +64,7 @@ Executable test_hvm_check_pvdriver
   BuildDepends:       xenctrl
 
 Executable test_gntshr
+  Build$:             flag(xenctrl)
   CompiledObject:     best
   Path:               test
   MainIs:             test_gntshr.ml
@@ -64,6 +72,7 @@ Executable test_gntshr
   BuildDepends:       xenctrl, cstruct
 
 Executable test_events
+  Build$:             flag(xenctrl)
   CompiledObject:     best
   Path:               test
   MainIs:             test_events.ml
