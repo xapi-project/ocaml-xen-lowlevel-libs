@@ -811,7 +811,7 @@ static value Val_shutdown_reason (libxl_shutdown_reason shutdown_reason_c)
 	CAMLlocal1(shutdown_reason_ocaml);
 	switch(shutdown_reason_c) {
 #ifdef OCAML_READY
-	    case 255:
+	    case -1:
 	    case LIBXL_SHUTDOWN_REASON_UNKNOWN: shutdown_reason_ocaml = Val_int(0); break;
 #endif
 	    case LIBXL_SHUTDOWN_REASON_POWEROFF: shutdown_reason_ocaml = Val_int(1); break;
