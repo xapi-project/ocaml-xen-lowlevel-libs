@@ -665,6 +665,7 @@ module Domain : sig
 	external suspend : ctx -> domid -> Unix.file_descr -> ?async:'a -> unit -> unit = "stub_libxl_domain_suspend"
 	external pause : ctx -> domid -> unit = "stub_libxl_domain_pause"
 	external unpause : ctx -> domid -> unit = "stub_libxl_domain_unpause"
+	external setmaxmem : ctx -> domid -> int32 -> unit = "stub_libxl_domain_setmaxmem"
 
 	external send_trigger : ctx -> domid -> trigger -> int -> unit = "stub_xl_send_trigger"
 	external send_sysrq : ctx -> domid -> char -> unit = "stub_xl_send_sysrq"
@@ -712,5 +713,6 @@ module Async : functor (S: EVENT_USERS) -> sig
 		event_occurs_callback:(S.event_user -> Event.t -> unit) ->
 		event_disaster_callback:(S.event_user -> event_type -> string -> int -> unit) ->
 		event_hooks
+
 end
 

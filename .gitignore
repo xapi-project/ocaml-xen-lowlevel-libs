@@ -16,3 +16,5 @@ setup.data
 setup.log
 api.docdir
 config.mk
+configure
+test_hvm_check_pvdriver.native
