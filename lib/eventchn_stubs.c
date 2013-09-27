@@ -37,20 +37,26 @@
 
 #define _H(__h) ((xc_evtchn *)(__h))
 
+xc_interface *global_xce = NULL;
+
 CAMLprim value stub_eventchn_init(value unit)
 {
   CAMLparam1(unit);
-  xc_interface *xce = xc_evtchn_open(NULL, XC_OPENFLAG_NON_REENTRANT);
+  if (global_xce == NULL) {
+    global_xce = xc_evtchn_open(NULL, XC_OPENFLAG_NON_REENTRANT);
+  }
 
-  if (xce == NULL)
+  if (global_xce == NULL)
     caml_failwith(strerror(errno));
 
-  CAMLreturn((value)xce);
+  CAMLreturn((value)global_xce);
 }
 
 CAMLprim value stub_eventchn_close(value xce)
 {
-  return Val_int(xc_evtchn_close(_H(xce)));
+/*  return Val_int(xc_evtchn_close(_H(xce))); */
+/* We don't ever actually want to do this */
+  return(Val_int(0));
 }
 
 CAMLprim value stub_eventchn_fd(value xce)

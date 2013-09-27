@@ -17,7 +17,7 @@ let wake port =
 
 (* Go through the event mask and activate any events, potentially spawning
    new threads *)
-let run xe =
+let run_real xe =
   let fd = Lwt_unix.of_unix_file_descr ~blocking:false ~set_flags:true (Eventchn.fd xe) in
   let rec inner () =
     lwt () = Lwt_unix.wait_read fd in
@@ -26,3 +26,9 @@ let run xe =
     Eventchn.unmask xe port;
     inner ()
   in inner ()
+
+let activations_thread = run_real (Eventchn.init ())
+
+(* Here for backwards compatibility *)
+let run _ = ()
+
