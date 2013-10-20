@@ -41,7 +41,7 @@ Library xenlight
   Path:               xenlight
   Findlibname:        xenlight
   Modules:            Xenlight
-  CSources:           xenlight_stubs.c, caml_xentoollog.h
+  CSources:           xenlight_stubs.c, caml_xentoollog.h, config.h
   CCLib:              -lxenlight -lxenctrl -lxenguest
 
 Library xentoollog
