@@ -71,6 +71,11 @@ module Gnttab : sig
 
   val unmap_exn: interface -> Local_mapping.t -> unit
   (** Unmap a single mapping (which may involve multiple grants) *)
+
+  val with_gnttab : (interface -> 'a) -> 'a
+  (** [with_gnttab f] opens an interface to gnttab, passes it to f, then returns
+   *  the result of f (or re-raises any exceptions) ensuring that the gnttab
+   *  interface is closed before returning. *)
 end
 
 module Gntshr : sig
@@ -112,4 +117,9 @@ module Gntshr : sig
 
   val get_n : int -> gntref list Lwt.t
   (** Allocate a block of n grant table indices *)
+
+  val with_gntshr : (interface -> 'a) -> 'a
+  (** [with_gntshr f] opens an interface to gntshr, passes it to f, then returns
+   *  the result of f (or re-raises any exceptions) ensuring that the gntshr
+   *  interface is closed before returning. *)
 end

@@ -58,6 +58,17 @@ module Gnttab = struct
 		mapv_exn h grant_array (if p then PROT_RDWR else PROT_READ)
 
 	let mapv h gs p = try Some (mapv_exn h gs p) with _ -> None
+
+	let with_gnttab f =
+		let intf = interface_open () in
+		let result = try
+			f intf
+		with e ->
+			interface_close intf;
+			raise e
+		in
+		interface_close intf;
+		result
 end
 
 module Gntshr = struct
@@ -85,4 +96,15 @@ module Gntshr = struct
 		with _ -> None
 
 	let get_n _ = Lwt.fail (Failure "Gntshr.get_n unimplemented")
+
+	let with_gntshr f =
+		let intf = interface_open () in
+		let result = try
+			f intf
+		with e ->
+			interface_close intf;
+			raise e
+		in
+		interface_close intf;
+		result
 end
