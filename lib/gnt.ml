@@ -18,46 +18,46 @@ type gntref = int
 type domid = int
 
 module Gnttab = struct
-  type interface
+	type interface
 
-  external interface_open: unit -> interface = "stub_xc_gnttab_open"
-  external interface_close: interface -> unit = "stub_xc_gnttab_close"
+	external interface_open: unit -> interface = "stub_xc_gnttab_open"
+	external interface_close: interface -> unit = "stub_xc_gnttab_close"
 
-  type grant = {
-    domid: domid;
-    ref: gntref;
-  }
+	type grant = {
+		domid: domid;
+		ref: gntref;
+	}
 
-  module Local_mapping = struct
-    type t = buf
-    let to_buf t = t
-  end
+	module Local_mapping = struct
+		type t = buf
+		let to_buf t = t
+	end
 
-  (* Look up the values of PROT_{READ,WRITE} from the C headers. *)
-  type perm = PROT_NONE | PROT_READ | PROT_WRITE | PROT_RDWR
+	(* Look up the values of PROT_{READ,WRITE} from the C headers. *)
+	type perm = PROT_NONE | PROT_READ | PROT_WRITE | PROT_RDWR
 
-  external map_exn: interface -> domid -> gntref -> perm -> Local_mapping.t =
-    "stub_xc_gnttab_map_grant_ref"
-  external mapv_exn: interface -> int array -> perm -> Local_mapping.t =
-    "stub_xc_gnttab_map_grant_refs"
-  external unmap_exn: interface -> Local_mapping.t -> unit =
-    "stub_xc_gnttab_unmap"
+	external map_exn: interface -> domid -> gntref -> perm -> Local_mapping.t =
+		"stub_xc_gnttab_map_grant_ref"
+	external mapv_exn: interface -> int array -> perm -> Local_mapping.t =
+		"stub_xc_gnttab_map_grant_refs"
+	external unmap_exn: interface -> Local_mapping.t -> unit =
+		"stub_xc_gnttab_unmap"
 
-  let map_exn h g p =
-    map_exn h g.domid g.ref (if p then PROT_RDWR else PROT_READ)
+	let map_exn h g p =
+		map_exn h g.domid g.ref (if p then PROT_RDWR else PROT_READ)
 
-  let map h g p = try Some (map_exn h g p) with _ -> None
+	let map h g p = try Some (map_exn h g p) with _ -> None
 
-  let mapv_exn h gs p =
-    let count = List.length gs in
-    let grant_array = Array.create (count * 2) 0 in
-    List.iteri (fun i g ->
-        grant_array.(i * 2 + 0) <- g.domid;
-        grant_array.(i * 2 + 1) <- g.ref;
-      ) gs;
-    mapv_exn h grant_array (if p then PROT_RDWR else PROT_READ)
+	let mapv_exn h gs p =
+		let count = List.length gs in
+		let grant_array = Array.create (count * 2) 0 in
+		List.iteri (fun i g ->
+				grant_array.(i * 2 + 0) <- g.domid;
+				grant_array.(i * 2 + 1) <- g.ref;
+			) gs;
+		mapv_exn h grant_array (if p then PROT_RDWR else PROT_READ)
 
-  let mapv h gs p = try Some (mapv_exn h gs p) with _ -> None
+	let mapv h gs p = try Some (mapv_exn h gs p) with _ -> None
 end
 
 module Gntshr = struct
