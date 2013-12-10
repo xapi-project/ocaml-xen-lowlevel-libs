@@ -1,0 +1,68 @@
+#!/bin/bash
+
+python genlevels.py _xtl_levels.mli.in _xtl_levels.ml.in _xtl_levels.inc
+
+sed -e '1i\
+(*\
+ * AUTO-GENERATED FILE DO NOT EDIT\
+ * Generated from xentoollog.ml.in and _xtl_levels.ml.in\
+ *)\
+' \
+-e '/^(\* @@XTL_LEVELS@@ \*)$/r_xtl_levels.ml.in' \
+< xentoollog.ml.in > xentoollog.ml.tmp
+mv xentoollog.ml.tmp xentoollog.ml
+
+sed -e '1i\
+ (*\
+  * AUTO-GENERATED FILE DO NOT EDIT\
+  * Generated from xentoollog.mli.in and _xtl_levels.mli.in\
+  *)\
+' \
+-e '/^(\* @@XTL_LEVELS@@ \*)$/r_xtl_levels.mli.in' \
+< xentoollog.mli.in > xentoollog.mli.tmp
+mv xentoollog.mli.tmp xentoollog.mli
+
+sed -e '1i\
+\/*\
+ * AUTO-GENERATED FILE DO NOT EDIT\
+ * Generated from xenlight.mli.in and _libxl_types.mli.in\
+ *\/\
+' \
+-e '/^\/\* @@XTL_LEVELS@@ \*\/$/r_xtl_levels.inc' \
+< xentoollog_stubs.c.in > xentoollog_stubs.c.tmp
+mv xentoollog_stubs.c.tmp xentoollog_stubs.c
+
+
+python genwrap.py libxl_types.idl _libxl_types.mli.in _libxl_types.ml.in _libxl_types.inc
+
+
+sed -e '1i\
+(*\
+ * AUTO-GENERATED FILE DO NOT EDIT\
+ * Generated from xenlight.ml.in and _libxl_types.ml.in\
+ *)\
+' \
+-e '/^(\* @@LIBXL_TYPES@@ \*)$/r_libxl_types.ml.in' \
+< xenlight.ml.in > xenlight.ml.tmp
+mv xenlight.ml.tmp xenlight.ml
+
+sed -e '1i\
+(*\
+ * AUTO-GENERATED FILE DO NOT EDIT\
+ * Generated from xenlight.mli.in and _libxl_types.mli.in\
+ *)\
+' \
+-e '/^(\* @@LIBXL_TYPES@@ \*)$/r_libxl_types.mli.in' \
+< xenlight.mli.in > xenlight.mli.tmp
+mv xenlight.mli.tmp xenlight.mli
+
+sed -e '1i\
+\/*\
+ * AUTO-GENERATED FILE DO NOT EDIT\
+ * Generated from xenlight.mli.in and _libxl_types.mli.in\
+ *\/\
+' \
+-e '/^\/\* @@LIBXL_TYPES@@ \*\/$/r_libxl_types.inc' \
+< xenlight_stubs.c.in > xenlight_stubs.c.tmp
+mv xenlight_stubs.c.tmp xenlight_stubs.c
+
