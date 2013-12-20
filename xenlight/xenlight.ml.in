@@ -33,14 +33,6 @@ type event =
 	| POLLHUP (* Device has been disconnected (revents only) *)
 	| POLLNVAL (* Invalid request: fd not open (revents only). *)
 
-module Domain_restore_params = struct
-	type t = 
-	{
-		checkpointed_stream : int;
-	}
-	let default ctx () = {checkpointed_stream = 0}
-end
-
 module Domain = struct
 	external create_new : ctx -> Domain_config.t -> ?async:'a -> unit -> domid = "stub_libxl_domain_create_new"
 	external create_restore : ctx -> Domain_config.t -> (Unix.file_descr * Domain_restore_params.t) ->
