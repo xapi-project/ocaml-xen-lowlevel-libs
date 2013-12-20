@@ -476,7 +476,7 @@ value stub_libxl_domain_create_restore(value ctx, value domain_config, value par
 	CAMLparam5(ctx, domain_config, params, async, unit);
 	int ret;
 	libxl_domain_config c_dconfig;
-/*	libxl_domain_restore_params c_params; */
+	libxl_domain_restore_params c_params;
 	uint32_t c_domid;
 	libxl_asyncop_how *ao_how;
 	int restore_fd;
@@ -487,26 +487,26 @@ value stub_libxl_domain_create_restore(value ctx, value domain_config, value par
 		libxl_domain_config_dispose(&c_dconfig);
 		failwith_xl(ret, "domain_create_restore");
 	}
-/*
+
 	libxl_domain_restore_params_init(&c_params);
 	ret = domain_restore_params_val(CTX, &c_params, Field(params, 1));
 	if (ret != 0) {
 		libxl_domain_restore_params_dispose(&c_params);
 		failwith_xl(ret, "domain_create_restore");
 	}
-*/
+
 	ao_how = aohow_val(async);
 	restore_fd = Int_val(Field(params, 0));
 
 	caml_enter_blocking_section();
 	ret = libxl_domain_create_restore(CTX, &c_dconfig, &c_domid, restore_fd,
-		/* &c_params,*/ ao_how, NULL);
+		 &c_params, ao_how, NULL);
 	caml_leave_blocking_section();
 
 	if (ao_how)
 		free(ao_how);
 	libxl_domain_config_dispose(&c_dconfig);
-/*	libxl_domain_restore_params_dispose(&c_params); */
+	libxl_domain_restore_params_dispose(&c_params);
 
 	if (ret != 0)
 		failwith_xl(ret, "domain_create_restore");
