@@ -3914,6 +3914,7 @@ int fd_register(void *user, int fd, void **for_app_registration_out,
 	*for_app = caml_callbackN_exn(*func, 4, args);
 	if (Is_exception_result(*for_app)) {
 		ret = ERROR_OSEVENT_REG_FAIL;
+		free(for_app);
 		goto err;
 	}
 
@@ -4045,7 +4046,6 @@ int timeout_register(void *user, void **for_app_registration_out,
 	handles->for_app = caml_callbackN_exn(*func, 4, args);
 	if (Is_exception_result(handles->for_app)) {
 		ret = ERROR_OSEVENT_REG_FAIL;
-		caml_remove_global_root(&handles->for_app);
 		free(handles);
 		goto err;
 	}
@@ -4158,17 +4158,17 @@ value stub_libxl_osevent_occurred_fd(value ctx, value for_libxl, value fd,
 	CAMLreturn(Val_unit);
 }
 
-value stub_libxl_osevent_occurred_timeout(value ctx, value for_libxl)
+value stub_libxl_osevent_occurred_timeout(value ctx, value handles)
 {
 	CAMLparam1(ctx);
-	struct timeout_handles *handles = (struct timeout_handles *) for_libxl;
+	struct timeout_handles *c_handles = (struct timeout_handles *) handles;
 
 	caml_enter_blocking_section();
-	libxl_osevent_occurred_timeout(CTX, (void *) handles->for_libxl);
+	libxl_osevent_occurred_timeout(CTX, (void *) c_handles->for_libxl);
 	caml_leave_blocking_section();
 
-	caml_remove_global_root(&handles->for_app);
-	free(handles);
+	caml_remove_global_root(&c_handles->for_app);
+	free(c_handles);
 
 	CAMLreturn(Val_unit);
 }
