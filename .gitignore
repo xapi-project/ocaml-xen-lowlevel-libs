@@ -25,6 +25,7 @@ event/eventchn.ml
 event/eventchn.mli
 event/eventchn_stubs.c
 event/activations.ml
+event/generation.ml
 grant/gnt.ml
 grant/gnt.mli
 grant/gnttab_stubs.c

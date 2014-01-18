@@ -39,7 +39,7 @@
 
 xc_interface *global_xce = NULL;
 
-CAMLprim value stub_eventchn_init(value unit)
+CAMLprim value stub_evtchn_init(value unit)
 {
   CAMLparam1(unit);
   if (global_xce == NULL) {
@@ -52,14 +52,14 @@ CAMLprim value stub_eventchn_init(value unit)
   CAMLreturn((value)global_xce);
 }
 
-CAMLprim value stub_eventchn_close(value xce)
+CAMLprim value stub_evtchn_close(value xce)
 {
 /*  return Val_int(xc_evtchn_close(_H(xce))); */
 /* We don't ever actually want to do this */
   return(Val_int(0));
 }
 
-CAMLprim value stub_eventchn_fd(value xce)
+CAMLprim value stub_evtchn_fd(value xce)
 {
   CAMLparam1(xce);
   int fd;
@@ -73,7 +73,7 @@ CAMLprim value stub_eventchn_fd(value xce)
   CAMLreturn(Val_int(fd));
 }
 
-CAMLprim value stub_eventchn_notify(value xce, value port)
+CAMLprim value stub_evtchn_notify(value xce, value port)
 {
   CAMLparam2(xce, port);
   if(xc_evtchn_notify(_H(xce), Int_val(port)) == -1)
@@ -85,7 +85,7 @@ CAMLprim value stub_eventchn_notify(value xce, value port)
   CAMLreturn(Val_unit);
 }
 
-CAMLprim value stub_eventchn_bind_interdomain(value xce, value domid,
+CAMLprim value stub_evtchn_bind_interdomain(value xce, value domid,
                                               value remote_port)
 {
   CAMLparam3(xce, domid, remote_port);
@@ -101,7 +101,7 @@ CAMLprim value stub_eventchn_bind_interdomain(value xce, value domid,
   CAMLreturn(Val_int(rc));
 }
 
-CAMLprim value stub_eventchn_bind_unbound_port(value xce, value remote_domid)
+CAMLprim value stub_evtchn_alloc_unbound(value xce, value remote_domid)
 {
   CAMLparam2(xce, remote_domid);
   evtchn_port_or_error_t rc;
@@ -117,12 +117,18 @@ CAMLprim value stub_eventchn_bind_unbound_port(value xce, value remote_domid)
 
 }
 
-CAMLprim value stub_eventchn_bind_dom_exc_virq(value xce)
+CAMLprim value stub_evtchn_virq_dom_exc(value unit)
 {
-  CAMLparam1(xce);
+  CAMLparam1(unit);
+  CAMLreturn(Val_int(VIRQ_DOM_EXC));
+}
+ 
+CAMLprim value stub_evtchn_bind_virq(value xce, value virq)
+{
+  CAMLparam2(xce, virq);
   evtchn_port_or_error_t rc;
 
-  rc = xc_evtchn_bind_virq(_H(xce), VIRQ_DOM_EXC);
+  rc = xc_evtchn_bind_virq(_H(xce), Int_val(virq));
   if (rc == -1)
     {
       perror("xc_evtchn_bind_virq");
@@ -132,7 +138,7 @@ CAMLprim value stub_eventchn_bind_dom_exc_virq(value xce)
   CAMLreturn(Val_int(rc));
 }
 
-CAMLprim value stub_eventchn_unbind(value xce, value port)
+CAMLprim value stub_evtchn_unbind(value xce, value port)
 {
   CAMLparam2(xce, port);
   if(xc_evtchn_unbind(_H(xce), Int_val(port)) == -1)
@@ -144,7 +150,7 @@ CAMLprim value stub_eventchn_unbind(value xce, value port)
   CAMLreturn(Val_unit);
 }
 
-CAMLprim value stub_eventchn_pending(value xce)
+CAMLprim value stub_evtchn_pending(value xce)
 {
   CAMLparam1(xce);
   evtchn_port_or_error_t port;
@@ -159,7 +165,7 @@ CAMLprim value stub_eventchn_pending(value xce)
   CAMLreturn(Val_int(port));
 }
 
-CAMLprim value stub_eventchn_unmask(value xce, value port)
+CAMLprim value stub_evtchn_unmask(value xce, value port)
 {
   CAMLparam2(xce, port);
   if (xc_evtchn_unmask(_H(xce), Int_val(port)) == -1)

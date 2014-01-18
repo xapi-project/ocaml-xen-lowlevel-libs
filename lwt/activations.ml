@@ -1,6 +1,6 @@
 
-external fd: Eventchn.handle -> Unix.file_descr = "stub_eventchn_fd"
-external pending: Eventchn.handle -> Eventchn.t = "stub_eventchn_pending"
+external fd: Eventchn.handle -> Unix.file_descr = "stub_evtchn_fd"
+external pending: Eventchn.handle -> Eventchn.t = "stub_evtchn_pending"
 
 let nr_events = 1024
 let event_cb = Array.init nr_events (fun _ -> Lwt_sequence.create ())
