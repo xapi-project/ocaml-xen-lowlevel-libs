@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 5780712e03b2453c4df7872d5dbdc6f5)
+# DO NOT EDIT (digest: 65570fac3a62f95ac5628c2c06ade885)
 version = "0.9.8"
 description = "Xen low-level bindings"
 archive(byte) = "xen_event.cma"
@@ -10,7 +10,7 @@ exists_if = "xen_event.cma"
 package "unix" (
  version = "0.9.8"
  description = "Xen low-level bindings"
- requires = "unix lwt bigarray"
+ requires = "unix lwt lwt.unix bigarray"
  archive(byte) = "xen_event_unix.cma"
  archive(byte, plugin) = "xen_event_unix.cma"
  archive(native) = "xen_event_unix.cmxa"

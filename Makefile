@@ -27,6 +27,7 @@ build: setup.data setup.bin
 	(cd event; ln -s ../lib/eventchn.ml || true)
 	(cd event; ln -s ../lib/eventchn.mli || true)
 	(cd event; ln -s ../lib/eventchn_stubs.c || true)
+	(cd event; ln -s ../lwt/activations.ml || true)
 	@./setup.bin -build -j $(J)
 
 doc: setup.data setup.bin

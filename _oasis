@@ -48,11 +48,11 @@ Library xen_event_unix
   Path:               event
   Findlibparent:      xen_event
   Findlibname:        unix
-  Modules:            Eventchn_stubs_dummy # force package to be built
+  Modules:            Activations 
   CSources:           eventchn_stubs.c
   CCLib:              -L/usr/lib/xen-4.2/lib -lxenctrl
   CCOpt:              -Wno-unused-function -g -ggdb
-  BuildDepends:       unix, lwt, bigarray
+  BuildDepends:       unix, lwt, lwt.unix, bigarray
 
 Library xenlight
   Build$:             flag(xenlight)

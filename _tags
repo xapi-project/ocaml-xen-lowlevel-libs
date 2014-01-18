@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: b39a0321b0d37cd854e051bacd0e5085)
+# DO NOT EDIT (digest: 5c8ff2a229e1d310eec98eabb9d5f2a5)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -69,9 +69,11 @@
 "event/dllxen_event_unix_stubs.so": oasis_library_xen_event_unix_cclib
 <event/xen_event_unix.{cma,cmxa}>: use_libxen_event_unix_stubs
 <event/*.ml{,i}>: pkg_lwt
+<event/*.ml{,i}>: pkg_lwt.unix
 <event/*.ml{,i}>: pkg_unix
 <event/*.ml{,i}>: pkg_bigarray
 "event/eventchn_stubs.c": pkg_lwt
+"event/eventchn_stubs.c": pkg_lwt.unix
 "event/eventchn_stubs.c": pkg_unix
 "event/eventchn_stubs.c": pkg_bigarray
 # Library xenlight
@@ -117,6 +119,7 @@
 # OASIS_STOP
 <configure.*>: not_hygienic
 <lwt/*.ml{,i}>: syntax_camlp4o, pkg_lwt.syntax
+<event/activations.ml{,i}>: syntax_camlp4o, pkg_lwt.syntax
 <lib>: include
 <lwt>: include
 <xenlight>: include
