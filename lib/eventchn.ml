@@ -18,7 +18,6 @@ type handle
 
 external init: unit -> handle = "stub_eventchn_init"
 external close: handle -> int = "stub_eventchn_close"
-external fd: handle -> Unix.file_descr = "stub_eventchn_fd"
 
 type t = int
 
@@ -27,7 +26,6 @@ external bind_interdomain: handle -> int -> int -> int = "stub_eventchn_bind_int
 external bind_unbound_port: handle -> int -> int = "stub_eventchn_bind_unbound_port"
 external bind_dom_exc_virq: handle -> int = "stub_eventchn_bind_dom_exc_virq"
 external unbind: handle -> int -> unit = "stub_eventchn_unbind"
-external pending: handle -> int = "stub_eventchn_pending"
 external unmask: handle -> int -> unit = "stub_eventchn_unmask"
 
 let to_int x = x
