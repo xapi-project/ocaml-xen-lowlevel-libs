@@ -24,6 +24,9 @@ setup.data: setup.bin
 	@./setup.bin -configure $(ENABLE_XENLIGHT) $(ENABLE_XENCTRL)
 
 build: setup.data setup.bin
+	(cd event; ln -s ../lib/eventchn.ml || true)
+	(cd event; ln -s ../lib/eventchn.mli || true)
+	(cd event; ln -s ../lib/eventchn_stubs.c || true)
 	@./setup.bin -build -j $(J)
 
 doc: setup.data setup.bin

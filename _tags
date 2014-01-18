@@ -1,7 +1,7 @@
 # OASIS_START
-# DO NOT EDIT (digest: d75ed0456590fad6628baa97bfcfc7cf)
-# Ignore VCS directories, you can use the same kind of rule outside 
-# OASIS_START/STOP if you want to exclude directories that contains 
+# DO NOT EDIT (digest: b39a0321b0d37cd854e051bacd0e5085)
+# Ignore VCS directories, you can use the same kind of rule outside
+# OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
 <**/.svn>: -traverse
 <**/.svn>: not_hygienic
@@ -56,6 +56,24 @@
 <lwt/*.ml{,i}>: pkg_lwt.unix
 <lwt/*.ml{,i}>: pkg_unix
 <lwt/*.ml{,i}>: pkg_bigarray
+# Library xen_event
+"event/xen_event.cmxs": use_xen_event
+# Library xen_event_unix
+"event/xen_event_unix.cmxs": use_xen_event_unix
+<event/*.ml{,i}>: oasis_library_xen_event_unix_ccopt
+"event/eventchn_stubs.c": oasis_library_xen_event_unix_ccopt
+<event/xen_event_unix.{cma,cmxa}>: oasis_library_xen_event_unix_cclib
+"event/libxen_event_unix_stubs.lib": oasis_library_xen_event_unix_cclib
+"event/dllxen_event_unix_stubs.dll": oasis_library_xen_event_unix_cclib
+"event/libxen_event_unix_stubs.a": oasis_library_xen_event_unix_cclib
+"event/dllxen_event_unix_stubs.so": oasis_library_xen_event_unix_cclib
+<event/xen_event_unix.{cma,cmxa}>: use_libxen_event_unix_stubs
+<event/*.ml{,i}>: pkg_lwt
+<event/*.ml{,i}>: pkg_unix
+<event/*.ml{,i}>: pkg_bigarray
+"event/eventchn_stubs.c": pkg_lwt
+"event/eventchn_stubs.c": pkg_unix
+"event/eventchn_stubs.c": pkg_bigarray
 # Library xenlight
 "xenlight/xenlight.cmxs": use_xenlight
 <xenlight/xenlight.{cma,cmxa}>: oasis_library_xenlight_cclib
