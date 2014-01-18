@@ -61,3 +61,7 @@ val unbind : handle -> t -> unit
 val unmask : handle -> t -> unit
 (** Unmasks the given event channel. On error it will throw a
     Failure exception. *)
+
+val is_valid : t -> bool
+(** [is_valid c] is true if [t] is bound. Bindings are invalidated
+    after a domain resume. *)

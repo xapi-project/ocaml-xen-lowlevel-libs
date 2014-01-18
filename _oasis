@@ -24,7 +24,7 @@ Library xenctrl
   CSources:           gntshr_stubs.c,gnttab_stubs.c, eventchn_stubs.c, xenmmap_stubs.c, mmap_stubs.h, xenctrl_stubs.c, xenguest_stubs.c
   CCLib:              -L/usr/lib/xen-4.2/lib -lxenctrl -lxenguest -lxenstore
   CCOpt:              -Wno-unused-function -g -ggdb
-  BuildDepends:       unix, lwt, bigarray
+  BuildDepends:       unix, lwt, bigarray, io-page
 
 Library xenctrl_lwt
   Build$:             flag(xenctrl)
@@ -45,9 +45,8 @@ Library xen_event
 Library xen_event_unix
   Build$:             flag(xenctrl)
   CompiledObject:     best
-  Path:               event
-  Findlibparent:      xen_event
-  Findlibname:        unix
+  Path:               event_unix
+  Findlibname:        xen-event-unix
   Modules:            Activations 
   CSources:           eventchn_stubs.c
   CCLib:              -L/usr/lib/xen-4.2/lib -lxenctrl
@@ -60,6 +59,7 @@ Library xen_grant
   Path:               grant
   Findlibname:        xen-grant
   Modules:            Gnt
+  BuildDepends:       io-page
 
 Library xen_grant_unix
   Build$:             flag(xenctrl)
@@ -99,7 +99,7 @@ Executable test_hvm_check_pvdriver
   MainIs:             test_hvm_check_pvdriver.ml
   Custom:             true
   Install:            false
-  BuildDepends:       xenctrl
+  BuildDepends:       xenctrl, io-page.unix
 
 Executable test_gntshr
   Build$:             flag(xenctrl)
@@ -107,7 +107,7 @@ Executable test_gntshr
   Path:               test
   MainIs:             test_gntshr.ml
   Install:            false
-  BuildDepends:       xenctrl, cstruct
+  BuildDepends:       xenctrl, io-page.unix, cstruct
 
 Executable test_events
   Build$:             flag(xenctrl)
@@ -115,7 +115,7 @@ Executable test_events
   Path:               test
   MainIs:             test_events.ml
   Install:            false
-  BuildDepends:       lwt, lwt.unix, xenctrl
+  BuildDepends:       lwt, lwt.unix, xenctrl, io-page.unix
 
 Document api
   Title: Xen low level bindings' documentation and API reference

@@ -27,8 +27,8 @@ build: setup.data setup.bin
 	(cd event; ln -s ../lib/generation.ml || true)
 	(cd event; ln -s ../lib/eventchn.ml || true)
 	(cd event; ln -s ../lib/eventchn.mli || true)
-	(cd event; ln -s ../lib/eventchn_stubs.c || true)
-	(cd event; ln -s ../lwt/activations.ml || true)
+	(cd event_unix; ln -s ../lib/eventchn_stubs.c || true)
+	(cd event_unix; ln -s ../lwt/activations.ml || true)
 	(cd grant; ln -s ../lib/gnt.ml || true)
 	(cd grant; ln -s ../lib/gnt.mli || true)
 	(cd grant; ln -s ../lib/gnttab_stubs.c || true)
@@ -47,11 +47,17 @@ test: setup.bin build
 reinstall: setup.bin
 	@ocamlfind remove xenctrl || true
 	@ocamlfind remove xenlight || true
+	@ocamlfind remove xen-event || true
+	@ocamlfind remove xen-event-unix || true
+	@ocamlfind remove xen-grant || true
 	@./setup.bin -reinstall
 
 uninstall:
 	@ocamlfind remove xenctrl || true
 	@ocamlfind remove xenlight || true
+	@ocamlfind remove xen-event || true
+	@ocamlfind remove xen-event-unix || true
+	@ocamlfind remove xen-grant || true
 
 clean:
 	@ocamlbuild -clean
