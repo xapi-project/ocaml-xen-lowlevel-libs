@@ -54,6 +54,25 @@ Library xen_event_unix
   CCOpt:              -Wno-unused-function -g -ggdb
   BuildDepends:       unix, lwt, lwt.unix, bigarray
 
+Library xen_grant
+  Build$:             flag(xenctrl)
+  CompiledObject:     best
+  Path:               grant
+  Findlibname:        xen-grant
+  Modules:            Gnt
+
+Library xen_grant_unix
+  Build$:             flag(xenctrl)
+  CompiledObject:     best
+  Path:               grant
+  Findlibparent:      xen_grant
+  Findlibname:        unix
+  Modules:            Gnt_dummy # to ensure library is created
+  CSources:           gntshr_stubs.c, gnttab_stubs.c
+  CCLib:              -L/usr/lib/xen-4.2/lib -lxenctrl
+  CCOpt:              -Wno-unused-function -g -ggdb
+  BuildDepends:       unix, lwt, lwt.unix, bigarray
+
 Library xenlight
   Build$:             flag(xenlight)
   CompiledObject:     best
