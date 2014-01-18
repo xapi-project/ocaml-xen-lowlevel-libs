@@ -38,11 +38,11 @@ module Gnttab = struct
 
   module Local_mapping = struct
     type t = {
-      h : grant_handle;
+      hs : grant_handle list;
       pages: Io_page.t;
     }
 
-    let make h pages = { h; pages }
+    let make hs pages = { hs; pages }
 
     let to_buf t = t.pages
   end
@@ -51,9 +51,23 @@ module Gnttab = struct
 
   let map_exn interface grant writeable =
     let h, page = map_exn interface grant.ref grant.domid (not writeable) in
-    Local_mapping.make h page
+    Local_mapping.make [h] page
 
   let map interface grant writable = try Some (map_exn interface grant writable) with _ -> None
+
+  let unbatched_mapv_exn interface grants writable =
+    let nb_grants = Array.length grants in
+    let block = Io_page.get nb_grants in
+    let pages = Io_page.to_pages block in
+    let hs =
+      List.fold_left2 (fun acc g p ->
+        try (map interface g p (not writeable))::acc
+        with exn ->
+          List.iter Raw.unmap_grant acc;
+          raise exn) [] grants pages
+    in Local_mapping.make hs block
+
+  let () = Callback.register "unbatched_mapv_exn" unbatched_mapv_exn
 
   external mapv_exn: interface -> int array -> bool -> (grant_handle * Io_page.t) = "stub_gnttab_mapv"
 
