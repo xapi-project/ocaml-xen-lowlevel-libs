@@ -59,7 +59,7 @@ Library xen_grant
   Path:               grant
   Findlibname:        xen-grant
   Modules:            Gnt
-  BuildDepends:       io-page
+  BuildDepends:       io-page,lwt
 
 Library xen_grant_unix
   Build$:             flag(xenctrl)

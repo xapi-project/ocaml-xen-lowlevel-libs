@@ -1,8 +1,8 @@
 # OASIS_START
-# DO NOT EDIT (digest: c28af5049e831d10c4c5e4e82eb73e2b)
+# DO NOT EDIT (digest: 6ac0fcf2a63ea2f0b327eb10018c4d92)
 version = "0.9.8"
 description = "Xen low-level bindings"
-requires = "io-page"
+requires = "io-page lwt"
 archive(byte) = "xen_grant.cma"
 archive(byte, plugin) = "xen_grant.cma"
 archive(native) = "xen_grant.cmxa"
