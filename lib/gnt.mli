@@ -75,9 +75,9 @@ module Gnttab : sig
       raising an exception. *)
 
   val mapv_exn : interface -> grant list -> bool -> Local_mapping.t
-  (** [mapv_exn if grants writeable] creates a single contiguous
-      mapping from a list of grants that will be writeable if
-      [writeable] is [true]. Note the grant list can involve grants
+  (** [mapv_exn if grants writable] creates a single contiguous
+      mapping from a list of grants that will be writable if
+      [writable] is [true]. Note the grant list can involve grants
       from multiple domains. If the mapping fails (because at least
       one grant fails to be mapped), then all grants are unmapped. *)
 
@@ -96,7 +96,7 @@ module Gnttab : sig
 
   val with_mapping : interface -> grant -> bool ->
     (Local_mapping.t option -> 'a Lwt.t) -> 'a Lwt.t
-  (** [with_mapping if grant writeable f] maps [grant] and calls [f] on
+  (** [with_mapping if grant writable f] maps [grant] and calls [f] on
       the result. *)
 end
 
@@ -126,80 +126,70 @@ module Gntshr : sig
       of our domid and list of references. *)
 
   val share_pages_exn: interface -> int -> int -> bool -> share
-  (** [share_pages_exn if domid count writeable] shares [count] pages with foreign
-      domain [domid]. [writeable] determines whether or not the foreign domain can
+  (** [share_pages_exn if domid count writable] shares [count] pages with foreign
+      domain [domid]. [writable] determines whether or not the foreign domain can
       write to the shared memory. *)
 
   val share_pages: interface -> int -> int -> bool -> share option
-  (** [share_pages if domid count writeable] shares [count] pages with foreign domain
-      [domid]. [writeable] determines whether or not the foreign domain can write to
+  (** [share_pages if domid count writable] shares [count] pages with foreign domain
+      [domid]. [writable] determines whether or not the foreign domain can write to
       the shared memory.
       On error this function returns None. Diagnostic details will be logged. *)
 
   val munmap_exn : interface -> share -> unit
   (** Unmap a single mapping (which may involve multiple grants) *)
 
-  module Lowlevel: sig
-    (** Low-level interface to the grant table. This is only available in kernelspace *)
+  (** {2 Low-level interface}: this is only available in kernelspace *)
 
-    exception Interface_unavailable
-    (** Raised when the low-level grant table interface is not available *)
+  exception Interface_unavailable
+  (** Raised when the low-level grant table interface is not available *)
 
-    type interface
-    (** An open low-level interface *)
+  val get : unit -> gntref Lwt.t
+  (** Allocate a single grant table index *)
 
-    val interface_open : unit -> interface
-    (** [interface_open ()] returns an open low-level interface, or throws
-        Interface_unavailable *)
+  val get_n : int -> gntref list Lwt.t
+  (** Allocate a block of n grant table indices *)
 
-    val get : interface -> gntref Lwt.t
-    (** Allocate a single grant table index *)
+  val put : gntref -> unit
+  (** Deallocate a grant table index *)
 
-    val get_n : interface -> int -> gntref list Lwt.t
-    (** Allocate a block of n grant table indices *)
+  val get_nonblock : unit-> gntref option
+  (** [get_nonblock ()] is [Some idx] is the grant table is not full,
+      or [None] otherwise. *)
 
-    val put : gntref -> unit
-    (** Deallocate a grant table index *)
+  val get_n_nonblock : int -> gntref list
+  (** [get_n_nonblock count] is a list of grant table indices of
+      length [count], or [[]] if there if the table is too full to
+      accomodate [count] new grant references. *)
 
-    val get_nonblock : interface -> gntref option
-    (** [get_nonblock ()] is [Some idx] is the grant table is not full,
-        or [None] otherwise. *)
+  val num_free_grants : unit -> int
+  (** [num_free_grants ()] returns the number of instantaneously free grant
+      table indices *)
 
-    val get_n_nonblock : interface -> int -> gntref list
-    (** [get_n_nonblock count] is a list of grant table indices of
-        length [count], or [[]] if there if the table is too full to
-        accomodate [count] new grant references. *)
+  val with_ref: (gntref -> 'a Lwt.t) -> 'a Lwt.t
 
-    val num_free_grants : interface -> int
-    (** [num_free_grants ()] returns the number of instantaneously free grant
-        table indices *)
+  val with_refs: int -> (gntref list -> 'a Lwt.t) -> 'a Lwt.t
 
-    val with_ref: interface -> (gntref -> 'a Lwt.t) -> 'a Lwt.t
+  val grant_access : domid:int -> writable:bool -> gntref -> Io_page.t -> unit
+  (** [grant_access ~domid ~writable gntref page] adds a grant table
+      entry at index [gntref] to the grant table, granting access to
+      [domid] to read [page], and write to is as well if [writable] is
+      [true]. *)
 
-    val with_refs: interface -> int -> (gntref list -> 'a Lwt.t) -> 'a Lwt.t
+  val end_access : gntref -> unit
+  (** [end_access gntref] removes entry index [gntref] from the grant
+      table. *)
 
-    val grant_access : interface:interface -> domid:int -> writeable:bool -> gntref -> Io_page.t -> unit
-    (** [grant_access ~interface ~domid ~writeable gntref page] adds a grant table
-        entry at index [gntref] to the grant table, granting access to
-        [domid] to read [page], and write to is as well if [writeable] is
-        [true]. *)
+  val with_grant : domid:int -> writable:bool -> gntref ->
+    Io_page.t -> (unit -> 'a Lwt.t) -> 'a Lwt.t
 
-    val end_access : interface -> gntref -> unit
-    (** [end_access interface gntref] removes entry index [gntref] from the grant
-        table. *)
-
-    val with_grant : interface:interface -> domid:int -> writeable:bool -> gntref ->
-      Io_page.t -> (unit -> 'a Lwt.t) -> 'a Lwt.t
-
-    val with_grants : interface:interface -> domid:int -> writeable:bool -> gntref list ->
-      Io_page.t list -> (unit -> 'a Lwt.t) -> 'a Lwt.t
-  end
-
+  val with_grants : domid:int -> writable:bool -> gntref list ->
+    Io_page.t list -> (unit -> 'a Lwt.t) -> 'a Lwt.t
 
   val with_gntshr : (interface -> 'a) -> 'a
   (** [with_gntshr f] opens an interface to gntshr, passes it to f, then returns
-   *  the result of f (or re-raises any exceptions) ensuring that the gntshr
-   *  interface is closed before returning. *)
+      the result of f (or re-raises any exceptions) ensuring that the gntshr
+      interface is closed before returning. *)
 end
 
 val console: gntref

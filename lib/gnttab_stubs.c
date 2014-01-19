@@ -32,7 +32,7 @@
 
 #define _G(__g) ((xc_gnttab *)(__g))
 
-CAMLprim value stub_gnttab_open(void)
+CAMLprim value stub_gnttab_interface_open(void)
 {
 	CAMLparam0();
 	xc_gnttab *xgh;
@@ -42,7 +42,7 @@ CAMLprim value stub_gnttab_open(void)
 	CAMLreturn((value)xgh);
 }
 
-CAMLprim value stub_gnttab_close(value xgh)
+CAMLprim value stub_gnttab_interface_close(value xgh)
 {
 	CAMLparam1(xgh);
 
@@ -51,16 +51,45 @@ CAMLprim value stub_gnttab_close(value xgh)
 	CAMLreturn(Val_unit);
 }
 
+CAMLprim value stub_gnttab_allocates(void)
+{
+	CAMLparam0();
+	CAMLreturn(Val_bool(1));
+}
+
+/* type grant_handle = Io_page.t = external bigarray */
+
+CAMLprim value stub_gnttab_unmap(value xgh, value array) 
+{
+	CAMLparam2(xgh, array);
+
+	int size = Caml_ba_array_val(array)->dim[0];
+	int pages = size >> XC_PAGE_SHIFT;
+	int result = xc_gnttab_munmap(_G(xgh), Caml_ba_data_val(array), pages);
+	if(result!=0) {
+		caml_failwith("Failed to unmap grant");
+	}
+
+	CAMLreturn(Val_unit);
+}
+
+CAMLprim value stub_gnttab_map_onto(value xgh, value g, value p, value d, value wr)
+{
+	/* This should never happen because the OCaml code will have
+	   asked us if we allocate or not first */
+	caml_failwith("This grant table implementation allocates internally, cannot implement map_onto");
+}
+
 #define XC_GNTTAB_BIGARRAY (CAML_BA_UINT8 | CAML_BA_C_LAYOUT | CAML_BA_EXTERNAL)
 
-CAMLprim value stub_gnttab_map(
+CAMLprim value stub_gnttab_map_fresh(
 	value xgh,
-	value domid,
 	value reference,
+	value domid,
 	value writable
 	)
 {
-	CAMLparam4(xgh, domid, reference, writable);
+	CAMLparam4(xgh, reference, domid, writable);
 	CAMLlocal2(pair, contents);
 
 	void *map =
@@ -74,12 +103,12 @@ CAMLprim value stub_gnttab_map(
 	contents = caml_ba_alloc_dims(XC_GNTTAB_BIGARRAY, 1,
 		map, 1 << XC_PAGE_SHIFT);
 	pair = caml_alloc_tuple(2);
-	Store_field(pair, 0, contents);
-	Store_field(pair, 1, contents);
+	Store_field(pair, 0, contents); /* grant_handle */
+	Store_field(pair, 1, contents); /* Io_page.t */
 	CAMLreturn(pair);
 }
 
-CAMLprim value stub_gnttab_mapv(
+CAMLprim value stub_gnttab_mapv_batched(
 	value xgh,
 	value array,
 	value writable)
@@ -107,21 +136,27 @@ CAMLprim value stub_gnttab_mapv(
 	contents = caml_ba_alloc_dims(XC_GNTTAB_BIGARRAY, 1,
 		map, count << XC_PAGE_SHIFT);
 	pair = caml_alloc_tuple(2);
-	Store_field(pair, 0, contents);
-	Store_field(pair, 1, contents);
+	Store_field(pair, 0, contents); /* grant_handle */
+	Store_field(pair, 1, contents); /* Io_page.t */
 	CAMLreturn(pair);
 }
 
-CAMLprim value stub_gnttab_unmap(value xgh, value array) 
+CAMLprim value stub_gnttab_fini(void)
 {
-	CAMLparam2(xgh, array);
+	return 0;
+}
 
-	int size = Caml_ba_array_val(array)->dim[0];
-	int pages = size >> XC_PAGE_SHIFT;
-	int result = xc_gnttab_munmap(_G(xgh), Caml_ba_data_val(array), pages);
-	if(result!=0) {
-		caml_failwith("Failed to unmap grant");
-	}
+CAMLprim value stub_gnttab_init(void)
+{
+	return 0;
+}
 
-	CAMLreturn(Val_unit);
+CAMLprim value stub_gnttab_reserved(void)
+{
+	return (Val_int(0));
+}
+
+CAMLprim value stub_gnttab_nr_entries(void)
+{
+	return (Val_int(0));
 }

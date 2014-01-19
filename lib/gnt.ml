@@ -47,45 +47,59 @@ module Gnttab = struct
     let to_buf t = t.pages
   end
 
-  external map_exn: interface -> gntref -> domid -> bool -> (grant_handle * Io_page.t) = "stub_gnttab_map"
+  (* There are 2 lowlevel API variants, which differ in whether they allocate
+     the buffers for us or expect us to supply them. The userspace libxc will
+     allocate internally. The raw kernelspace Mirage interface expects us to
+     pass buffers in. *)
 
-  let map_exn interface grant writeable =
-    let h, page = map_exn interface grant.ref grant.domid (not writeable) in
+  external gnttab_allocates: unit -> bool = "stub_gnttab_allocates"
+  let gnttab_allocates = gnttab_allocates ()
+
+  external unmap_exn : interface -> grant_handle -> unit = "stub_gnttab_unmap"
+
+  external map_onto_exn: interface -> gntref -> Io_page.t -> domid -> bool -> grant_handle = "stub_gnttab_map_onto"
+  external map_fresh_exn: interface -> gntref -> domid -> bool -> (grant_handle * Io_page.t) = "stub_gnttab_map_fresh"
+
+  let map_exn interface grant writable = match gnttab_allocates with
+  | true ->
+    let h, page = map_fresh_exn interface grant.ref grant.domid writable in
+    Local_mapping.make [h] page
+  | false ->
+    let page = Io_page.get 1 in
+    let h = map_onto_exn interface grant.ref page grant.domid writable in
     Local_mapping.make [h] page
 
   let map interface grant writable = try Some (map_exn interface grant writable) with _ -> None
 
-  let unbatched_mapv_exn interface grants writable =
-    let nb_grants = Array.length grants in
-    let block = Io_page.get nb_grants in
-    let pages = Io_page.to_pages block in
-    let hs =
-      List.fold_left2 (fun acc g p ->
-        try (map interface g p (not writeable))::acc
-        with exn ->
-          List.iter Raw.unmap_grant acc;
-          raise exn) [] grants pages
-    in Local_mapping.make hs block
+  (* If the lowlevel API allocates then we must use a special mapv function to
+     ensure the memory is mapped contiguously. *)
+  external mapv_batched_exn: interface -> int array -> bool -> (grant_handle * Io_page.t) = "stub_gnttab_mapv_batched"
 
-  let () = Callback.register "unbatched_mapv_exn" unbatched_mapv_exn
-
-  external mapv_exn: interface -> int array -> bool -> (grant_handle * Io_page.t) = "stub_gnttab_mapv"
-
-  let mapv_exn interface gs p =
-    let count = List.length gs in
+  let mapv_exn interface grants writable = match gnttab_allocates with
+  | true ->
+    let count = List.length grants in
     let grant_array = Array.create (count * 2) 0 in
     List.iteri (fun i g ->
       grant_array.(i * 2 + 0) <- g.domid;
       grant_array.(i * 2 + 1) <- g.ref;
-    ) gs;
-    let h, page = mapv_exn interface grant_array p in
-    Local_mapping.make h page
+    ) grants;
+    let h, page = mapv_batched_exn interface grant_array writable in
+    Local_mapping.make [h] page
+  | false ->
+    let nb_grants = List.length grants in
+    let block = Io_page.get nb_grants in
+    let pages = Io_page.to_pages block in
+    let hs =
+      List.fold_left2 (fun acc g p ->
+        try (map_onto_exn interface g.ref p g.domid writable)::acc
+        with exn ->
+          List.iter (unmap_exn interface) acc;
+          raise exn) [] grants pages
+    in Local_mapping.make hs block
 
   let mapv interface gs p = try Some (mapv_exn interface gs p) with _ -> None
 
-  external unmap_exn : interface -> grant_handle -> unit = "stub_gnttab_unmap"
-
-  let unmap_exn interface mapping = unmap_exn interface mapping.Local_mapping.h
+  let unmap_exn interface mapping = List.iter (unmap_exn interface) mapping.Local_mapping.hs
 
   let with_gnttab f =
     let intf = interface_open () in
@@ -98,8 +112,8 @@ module Gnttab = struct
     interface_close intf;
     result
 
-  let with_mapping interface grant writeable fn =
-    let mapping = map interface grant writeable in
+  let with_mapping interface grant writable fn =
+    let mapping = map interface grant writable in
     try_lwt fn mapping
     finally
       match mapping with
@@ -118,122 +132,130 @@ module Gntshr = struct
     mapping: Io_page.t;
   }
 
-  module Lowlevel = struct
-    exception Interface_unavailable
+  exception Interface_unavailable
+  
+  (* For kernelspace we need to track the real free grant table slots. *)
 
-    type interface
+  let free_list : gntref Queue.t = Queue.create ()
+  let free_list_waiters = Lwt_sequence.create ()
 
-    external interface_open: unit -> interface = "stub_gntshr_lowlevel_open"
-    external interface_close: interface -> unit = "stub_gntshr_lowlevel_close"
+  let put r =
+    Queue.push r free_list;
+    match Lwt_sequence.take_opt_l free_list_waiters with
+    | None -> ()
+    | Some u -> Lwt.wakeup u ()
 
-    (* For kernelspace we need to track the real free grant table slots. *)
+    let num_free_grants () = Queue.length free_list
 
-    let free_list : gntref Queue.t = Queue.create ()
-    let free_list_waiters = Lwt_sequence.create ()
+  let rec get () =
+    if Gnttab.gnttab_allocates
+    then fail Interface_unavailable
+    else match Queue.is_empty free_list with
+    | true ->
+      let th, u = Lwt.task () in
+      let node = Lwt_sequence.add_r u free_list_waiters  in
+      Lwt.on_cancel th (fun () -> Lwt_sequence.remove node);
+      th >> get ()
+    | false ->
+      return (Queue.pop free_list)
 
-    let put r =
-      Queue.push r free_list;
-      match Lwt_sequence.take_opt_l free_list_waiters with
-      | None -> ()
-      | Some u -> Lwt.wakeup u ()
-
-    let num_free_grants interface = Queue.length free_list
-
-    let rec get interface =
-      match Queue.is_empty free_list with
-      | true ->
-        let th, u = Lwt.task () in
-        let node = Lwt_sequence.add_r u free_list_waiters  in
-        Lwt.on_cancel th (fun () -> Lwt_sequence.remove node);
-        th >> get interface
-      | false ->
-        return (Queue.pop free_list)
-
-    let get_n interface num =
-      let rec gen_gnts num acc =
+  let get_n num =
+    let rec gen_gnts num acc =
       match num with
       | 0 -> return acc
       | n ->
-        lwt gnt = get interface in
+        lwt gnt = get () in
         gen_gnts (n-1) (gnt :: acc)
       in gen_gnts num []
 
-    let get_nonblock interface =
-      try Some (Queue.pop free_list) with Queue.Empty -> None
+  let get_nonblock () =
+    if Gnttab.gnttab_allocates then raise Interface_unavailable;
+    try Some (Queue.pop free_list) with Queue.Empty -> None
 
-    let get_n_nonblock interface num =
-      let rec aux acc num = match num with
-      | 0 -> List.rev acc
-      | n ->
-        (match get_nonblock interface with
-         | Some p -> aux (p::acc) (n-1)
-           (* If we can't have enough, we push them back in the queue. *)
-         | None -> List.iter (fun gntref -> Queue.push gntref free_list) acc; [])
-        in aux [] num
+  let get_n_nonblock num =
+    let rec aux acc num = match num with
+    | 0 -> List.rev acc
+    | n ->
+      (match get_nonblock () with
+       | Some p -> aux (p::acc) (n-1)
+         (* If we can't have enough, we push them back in the queue. *)
+       | None -> List.iter (fun gntref -> Queue.push gntref free_list) acc; [])
+      in aux [] num
 
-    let with_ref interface f =
-      lwt gnt = get interface in
-      try_lwt f gnt
-      finally Lwt.return (put gnt)
+  let with_ref f =
+    lwt gnt = get () in
+    try_lwt f gnt
+    finally Lwt.return (put gnt)
 
-    let with_refs interface n f =
-      lwt gnts = get_n interface n in
-      try_lwt f gnts
-      finally Lwt.return (List.iter put gnts)
+  let with_refs n f =
+    lwt gnts = get_n n in
+    try_lwt f gnts
+    finally Lwt.return (List.iter put gnts)
 
-    external grant_access : interface -> gntref -> Io_page.t -> int -> bool -> unit = "stub_gnttab_grant_access"
+  external grant_access : gntref -> Io_page.t -> int -> bool -> unit = "stub_gntshr_grant_access"
 
-    let grant_access ~interface ~domid ~writeable gntref page = grant_access interface gntref page domid (not writeable)
+  let grant_access ~domid ~writable gntref page =
+    if Gnttab.gnttab_allocates then raise Interface_unavailable;
+    grant_access gntref page domid writable
 
-    external end_access : interface -> gntref -> unit = "stub_gnttab_end_access"
+  external end_access : gntref -> unit = "stub_gntshr_end_access"
 
-    let with_grant ~interface ~domid ~writeable gnt page fn =
-      grant_access ~interface ~domid ~writeable gnt page;
-      try_lwt fn ()
-      finally Lwt.return (end_access interface gnt)
+  let end_access g =
+    if Gnttab.gnttab_allocates then raise Interface_unavailable;
+    end_access g
 
-    let with_grants ~interface ~domid ~writeable gnts pages fn =
-      try_lwt
-        List.iter (fun (gnt, page) ->
-          grant_access ~interface ~domid ~writeable gnt page) (List.combine gnts pages);
-          fn ()
-      finally
-        Lwt.return (List.iter (end_access interface) gnts)
+  let with_grant ~domid ~writable gnt page fn =
+    grant_access ~domid ~writable gnt page;
+    try_lwt fn ()
+    finally Lwt.return (end_access gnt)
 
-    exception Grant_table_full
+  let with_grants ~domid ~writable gnts pages fn =
+    try_lwt
+      List.iter (fun (gnt, page) ->
+        grant_access ~domid ~writable gnt page) (List.combine gnts pages);
+        fn ()
+    finally
+      Lwt.return (List.iter end_access gnts)
 
-    let share_pages_exn interface domid count writeable =
-      (* First allocate a list of n pages. *)
-      let block = Io_page.get count in
-      let pages = Io_page.to_pages block in
-      let gntrefs = get_n_nonblock interface count in
-      if gntrefs = []
-      then raise Grant_table_full
-      else begin
-        List.iter2 (fun g p -> grant_access ~interface ~domid ~writeable g p) gntrefs pages;
-        { refs = gntrefs; mapping = block }
-      end
-
-    (* Let the C stubs decide which function to call *)
-    let () = Callback.register "share_pages_exn" share_pages_exn
-
-    let munmap_exn interface { refs; _ } =
-      List.iter (end_access interface) refs
-
-    let () = Callback.register "munmap_exn" munmap_exn
-  end
-
-  external share_pages_exn: interface -> int -> int -> bool -> share = "stub_gntshr_share_pages"
 
   exception Need_xen_4_2_or_later
-
   let () = Callback.register_exception "gntshr.missing" Need_xen_4_2_or_later
 
-  external munmap_exn: interface -> share -> unit = "stub_gntshr_munmap"
+  external share_pages_batched_exn: interface -> int -> int -> bool -> share = "stub_gntshr_share_pages_batched"
 
-  let share_pages interface domid count writeable =
-    try Some (share_pages_exn interface domid count writeable)
+  (* XXX; we should block instead of failing! *)
+  exception Grant_table_full
+
+  let share_pages_individually_exn _ domid count writable =
+    (* First allocate a list of n pages. *)
+    let block = Io_page.get count in
+    let pages = Io_page.to_pages block in
+    let gntrefs = get_n_nonblock count in
+    if gntrefs = []
+    then raise Grant_table_full
+    else begin
+      List.iter2 (fun g p -> grant_access ~domid ~writable g p) gntrefs pages;
+      { refs = gntrefs; mapping = block }
+    end
+
+  let share_pages_exn =
+    if Gnttab.gnttab_allocates
+    then share_pages_batched_exn
+    else share_pages_individually_exn
+
+  let share_pages interface domid count writable =
+    try Some (share_pages_exn interface domid count writable)
     with _ -> None
+
+  let munmap_individually_exn _ { refs; _ } =
+    List.iter end_access refs
+
+  external munmap_batched_exn: interface -> share -> unit = "stub_gntshr_munmap_batched"
+
+  let munmap_exn =
+    if Gnttab.gnttab_allocates
+    then munmap_batched_exn
+    else munmap_individually_exn
 
   let with_gntshr f =
     let intf = interface_open () in
@@ -259,7 +281,7 @@ external nr_reserved : unit -> int = "stub_gnttab_reserved"
 
 let _ =
   for i = nr_reserved () to nr_entries () - 1 do
-    Gntshr.Lowlevel.put i;
+    Gntshr.put i;
   done;
   init ()
 
