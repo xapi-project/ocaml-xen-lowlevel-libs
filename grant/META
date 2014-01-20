@@ -1,0 +1,22 @@
+# OASIS_START
+# DO NOT EDIT (digest: 6ac0fcf2a63ea2f0b327eb10018c4d92)
+version = "0.9.8"
+description = "Xen low-level bindings"
+requires = "io-page lwt"
+archive(byte) = "xen_grant.cma"
+archive(byte, plugin) = "xen_grant.cma"
+archive(native) = "xen_grant.cmxa"
+archive(native, plugin) = "xen_grant.cmxs"
+exists_if = "xen_grant.cma"
+package "unix" (
+ version = "0.9.8"
+ description = "Xen low-level bindings"
+ requires = "unix lwt lwt.unix bigarray"
+ archive(byte) = "xen_grant_unix.cma"
+ archive(byte, plugin) = "xen_grant_unix.cma"
+ archive(native) = "xen_grant_unix.cmxa"
+ archive(native, plugin) = "xen_grant_unix.cmxs"
+ exists_if = "xen_grant_unix.cma"
+)
+# OASIS_STOP
+

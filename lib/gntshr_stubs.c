@@ -67,7 +67,7 @@ static void failwith_xc(xc_interface *xch)
 }
 #endif
 
-CAMLprim value stub_xc_gntshr_open(value unit)
+CAMLprim value stub_gntshr_open(value unit)
 {
 	CAMLparam1(unit);
 	CAMLlocal1(result);
@@ -84,7 +84,7 @@ CAMLprim value stub_xc_gntshr_open(value unit)
 	CAMLreturn(result);
 }
 
-CAMLprim value stub_xc_gntshr_close(value xgh)
+CAMLprim value stub_gntshr_close(value xgh)
 {
 	CAMLparam1(xgh);
 #ifdef HAVE_GNTSHR
@@ -95,8 +95,19 @@ CAMLprim value stub_xc_gntshr_close(value xgh)
 	CAMLreturn(Val_unit);
 }
 
-CAMLprim value stub_xc_gntshr_share_pages(value xgh, value domid, value count, value writeable) {
-	CAMLparam4(xgh, domid, count, writeable);
+
+CAMLprim value stub_gntshr_grant_access(value i, value g, value p, value d, value w)
+{
+	abort();
+}
+
+CAMLprim value stub_gntshr_end_access(value i, value g)
+{
+	abort();
+}
+
+CAMLprim value stub_gntshr_share_pages_batched(value xgh, value domid, value count, value writable) {
+	CAMLparam4(xgh, domid, count, writable);
 	CAMLlocal4(result, ml_refs, ml_refs_cons, ml_map);
 #ifdef HAVE_GNTSHR
 	void *map;
@@ -106,7 +117,7 @@ CAMLprim value stub_xc_gntshr_share_pages(value xgh, value domid, value count, v
 	result = caml_alloc(2, 0);
 	refs = malloc(c_count * sizeof(uint32_t));
 
-	map = xc_gntshr_share_pages(_G(xgh), Int_val(domid), c_count, refs, Bool_val(writeable));
+	map = xc_gntshr_share_pages(_G(xgh), Int_val(domid), c_count, refs, Bool_val(writable));
 
 	if(NULL == map) {
 		free(refs);
@@ -137,7 +148,7 @@ CAMLprim value stub_xc_gntshr_share_pages(value xgh, value domid, value count, v
 	CAMLreturn(result);
 }
 
-CAMLprim value stub_xc_gntshr_munmap(value xgh, value share) {
+CAMLprim value stub_gntshr_munmap_batched(value xgh, value share) {
 	CAMLparam2(xgh, share);
 	CAMLlocal1(ml_map);
 #ifdef HAVE_GNTSHR

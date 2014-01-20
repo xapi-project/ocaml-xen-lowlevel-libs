@@ -1,0 +1,12 @@
+# OASIS_START
+# DO NOT EDIT (digest: 6176d28a364ecc2db4caf82088aec613)
+version = "0.9.8"
+description = "Xen low-level bindings"
+requires = "unix lwt lwt.unix bigarray"
+archive(byte) = "xen_event_unix.cma"
+archive(byte, plugin) = "xen_event_unix.cma"
+archive(native) = "xen_event_unix.cmxa"
+archive(native, plugin) = "xen_event_unix.cmxs"
+exists_if = "xen_event_unix.cma"
+# OASIS_STOP
+

@@ -1,0 +1,11 @@
+# OASIS_START
+# DO NOT EDIT (digest: e4d0128a7ffa0ac7f0a17df0daa12dc3)
+version = "0.9.8"
+description = "Xen low-level bindings"
+archive(byte) = "xen_event.cma"
+archive(byte, plugin) = "xen_event.cma"
+archive(native) = "xen_event.cmxa"
+archive(native, plugin) = "xen_event.cmxs"
+exists_if = "xen_event.cma"
+# OASIS_STOP
+

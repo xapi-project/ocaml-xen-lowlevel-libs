@@ -20,3 +20,13 @@ config.mk
 configure
 test_hvm_check_pvdriver.native
 xenlight/_*
+# symlinks
+event/eventchn.ml
+event/eventchn.mli
+event_unix/eventchn_stubs.c
+event_unix/activations.ml
+event/generation.ml
+grant/gnt.ml
+grant/gnt.mli
+grant/gnttab_stubs.c
+grant/gntshr_stubs.c
