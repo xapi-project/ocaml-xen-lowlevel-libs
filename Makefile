@@ -20,7 +20,7 @@ setup.bin: setup.ml
 	@ocamlopt.opt -o $@ $< || ocamlopt -o $@ $< || ocamlc -o $@ $<
 	@rm -f setup.cmx setup.cmi setup.o setup.cmo
 
-setup.data: setup.bin
+setup.data: setup.bin config.mk
 	@./setup.bin -configure $(ENABLE_XENLIGHT) $(ENABLE_XENCTRL)
 
 build: setup.data setup.bin
