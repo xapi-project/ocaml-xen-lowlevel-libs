@@ -4,9 +4,6 @@ let main () =
   (* Obtain a handler. *)
   let evtchn_h = Eventchn.init () in
 
-  (* Run the activation loop in the background. *)
-  Lwt.async (fun () -> Activations.run evtchn_h);
-
   (* Create two connected event channels. *)
   let ch1 = Eventchn.bind_unbound_port evtchn_h 0 in
   let ch2 = Eventchn.bind_interdomain evtchn_h 0 (Eventchn.to_int ch1) in

@@ -1,3 +1,7 @@
+
+external fd: Eventchn.handle -> Unix.file_descr = "stub_evtchn_fd"
+external pending: Eventchn.handle -> Eventchn.t = "stub_evtchn_pending"
+
 let nr_events = 1024
 let event_cb = Array.init nr_events (fun _ -> Lwt_sequence.create ())
 
@@ -17,12 +21,18 @@ let wake port =
 
 (* Go through the event mask and activate any events, potentially spawning
    new threads *)
-let run xe =
-  let fd = Lwt_unix.of_unix_file_descr ~blocking:false ~set_flags:true (Eventchn.fd xe) in
+let run_real xe =
+  let fd = Lwt_unix.of_unix_file_descr ~blocking:false ~set_flags:true (fd xe) in
   let rec inner () =
     lwt () = Lwt_unix.wait_read fd in
-    let port = Eventchn.pending xe in
+    let port = pending xe in
     wake port;
     Eventchn.unmask xe port;
     inner ()
   in inner ()
+
+let activations_thread = run_real (Eventchn.init ())
+
+(* Here for backwards compatibility *)
+let run _ = ()
+

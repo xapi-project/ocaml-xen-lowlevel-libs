@@ -20,10 +20,19 @@ setup.bin: setup.ml
 	@ocamlopt.opt -o $@ $< || ocamlopt -o $@ $< || ocamlc -o $@ $<
 	@rm -f setup.cmx setup.cmi setup.o setup.cmo
 
-setup.data: setup.bin
+setup.data: setup.bin config.mk
 	@./setup.bin -configure $(ENABLE_XENLIGHT) $(ENABLE_XENCTRL)
 
 build: setup.data setup.bin
+	(cd event; ln -s ../lib/generation.ml || true)
+	(cd event; ln -s ../lib/eventchn.ml || true)
+	(cd event; ln -s ../lib/eventchn.mli || true)
+	(cd event_unix; ln -s ../lib/eventchn_stubs.c || true)
+	(cd event_unix; ln -s ../lwt/activations.ml || true)
+	(cd grant; ln -s ../lib/gnt.ml || true)
+	(cd grant; ln -s ../lib/gnt.mli || true)
+	(cd grant; ln -s ../lib/gnttab_stubs.c || true)
+	(cd grant; ln -s ../lib/gntshr_stubs.c || true)
 	@./setup.bin -build -j $(J)
 
 doc: setup.data setup.bin
@@ -38,11 +47,17 @@ test: setup.bin build
 reinstall: setup.bin
 	@ocamlfind remove xenctrl || true
 	@ocamlfind remove xenlight || true
+	@ocamlfind remove xen-event || true
+	@ocamlfind remove xen-event-unix || true
+	@ocamlfind remove xen-grant || true
 	@./setup.bin -reinstall
 
 uninstall:
 	@ocamlfind remove xenctrl || true
 	@ocamlfind remove xenlight || true
+	@ocamlfind remove xen-event || true
+	@ocamlfind remove xen-event-unix || true
+	@ocamlfind remove xen-grant || true
 
 clean:
 	@ocamlbuild -clean

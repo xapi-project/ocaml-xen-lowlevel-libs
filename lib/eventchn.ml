@@ -1,7 +1,6 @@
 (*
- * Copyright (C) 2006-2007 XenSource Ltd.
- * Copyright (C) 2008      Citrix Ltd.
- * Author Vincent Hanquez <vincent.hanquez@eu.citrix.com>
+ * Copyright (C) 2006-2014 Citrix Inc.
+ * Copyright (c) 2010 Anil Madhavapeddy <anil@recoil.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -16,19 +15,32 @@
 
 type handle
 
-external init: unit -> handle = "stub_eventchn_init"
-external close: handle -> int = "stub_eventchn_close"
-external fd: handle -> Unix.file_descr = "stub_eventchn_fd"
+external init: unit -> handle = "stub_evtchn_init"
+external close: handle -> int = "stub_evtchn_close"
 
-type t = int
+type t = int Generation.t
 
-external notify: handle -> int -> unit = "stub_eventchn_notify"
-external bind_interdomain: handle -> int -> int -> int = "stub_eventchn_bind_interdomain"
-external bind_unbound_port: handle -> int -> int = "stub_eventchn_bind_unbound_port"
-external bind_dom_exc_virq: handle -> int = "stub_eventchn_bind_dom_exc_virq"
-external unbind: handle -> int -> unit = "stub_eventchn_unbind"
-external pending: handle -> int = "stub_eventchn_pending"
-external unmask: handle -> int -> unit = "stub_eventchn_unmask"
+external stub_bind_unbound_port: handle -> int -> int = "stub_evtchn_alloc_unbound"
+external stub_bind_interdomain: handle -> int -> int -> int = "stub_evtchn_bind_interdomain"
+external stub_unmask: handle -> int -> unit = "stub_evtchn_unmask"
+external stub_notify: handle -> int -> unit = "stub_evtchn_notify" "noalloc"
+external stub_unbind: handle -> int -> unit = "stub_evtchn_unbind"
+external stub_virq_dom_exc: unit -> int = "stub_evtchn_virq_dom_exc"
+external stub_bind_virq: handle -> int -> int = "stub_evtchn_bind_virq"
 
-let to_int x = x
-let of_int x = x
+let construct f x = Generation.wrap (f x)
+let bind_unbound_port h = construct (stub_bind_unbound_port h)
+let bind_interdomain h remote_domid = construct (stub_bind_interdomain h remote_domid)
+
+let maybe t f d = Generation.maybe t f d
+let unmask h t = maybe t (stub_unmask h) ()
+let notify h t = maybe t (stub_notify h) ()
+let unbind h t = maybe t (stub_unbind h) ()
+let is_valid t = maybe t (fun _ -> true) false
+
+let of_int n = Generation.wrap n
+let to_int t = Generation.extract t
+
+let bind_dom_exc_virq h =
+  let port = stub_bind_virq h (stub_virq_dom_exc ()) in
+  construct (fun () -> port) ()

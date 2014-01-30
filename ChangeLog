@@ -1,3 +1,7 @@
+trunk (unreleased):
+* add xen-{event,grant}{,.unix} ocamlfind packages to merge with
+  Mirage
+
 0.9.8 (8-Aug-2013):
 * update Gnt interface to match mirage 0.9.4
 * add ocamldoc generation

@@ -20,6 +20,6 @@ val wait : Eventchn.t -> unit Lwt.t
 (** For a given event channel, create a thread which completes when
     the event channel is signalled. *)
 
-val run : Eventchn.handle -> unit Lwt.t
+val run : Eventchn.handle -> unit
 (** Start a background thread which monitors the state of every event
     channel and wakes up any sleeping threads. *)
