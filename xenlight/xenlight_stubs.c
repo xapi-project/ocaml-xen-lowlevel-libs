@@ -870,6 +870,32 @@ static value Val_vga_interface_type (libxl_vga_interface_type vga_interface_type
 	CAMLreturn(vga_interface_type_ocaml);
 }
 
+/* Convert caml value to vendor_device */
+static int vendor_device_val (libxl_ctx *ctx, libxl_vendor_device *c_val, value v)
+{
+	CAMLparam1(v);
+
+	switch(Int_val(v)) {
+	    case 0: *c_val = LIBXL_VENDOR_DEVICE_NONE; break;
+	    case 1: *c_val = LIBXL_VENDOR_DEVICE_XENSERVER; break;
+	    default: failwith_xl(ERROR_FAIL, "cannot convert value to libxl_vendor_device"); break;
+	}
+	CAMLreturn(0);
+}
+
+/* Convert vendor_device to a caml value */
+static value Val_vendor_device (libxl_vendor_device vendor_device_c)
+{
+	CAMLparam0();
+	CAMLlocal1(vendor_device_ocaml);
+	switch(vendor_device_c) {
+	    case LIBXL_VENDOR_DEVICE_NONE: vendor_device_ocaml = Val_int(0); break;
+	    case LIBXL_VENDOR_DEVICE_XENSERVER: vendor_device_ocaml = Val_int(1); break;
+	    default: failwith_xl(ERROR_FAIL, "cannot convert value from libxl_vendor_device"); break;
+	}
+	CAMLreturn(vendor_device_ocaml);
+}
+
 /* Convert caml value to ioport_range */
 static int ioport_range_val (libxl_ctx *ctx, libxl_ioport_range *c_val, value v)
 {
@@ -1058,6 +1084,9 @@ static int spice_info_val (libxl_ctx *ctx, libxl_spice_info *c_val, value v)
 	c_val->disable_ticketing = Defbool_val(Field(v, 4));
 	c_val->passwd = String_option_val(Field(v, 5));
 	c_val->agent_mouse = Defbool_val(Field(v, 6));
+	c_val->vdagent = Defbool_val(Field(v, 7));
+	c_val->clipboard_sharing = Defbool_val(Field(v, 8));
+	c_val->usbredirection = Int_val(Field(v, 9));
 	
 	CAMLreturn(0);
 }
@@ -1070,7 +1099,7 @@ static value Val_spice_info (libxl_spice_info *spice_info_c)
 	{
 		CAMLlocal1(spice_info_field);
 	
-		spice_info_ocaml = caml_alloc_tuple(7);
+		spice_info_ocaml = caml_alloc_tuple(10);
 	
 		spice_info_field = Val_defbool(spice_info_c->enable);
 		Store_field(spice_info_ocaml, 0, spice_info_field);
@@ -1092,6 +1121,15 @@ static value Val_spice_info (libxl_spice_info *spice_info_c)
 	
 		spice_info_field = Val_defbool(spice_info_c->agent_mouse);
 		Store_field(spice_info_ocaml, 6, spice_info_field);
+	
+		spice_info_field = Val_defbool(spice_info_c->vdagent);
+		Store_field(spice_info_ocaml, 7, spice_info_field);
+	
+		spice_info_field = Val_defbool(spice_info_c->clipboard_sharing);
+		Store_field(spice_info_ocaml, 8, spice_info_field);
+	
+		spice_info_field = Val_int(spice_info_c->usbredirection);
+		Store_field(spice_info_ocaml, 9, spice_info_field);
 	}
 	CAMLreturn(spice_info_ocaml);
 }
@@ -1351,6 +1389,8 @@ static int domain_create_info_val (libxl_ctx *ctx, libxl_domain_create_info *c_v
 	libxl_key_value_list_val(&c_val->platformdata, Field(v, 7));
 	c_val->poolid = Int32_val(Field(v, 8));
 	c_val->run_hotplug_scripts = Defbool_val(Field(v, 9));
+	c_val->pvh = Defbool_val(Field(v, 10));
+	c_val->driver_domain = Defbool_val(Field(v, 11));
 	
 	CAMLreturn(0);
 }
@@ -1363,7 +1403,7 @@ static value Val_domain_create_info (libxl_domain_create_info *domain_create_inf
 	{
 		CAMLlocal1(domain_create_info_field);
 	
-		domain_create_info_ocaml = caml_alloc_tuple(10);
+		domain_create_info_ocaml = caml_alloc_tuple(12);
 	
 		domain_create_info_field = Val_domain_type(domain_create_info_c->type);
 		Store_field(domain_create_info_ocaml, 0, domain_create_info_field);
@@ -1394,6 +1434,12 @@ static value Val_domain_create_info (libxl_domain_create_info *domain_create_inf
 	
 		domain_create_info_field = Val_defbool(domain_create_info_c->run_hotplug_scripts);
 		Store_field(domain_create_info_ocaml, 9, domain_create_info_field);
+	
+		domain_create_info_field = Val_defbool(domain_create_info_c->pvh);
+		Store_field(domain_create_info_ocaml, 10, domain_create_info_field);
+	
+		domain_create_info_field = Val_defbool(domain_create_info_c->driver_domain);
+		Store_field(domain_create_info_ocaml, 11, domain_create_info_field);
 	}
 	CAMLreturn(domain_create_info_ocaml);
 }
@@ -1407,6 +1453,44 @@ value stub_libxl_domain_create_info_init(value ctx, value unit)
 	libxl_domain_create_info_init(&c_val);
 	val = Val_domain_create_info(&c_val);
 	libxl_domain_create_info_dispose(&c_val);
+	CAMLreturn(val);
+}
+
+/* Convert caml value to domain_restore_params */
+static int domain_restore_params_val (libxl_ctx *ctx, libxl_domain_restore_params *c_val, value v)
+{
+	CAMLparam1(v);
+
+	c_val->checkpointed_stream = Int_val(Field(v, 0));
+	
+	CAMLreturn(0);
+}
+
+/* Convert domain_restore_params to a caml value */
+static value Val_domain_restore_params (libxl_domain_restore_params *domain_restore_params_c)
+{
+	CAMLparam0();
+	CAMLlocal1(domain_restore_params_ocaml);
+	{
+		CAMLlocal1(domain_restore_params_field);
+	
+		domain_restore_params_ocaml = caml_alloc_tuple(1);
+	
+		domain_restore_params_field = Val_int(domain_restore_params_c->checkpointed_stream);
+		Store_field(domain_restore_params_ocaml, 0, domain_restore_params_field);
+	}
+	CAMLreturn(domain_restore_params_ocaml);
+}
+
+/* Get the defaults for domain_restore_params */
+value stub_libxl_domain_restore_params_init(value ctx, value unit)
+{
+	CAMLparam2(ctx, unit);
+	CAMLlocal1(val);
+	libxl_domain_restore_params c_val;
+	libxl_domain_restore_params_init(&c_val);
+	val = Val_domain_restore_params(&c_val);
+	libxl_domain_restore_params_dispose(&c_val);
 	CAMLreturn(val);
 }
 
@@ -1533,58 +1617,61 @@ static int domain_build_info_val (libxl_ctx *ctx, libxl_domain_build_info *c_val
 	}
 	
 	c_val->claim_mode = Defbool_val(Field(v, 27));
+	c_val->event_channels = Int32_val(Field(v, 28));
 	{
-		if(Is_long(Field(v, 28))) {
-			switch(Int_val(Field(v, 28))) {
+		if(Is_long(Field(v, 29))) {
+			switch(Int_val(Field(v, 29))) {
 			    case 0: c_val->type = LIBXL_DOMAIN_TYPE_INVALID; break;
 			    default: failwith_xl(ERROR_FAIL, "variant handling bug c_val->type (long)"); break;
 			}
 		} else {
 			/* Is block... */
-			switch(Tag_val(Field(v, 28))) {
+			switch(Tag_val(Field(v, 29))) {
 			    case 0:
 			        c_val->type = LIBXL_DOMAIN_TYPE_HVM;
-			        c_val->u.hvm.firmware = String_option_val(Field(Field(Field(v, 28), 0), 0));
-			        bios_type_val(ctx, &c_val->u.hvm.bios, Field(Field(Field(v, 28), 0), 1));
-			        c_val->u.hvm.pae = Defbool_val(Field(Field(Field(v, 28), 0), 2));
-			        c_val->u.hvm.apic = Defbool_val(Field(Field(Field(v, 28), 0), 3));
-			        c_val->u.hvm.acpi = Defbool_val(Field(Field(Field(v, 28), 0), 4));
-			        c_val->u.hvm.acpi_s3 = Defbool_val(Field(Field(Field(v, 28), 0), 5));
-			        c_val->u.hvm.acpi_s4 = Defbool_val(Field(Field(Field(v, 28), 0), 6));
-			        c_val->u.hvm.nx = Defbool_val(Field(Field(Field(v, 28), 0), 7));
-			        c_val->u.hvm.viridian = Defbool_val(Field(Field(Field(v, 28), 0), 8));
-			        c_val->u.hvm.timeoffset = String_option_val(Field(Field(Field(v, 28), 0), 9));
-			        c_val->u.hvm.hpet = Defbool_val(Field(Field(Field(v, 28), 0), 10));
-			        c_val->u.hvm.vpt_align = Defbool_val(Field(Field(Field(v, 28), 0), 11));
-			        timer_mode_val(ctx, &c_val->u.hvm.timer_mode, Field(Field(Field(v, 28), 0), 12));
-			        c_val->u.hvm.nested_hvm = Defbool_val(Field(Field(Field(v, 28), 0), 13));
-			        c_val->u.hvm.smbios_firmware = String_option_val(Field(Field(Field(v, 28), 0), 14));
-			        c_val->u.hvm.acpi_firmware = String_option_val(Field(Field(Field(v, 28), 0), 15));
-			        c_val->u.hvm.nographic = Defbool_val(Field(Field(Field(v, 28), 0), 16));
-			        vga_interface_info_val(ctx, &c_val->u.hvm.vga, Field(Field(Field(v, 28), 0), 17));
-			        vnc_info_val(ctx, &c_val->u.hvm.vnc, Field(Field(Field(v, 28), 0), 18));
-			        c_val->u.hvm.keymap = String_option_val(Field(Field(Field(v, 28), 0), 19));
-			        sdl_info_val(ctx, &c_val->u.hvm.sdl, Field(Field(Field(v, 28), 0), 20));
-			        spice_info_val(ctx, &c_val->u.hvm.spice, Field(Field(Field(v, 28), 0), 21));
-			        c_val->u.hvm.gfx_passthru = Defbool_val(Field(Field(Field(v, 28), 0), 22));
-			        c_val->u.hvm.serial = String_option_val(Field(Field(Field(v, 28), 0), 23));
-			        c_val->u.hvm.boot = String_option_val(Field(Field(Field(v, 28), 0), 24));
-			        c_val->u.hvm.usb = Defbool_val(Field(Field(Field(v, 28), 0), 25));
-			        c_val->u.hvm.usbdevice = String_option_val(Field(Field(Field(v, 28), 0), 26));
-			        c_val->u.hvm.soundhw = String_option_val(Field(Field(Field(v, 28), 0), 27));
-			        c_val->u.hvm.xen_platform_pci = Defbool_val(Field(Field(Field(v, 28), 0), 28));
-			        libxl_string_list_val(&c_val->u.hvm.usbdevice_list, Field(Field(Field(v, 28), 0), 29));
+			        c_val->u.hvm.firmware = String_option_val(Field(Field(Field(v, 29), 0), 0));
+			        bios_type_val(ctx, &c_val->u.hvm.bios, Field(Field(Field(v, 29), 0), 1));
+			        c_val->u.hvm.pae = Defbool_val(Field(Field(Field(v, 29), 0), 2));
+			        c_val->u.hvm.apic = Defbool_val(Field(Field(Field(v, 29), 0), 3));
+			        c_val->u.hvm.acpi = Defbool_val(Field(Field(Field(v, 29), 0), 4));
+			        c_val->u.hvm.acpi_s3 = Defbool_val(Field(Field(Field(v, 29), 0), 5));
+			        c_val->u.hvm.acpi_s4 = Defbool_val(Field(Field(Field(v, 29), 0), 6));
+			        c_val->u.hvm.nx = Defbool_val(Field(Field(Field(v, 29), 0), 7));
+			        c_val->u.hvm.viridian = Defbool_val(Field(Field(Field(v, 29), 0), 8));
+			        c_val->u.hvm.timeoffset = String_option_val(Field(Field(Field(v, 29), 0), 9));
+			        c_val->u.hvm.hpet = Defbool_val(Field(Field(Field(v, 29), 0), 10));
+			        c_val->u.hvm.vpt_align = Defbool_val(Field(Field(Field(v, 29), 0), 11));
+			        timer_mode_val(ctx, &c_val->u.hvm.timer_mode, Field(Field(Field(v, 29), 0), 12));
+			        c_val->u.hvm.nested_hvm = Defbool_val(Field(Field(Field(v, 29), 0), 13));
+			        c_val->u.hvm.smbios_firmware = String_option_val(Field(Field(Field(v, 29), 0), 14));
+			        c_val->u.hvm.acpi_firmware = String_option_val(Field(Field(Field(v, 29), 0), 15));
+			        c_val->u.hvm.nographic = Defbool_val(Field(Field(Field(v, 29), 0), 16));
+			        vga_interface_info_val(ctx, &c_val->u.hvm.vga, Field(Field(Field(v, 29), 0), 17));
+			        vnc_info_val(ctx, &c_val->u.hvm.vnc, Field(Field(Field(v, 29), 0), 18));
+			        c_val->u.hvm.keymap = String_option_val(Field(Field(Field(v, 29), 0), 19));
+			        sdl_info_val(ctx, &c_val->u.hvm.sdl, Field(Field(Field(v, 29), 0), 20));
+			        spice_info_val(ctx, &c_val->u.hvm.spice, Field(Field(Field(v, 29), 0), 21));
+			        c_val->u.hvm.gfx_passthru = Defbool_val(Field(Field(Field(v, 29), 0), 22));
+			        c_val->u.hvm.serial = String_option_val(Field(Field(Field(v, 29), 0), 23));
+			        c_val->u.hvm.boot = String_option_val(Field(Field(Field(v, 29), 0), 24));
+			        c_val->u.hvm.usb = Defbool_val(Field(Field(Field(v, 29), 0), 25));
+			        c_val->u.hvm.usbversion = Int_val(Field(Field(Field(v, 29), 0), 26));
+			        c_val->u.hvm.usbdevice = String_option_val(Field(Field(Field(v, 29), 0), 27));
+			        c_val->u.hvm.soundhw = String_option_val(Field(Field(Field(v, 29), 0), 28));
+			        c_val->u.hvm.xen_platform_pci = Defbool_val(Field(Field(Field(v, 29), 0), 29));
+			        libxl_string_list_val(&c_val->u.hvm.usbdevice_list, Field(Field(Field(v, 29), 0), 30));
+			        vendor_device_val(ctx, &c_val->u.hvm.vendor_device, Field(Field(Field(v, 29), 0), 31));
 			        break;
 			    case 1:
 			        c_val->type = LIBXL_DOMAIN_TYPE_PV;
-			        c_val->u.pv.kernel = String_option_val(Field(Field(Field(v, 28), 0), 0));
-			        c_val->u.pv.slack_memkb = Int64_val(Field(Field(Field(v, 28), 0), 1));
-			        c_val->u.pv.bootloader = String_option_val(Field(Field(Field(v, 28), 0), 2));
-			        libxl_string_list_val(&c_val->u.pv.bootloader_args, Field(Field(Field(v, 28), 0), 3));
-			        c_val->u.pv.cmdline = String_option_val(Field(Field(Field(v, 28), 0), 4));
-			        c_val->u.pv.ramdisk = String_option_val(Field(Field(Field(v, 28), 0), 5));
-			        c_val->u.pv.features = String_option_val(Field(Field(Field(v, 28), 0), 6));
-			        c_val->u.pv.e820_host = Defbool_val(Field(Field(Field(v, 28), 0), 7));
+			        c_val->u.pv.kernel = String_option_val(Field(Field(Field(v, 29), 0), 0));
+			        c_val->u.pv.slack_memkb = Int64_val(Field(Field(Field(v, 29), 0), 1));
+			        c_val->u.pv.bootloader = String_option_val(Field(Field(Field(v, 29), 0), 2));
+			        libxl_string_list_val(&c_val->u.pv.bootloader_args, Field(Field(Field(v, 29), 0), 3));
+			        c_val->u.pv.cmdline = String_option_val(Field(Field(Field(v, 29), 0), 4));
+			        c_val->u.pv.ramdisk = String_option_val(Field(Field(Field(v, 29), 0), 5));
+			        c_val->u.pv.features = String_option_val(Field(Field(Field(v, 29), 0), 6));
+			        c_val->u.pv.e820_host = Defbool_val(Field(Field(Field(v, 29), 0), 7));
 			        break;
 			    default: failwith_xl(ERROR_FAIL, "variant handling bug c_val->type (block)"); break;
 			}
@@ -1602,7 +1689,7 @@ static value Val_domain_build_info (libxl_domain_build_info *domain_build_info_c
 	{
 		CAMLlocal1(domain_build_info_field);
 	
-		domain_build_info_ocaml = caml_alloc_tuple(29);
+		domain_build_info_ocaml = caml_alloc_tuple(30);
 	
 		domain_build_info_field = Val_int(domain_build_info_c->max_vcpus);
 		Store_field(domain_build_info_ocaml, 0, domain_build_info_field);
@@ -1712,6 +1799,9 @@ static value Val_domain_build_info (libxl_domain_build_info *domain_build_info_c
 		domain_build_info_field = Val_defbool(domain_build_info_c->claim_mode);
 		Store_field(domain_build_info_ocaml, 27, domain_build_info_field);
 	
+		domain_build_info_field = caml_copy_int32(domain_build_info_c->event_channels);
+		Store_field(domain_build_info_ocaml, 28, domain_build_info_field);
+	
 		switch(domain_build_info_c->type) {
 		    case LIBXL_DOMAIN_TYPE_HVM:
 		        /* 0: Block */
@@ -1721,7 +1811,7 @@ static value Val_domain_build_info (libxl_domain_build_info *domain_build_info_c
 			        {
 			        	CAMLlocal1(anon_field);
 			        
-			        	tmp = caml_alloc_tuple(30);
+			        	tmp = caml_alloc_tuple(32);
 			        
 			        	anon_field = Val_string_option(domain_build_info_c->u.hvm.firmware);
 			        	Store_field(tmp, 0, anon_field);
@@ -1801,17 +1891,23 @@ static value Val_domain_build_info (libxl_domain_build_info *domain_build_info_c
 			        	anon_field = Val_defbool(domain_build_info_c->u.hvm.usb);
 			        	Store_field(tmp, 25, anon_field);
 			        
-			        	anon_field = Val_string_option(domain_build_info_c->u.hvm.usbdevice);
+			        	anon_field = Val_int(domain_build_info_c->u.hvm.usbversion);
 			        	Store_field(tmp, 26, anon_field);
 			        
-			        	anon_field = Val_string_option(domain_build_info_c->u.hvm.soundhw);
+			        	anon_field = Val_string_option(domain_build_info_c->u.hvm.usbdevice);
 			        	Store_field(tmp, 27, anon_field);
 			        
-			        	anon_field = Val_defbool(domain_build_info_c->u.hvm.xen_platform_pci);
+			        	anon_field = Val_string_option(domain_build_info_c->u.hvm.soundhw);
 			        	Store_field(tmp, 28, anon_field);
 			        
-			        	anon_field = Val_string_list(&domain_build_info_c->u.hvm.usbdevice_list);
+			        	anon_field = Val_defbool(domain_build_info_c->u.hvm.xen_platform_pci);
 			        	Store_field(tmp, 29, anon_field);
+			        
+			        	anon_field = Val_string_list(&domain_build_info_c->u.hvm.usbdevice_list);
+			        	Store_field(tmp, 30, anon_field);
+			        
+			        	anon_field = Val_vendor_device(domain_build_info_c->u.hvm.vendor_device);
+			        	Store_field(tmp, 31, anon_field);
 			        }
 			        Store_field(domain_build_info_field, 0, tmp);
 		        }
@@ -1859,7 +1955,7 @@ static value Val_domain_build_info (libxl_domain_build_info *domain_build_info_c
 		        break;
 		    default: failwith_xl(ERROR_FAIL, "cannot convert value from None"); break;
 		}
-		Store_field(domain_build_info_ocaml, 28, domain_build_info_field);
+		Store_field(domain_build_info_ocaml, 29, domain_build_info_field);
 	}
 	CAMLreturn(domain_build_info_ocaml);
 }
@@ -4087,7 +4183,6 @@ int timeout_modify(void *user, void **for_app_registration_update,
 	args[1] = handles->for_app;
 
 	for_app_update = caml_callbackN_exn(*func, 2, args);
-
 	if (Is_exception_result(for_app_update)) {
 		/* If an exception is caught, *for_app_registration_update is not
 		 * changed. It remains a valid pointer to a value that is registered

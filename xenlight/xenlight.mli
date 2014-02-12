@@ -178,6 +178,13 @@ type vga_interface_type =
 
 val string_of_vga_interface_type : vga_interface_type -> string
 
+(* libxl_vendor_device interface *)
+type vendor_device = 
+	 | VENDOR_DEVICE_NONE
+	 | VENDOR_DEVICE_XENSERVER
+
+val string_of_vendor_device : vendor_device -> string
+
 (* libxl_ioport_range interface *)
 module Ioport_range : sig
 	type t =
@@ -231,6 +238,9 @@ module Spice_info : sig
 		disable_ticketing : bool option;
 		passwd : string option;
 		agent_mouse : bool option;
+		vdagent : bool option;
+		clipboard_sharing : bool option;
+		usbredirection : int;
 	}
 	val default : ctx -> unit -> t
 end
@@ -320,6 +330,17 @@ module Domain_create_info : sig
 		platformdata : (string * string) list;
 		poolid : int32;
 		run_hotplug_scripts : bool option;
+		pvh : bool option;
+		driver_domain : bool option;
+	}
+	val default : ctx -> unit -> t
+end
+
+(* libxl_domain_restore_params interface *)
+module Domain_restore_params : sig
+	type t =
+	{
+		checkpointed_stream : int;
 	}
 	val default : ctx -> unit -> t
 end
@@ -372,10 +393,12 @@ module Domain_build_info : sig
 			serial : string option;
 			boot : string option;
 			usb : bool option;
+			usbversion : int;
 			usbdevice : string option;
 			soundhw : string option;
 			xen_platform_pci : bool option;
 			usbdevice_list : string list;
+			vendor_device : vendor_device;
 	}
 	
 	type type_pv =
@@ -422,6 +445,7 @@ module Domain_build_info : sig
 		irqs : int32 array;
 		iomem : Iomem_range.t array;
 		claim_mode : bool option;
+		event_channels : int32;
 		xl_type : type__union;
 	}
 	val default : ctx -> ?xl_type:domain_type -> unit -> t

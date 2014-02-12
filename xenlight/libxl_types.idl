@@ -155,6 +155,10 @@ libxl_vga_interface_type = Enumeration("vga_interface_type", [
     (2, "STD"),
     ], init_val = 1)
 
+libxl_vendor_device = Enumeration("vendor_device", [
+    (0, "NONE"),
+    (1, "XENSERVER"),
+    ])
 #
 # Complex libxl types
 #
@@ -194,6 +198,9 @@ libxl_spice_info = Struct("spice_info", [
     ("disable_ticketing", libxl_defbool),
     ("passwd",      string),
     ("agent_mouse", libxl_defbool),
+    ("vdagent",     libxl_defbool),
+    ("clipboard_sharing", libxl_defbool),
+    ("usbredirection", integer),
     ])
 
 libxl_sdl_info = Struct("sdl_info", [
@@ -268,7 +275,13 @@ libxl_domain_create_info = Struct("domain_create_info",[
     ("platformdata", libxl_key_value_list),
     ("poolid",       uint32),
     ("run_hotplug_scripts",libxl_defbool),
+    ("pvh",          libxl_defbool),
+    ("driver_domain",libxl_defbool),
     ], dir=DIR_IN)
+
+libxl_domain_restore_params = Struct("domain_restore_params", [
+    ("checkpointed_stream", integer),
+    ])
 
 MemKB = UInt(64, init_val = "LIBXL_MEMKB_DEFAULT")
 
@@ -319,6 +332,7 @@ libxl_domain_build_info = Struct("domain_build_info",[
     ("irqs",             Array(uint32, "num_irqs")),
     ("iomem",            Array(libxl_iomem_range, "num_iomem")),
     ("claim_mode",	     libxl_defbool),
+    ("event_channels",   uint32),
     ("u", KeyedUnion(None, libxl_domain_type, "type",
                 [("hvm", Struct(None, [("firmware",         string),
                                        ("bios",             libxl_bios_type),
@@ -349,6 +363,7 @@ libxl_domain_build_info = Struct("domain_build_info",[
                                        ("serial",           string),
                                        ("boot",             string),
                                        ("usb",              libxl_defbool),
+                                       ("usbversion",       integer),
                                        # usbdevice:
                                        # - "tablet" for absolute mouse,
                                        # - "mouse" for PS/2 protocol relative mouse
@@ -356,6 +371,7 @@ libxl_domain_build_info = Struct("domain_build_info",[
                                        ("soundhw",          string),
                                        ("xen_platform_pci", libxl_defbool),
                                        ("usbdevice_list",   libxl_string_list),
+                                       ("vendor_device",    libxl_vendor_device),
                                        ])),
                  ("pv", Struct(None, [("kernel", string),
                                       ("slack_memkb", MemKB),

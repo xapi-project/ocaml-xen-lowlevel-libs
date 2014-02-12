@@ -253,6 +253,15 @@ let string_of_vga_interface_type = function
 	| VGA_INTERFACE_TYPE_CIRRUS -> "CIRRUS"
 	| VGA_INTERFACE_TYPE_STD -> "STD"
 
+(* libxl_vendor_device implementation *)
+type vendor_device = 
+	 | VENDOR_DEVICE_NONE
+	 | VENDOR_DEVICE_XENSERVER
+
+let string_of_vendor_device = function
+	| VENDOR_DEVICE_NONE -> "NONE"
+	| VENDOR_DEVICE_XENSERVER -> "XENSERVER"
+
 (* libxl_ioport_range implementation *)
 module Ioport_range = struct
 	type t =
@@ -306,6 +315,9 @@ module Spice_info = struct
 		disable_ticketing : bool option;
 		passwd : string option;
 		agent_mouse : bool option;
+		vdagent : bool option;
+		clipboard_sharing : bool option;
+		usbredirection : int;
 	}
 	external default : ctx -> unit -> t = "stub_libxl_spice_info_init"
 end
@@ -395,8 +407,19 @@ module Domain_create_info = struct
 		platformdata : (string * string) list;
 		poolid : int32;
 		run_hotplug_scripts : bool option;
+		pvh : bool option;
+		driver_domain : bool option;
 	}
 	external default : ctx -> unit -> t = "stub_libxl_domain_create_info_init"
+end
+
+(* libxl_domain_restore_params implementation *)
+module Domain_restore_params = struct
+	type t =
+	{
+		checkpointed_stream : int;
+	}
+	external default : ctx -> unit -> t = "stub_libxl_domain_restore_params_init"
 end
 
 (* libxl_domain_sched_params implementation *)
@@ -447,10 +470,12 @@ module Domain_build_info = struct
 			serial : string option;
 			boot : string option;
 			usb : bool option;
+			usbversion : int;
 			usbdevice : string option;
 			soundhw : string option;
 			xen_platform_pci : bool option;
 			usbdevice_list : string list;
+			vendor_device : vendor_device;
 	}
 	
 	type type_pv =
@@ -497,6 +522,7 @@ module Domain_build_info = struct
 		irqs : int32 array;
 		iomem : Iomem_range.t array;
 		claim_mode : bool option;
+		event_channels : int32;
 		xl_type : type__union;
 	}
 	external default : ctx -> ?xl_type:domain_type -> unit -> t = "stub_libxl_domain_build_info_init"
