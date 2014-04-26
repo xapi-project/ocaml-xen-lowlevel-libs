@@ -29,10 +29,6 @@ build: setup.data setup.bin
 	(cd event; ln -s ../lib/eventchn.mli || true)
 	(cd event_unix; ln -s ../lib/eventchn_stubs.c || true)
 	(cd event_unix; ln -s ../lwt/activations.ml || true)
-	(cd grant; ln -s ../lib/gnt.ml || true)
-	(cd grant; ln -s ../lib/gnt.mli || true)
-	(cd grant; ln -s ../lib/gnttab_stubs.c || true)
-	(cd grant; ln -s ../lib/gntshr_stubs.c || true)
 	@./setup.bin -build -j $(J)
 
 doc: setup.data setup.bin

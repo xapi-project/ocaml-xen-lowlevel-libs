@@ -1,7 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 177431568fd74ab46cb4d71316d20594)
-gntshr_stubs.o
-gnttab_stubs.o
+# DO NOT EDIT (digest: 0069711f65896cacdd25f8a41c660c3f)
 eventchn_stubs.o
 xenmmap_stubs.o
 xenctrl_stubs.o
