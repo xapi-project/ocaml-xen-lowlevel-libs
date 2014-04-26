@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: a375c09aa418aa2b3cd7894090a3fdd5)
+# DO NOT EDIT (digest: 648b24c0ee3ebb3595e7e344ae37f6e5)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -16,7 +16,6 @@
 # Library xenctrl
 "lib/xenctrl.cmxs": use_xenctrl
 <lib/*.ml{,i}>: oasis_library_xenctrl_ccopt
-"lib/eventchn_stubs.c": oasis_library_xenctrl_ccopt
 "lib/xenmmap_stubs.c": oasis_library_xenctrl_ccopt
 "lib/xenctrl_stubs.c": oasis_library_xenctrl_ccopt
 "lib/xenguest_stubs.c": oasis_library_xenctrl_ccopt
@@ -29,9 +28,6 @@
 <lib/*.ml{,i}>: pkg_bigarray
 <lib/*.ml{,i}>: pkg_lwt
 <lib/*.ml{,i}>: pkg_unix
-"lib/eventchn_stubs.c": pkg_bigarray
-"lib/eventchn_stubs.c": pkg_lwt
-"lib/eventchn_stubs.c": pkg_unix
 "lib/xenmmap_stubs.c": pkg_bigarray
 "lib/xenmmap_stubs.c": pkg_lwt
 "lib/xenmmap_stubs.c": pkg_unix
@@ -41,33 +37,6 @@
 "lib/xenguest_stubs.c": pkg_bigarray
 "lib/xenguest_stubs.c": pkg_lwt
 "lib/xenguest_stubs.c": pkg_unix
-# Library xenctrl_lwt
-"lwt/xenctrl_lwt.cmxs": use_xenctrl_lwt
-<lwt/*.ml{,i}>: pkg_bigarray
-<lwt/*.ml{,i}>: pkg_lwt
-<lwt/*.ml{,i}>: pkg_lwt.unix
-<lwt/*.ml{,i}>: pkg_unix
-<lwt/*.ml{,i}>: use_xenctrl
-# Library xen_event
-"event/xen_event.cmxs": use_xen_event
-# Library xen_event_unix
-"event_unix/xen_event_unix.cmxs": use_xen_event_unix
-<event_unix/*.ml{,i}>: oasis_library_xen_event_unix_ccopt
-"event_unix/eventchn_stubs.c": oasis_library_xen_event_unix_ccopt
-<event_unix/xen_event_unix.{cma,cmxa}>: oasis_library_xen_event_unix_cclib
-"event_unix/libxen_event_unix_stubs.lib": oasis_library_xen_event_unix_cclib
-"event_unix/dllxen_event_unix_stubs.dll": oasis_library_xen_event_unix_cclib
-"event_unix/libxen_event_unix_stubs.a": oasis_library_xen_event_unix_cclib
-"event_unix/dllxen_event_unix_stubs.so": oasis_library_xen_event_unix_cclib
-<event_unix/xen_event_unix.{cma,cmxa}>: use_libxen_event_unix_stubs
-<event_unix/*.ml{,i}>: pkg_bigarray
-<event_unix/*.ml{,i}>: pkg_lwt
-<event_unix/*.ml{,i}>: pkg_lwt.unix
-<event_unix/*.ml{,i}>: pkg_unix
-"event_unix/eventchn_stubs.c": pkg_bigarray
-"event_unix/eventchn_stubs.c": pkg_lwt
-"event_unix/eventchn_stubs.c": pkg_lwt.unix
-"event_unix/eventchn_stubs.c": pkg_unix
 # Library xenlight
 "xenlight/xenlight.cmxs": use_xenlight
 <xenlight/xenlight.{cma,cmxa}>: oasis_library_xenlight_cclib
@@ -89,18 +58,11 @@
 <test/test_hvm_check_pvdriver.{native,byte}>: pkg_lwt
 <test/test_hvm_check_pvdriver.{native,byte}>: pkg_unix
 <test/test_hvm_check_pvdriver.{native,byte}>: use_xenctrl
-<test/test_hvm_check_pvdriver.{native,byte}>: custom
-# Executable test_events
-<test/test_events.{native,byte}>: pkg_bigarray
-<test/test_events.{native,byte}>: pkg_lwt
-<test/test_events.{native,byte}>: pkg_lwt.unix
-<test/test_events.{native,byte}>: pkg_unix
-<test/test_events.{native,byte}>: use_xenctrl
 <test/*.ml{,i}>: pkg_bigarray
 <test/*.ml{,i}>: pkg_lwt
-<test/*.ml{,i}>: pkg_lwt.unix
 <test/*.ml{,i}>: pkg_unix
 <test/*.ml{,i}>: use_xenctrl
+<test/test_hvm_check_pvdriver.{native,byte}>: custom
 # OASIS_STOP
 <configure.*>: not_hygienic
 <lwt/*.ml{,i}>: syntax_camlp4o, pkg_lwt.syntax

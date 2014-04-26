@@ -20,38 +20,11 @@ Library xenctrl
   CompiledObject:     best
   Path:               lib
   Findlibname:        xenctrl
-  Modules:            Eventchn, Generation, Xenmmap, Xenctrl, Xenguest
-  CSources:           eventchn_stubs.c, xenmmap_stubs.c, mmap_stubs.h, xenctrl_stubs.c, xenguest_stubs.c
+  Modules:            Xenmmap, Xenctrl, Xenguest
+  CSources:           xenmmap_stubs.c, mmap_stubs.h, xenctrl_stubs.c, xenguest_stubs.c
   CCLib:              -L/usr/lib/xen-4.2/lib -lxenctrl -lxenguest -lxenstore
   CCOpt:              -Wno-unused-function -g -ggdb
   BuildDepends:       unix, lwt, bigarray
-
-Library xenctrl_lwt
-  Build$:             flag(xenctrl)
-  CompiledObject:     best
-  Path:               lwt
-  Findlibname:        lwt
-  Findlibparent:      xenctrl
-  Modules:            Activations
-  BuildDepends:       lwt, lwt.unix, xenctrl
-
-Library xen_event
-  Build$:             flag(xenctrl)
-  CompiledObject:     best
-  Path:               event
-  Findlibname:        xen-event
-  Modules:            Eventchn, Generation
-
-Library xen_event_unix
-  Build$:             flag(xenctrl)
-  CompiledObject:     best
-  Path:               event_unix
-  Findlibname:        xen-event-unix
-  Modules:            Activations 
-  CSources:           eventchn_stubs.c
-  CCLib:              -L/usr/lib/xen-4.2/lib -lxenctrl
-  CCOpt:              -Wno-unused-function -g -ggdb
-  BuildDepends:       unix, lwt, lwt.unix, bigarray
 
 Library xenlight
   Build$:             flag(xenlight)
@@ -81,18 +54,10 @@ Executable test_hvm_check_pvdriver
   Install:            false
   BuildDepends:       xenctrl
 
-Executable test_events
-  Build$:             flag(xenctrl)
-  CompiledObject:     best
-  Path:               test
-  MainIs:             test_events.ml
-  Install:            false
-  BuildDepends:       lwt, lwt.unix, xenctrl
-
 Document api
   Title: Xen low level bindings' documentation and API reference
   Type: ocamlbuild (0.3)
   BuildTools+: ocamldoc
-  XOcamlbuildModules: Eventchn, Xenctrl, Xenguest, Xenmmap, Activations, Xenlight, Xentoollog
+  XOcamlbuildModules: Xenctrl, Xenguest, Xenmmap, Xenlight, Xentoollog
   XOcamlbuildPath: doc
   Install: false
