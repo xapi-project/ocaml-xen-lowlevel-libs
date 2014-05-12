@@ -23,11 +23,11 @@ setup.bin: setup.ml
 	@rm -f setup.cmx setup.cmi setup.o setup.cmo
 
 setup.data: setup.bin config.mk
-	@./setup.bin -configure $(ENABLE_XENLIGHT) $(ENABLE_XENCTRL)
+	@./setup.bin -configure $(ENABLE_XENLIGHT) $(ENABLE_XENCTRL) $(ENABLE_XENGUEST42)
 
 build: setup.data setup.bin
 	@./setup.bin -build -j $(J)
-ifeq ($(ENABLE_XENGUEST_44),true)
+ifeq ($(ENABLE_XENGUEST44),true)
 	(cd xenguest-4.4 && make)
 endif
 
