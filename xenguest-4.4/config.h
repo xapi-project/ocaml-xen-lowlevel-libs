@@ -1,0 +1,2 @@
+#undef HAVE_HVM_PARAM_NX_ENABLED
+
