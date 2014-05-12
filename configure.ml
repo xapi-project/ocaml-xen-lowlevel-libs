@@ -36,6 +36,8 @@ let find_header verbose name =
 
 let find_xen_4_4 verbose =
   let c_program = [
+    "#include <stdlib.h>";
+    "#include <xenctrl.h>";
     "#include <xenguest.h>";
     "int main(int argc, const char *argv){";
     "  int r = xc_domain_restore(NULL, 0, 0,";
