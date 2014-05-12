@@ -20,9 +20,9 @@ Library xenctrl
   CompiledObject:     best
   Path:               lib
   Findlibname:        xenctrl
-  Modules:            Xenmmap, Xenctrl, Xenguest
-  CSources:           xenmmap_stubs.c, mmap_stubs.h, xenctrl_stubs.c, xenguest_stubs.c
-  CCLib:              -L/usr/lib/xen-4.2/lib -lxenctrl -lxenguest -lxenstore
+  Modules:            Xenmmap, Xenctrl
+  CSources:           xenmmap_stubs.c, mmap_stubs.h, xenctrl_stubs.c 
+  CCLib:              -lxenctrl -lxenguest -lxenstore
   CCOpt:              -Wno-unused-function -g -ggdb
   BuildDepends:       unix, lwt, bigarray
 
@@ -33,7 +33,7 @@ Library xenlight
   Findlibname:        xenlight
   Modules:            Xenlight
   CSources:           xenlight_stubs.c, caml_xentoollog.h
-  CCLib:              -L/usr/lib/xen-4.2/lib -lxenlight -lxenctrl -lxenguest
+  CCLib:              -lxenlight -lxenctrl -lxenguest
 
 Library xentoollog
   Build$:             flag(xenlight)
@@ -58,6 +58,6 @@ Document api
   Title: Xen low level bindings' documentation and API reference
   Type: ocamlbuild (0.3)
   BuildTools+: ocamldoc
-  XOcamlbuildModules: Xenctrl, Xenguest, Xenmmap, Xenlight, Xentoollog
+  XOcamlbuildModules: Xenctrl, Xenmmap, Xenlight, Xentoollog
   XOcamlbuildPath: doc
   Install: false
