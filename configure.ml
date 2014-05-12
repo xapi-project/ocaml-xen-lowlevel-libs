@@ -14,6 +14,15 @@ let output_file filename lines =
   List.iter (output_string oc) lines;
   close_out oc
 
+let cc verbose c_program =
+  let c_file = Filename.temp_file "configure" ".c" in
+  let o_file = c_file ^ ".o" in
+  output_file c_file c_program;
+  let found = Sys.command (Printf.sprintf "cc -c %s -o %s %s" c_file o_file (if verbose then "" else "2>/dev/null")) = 0 in
+  if Sys.file_exists c_file then Sys.remove c_file;
+  if Sys.file_exists o_file then Sys.remove o_file;
+  found
+
 let find_header verbose name =
   let c_program = [
     Printf.sprintf "#include <%s>" name;
@@ -21,13 +30,27 @@ let find_header verbose name =
     "return 0;";
     "}";
   ] in
-  let c_file = Filename.temp_file "looking_for_header" ".c" in
-  let o_file = c_file ^ ".o" in
-  output_file c_file c_program;
-  let found = Sys.command (Printf.sprintf "cc -c %s -o %s %s" c_file o_file (if verbose then "" else "2>/dev/null")) = 0 in
-  if Sys.file_exists c_file then Sys.remove c_file;
-  if Sys.file_exists o_file then Sys.remove o_file;
+  let found = cc verbose c_program in
   Printf.printf "Looking for %s: %s\n" name (if found then "ok" else "missing");
+  found
+
+let find_xen_4_4 verbose =
+  let c_program = [
+    "#include <xenguest.h>";
+    "int main(int argc, const char *argv){";
+    "  int r = xc_domain_restore(NULL, 0, 0,";
+    "          0, 0, 0,";
+    "          0, 0, 0,";
+    "          0, 0, /* int superpages */ 0,";
+    "          /* int no_incr_generation_id */ 0,";
+    "          /* int checkpointed_stream */0,";
+    "          /* unsigned long *vm_generationid_addr */NULL,";
+    "          NULL);";
+    "  return 0;";
+    "}";
+  ] in
+  let found = cc verbose c_program in
+  Printf.printf "Looking for xen-4.4: %s\n" (if found then "ok" else "missing");
   found
 
 let disable_xenctrl =
@@ -41,6 +64,7 @@ let disable_xenlight =
 let configure verbose disable_xenctrl disable_xenlight =
   let xenctrl  = find_header verbose "xenctrl.h" in
   let xenlight = find_header verbose "libxl.h" in
+  let xen_4_4  = find_xen_4_4 verbose in
   if not xenctrl then begin
     Printf.fprintf stderr "Failure: we can't build anything without xenctrl.h\n";
     exit 1;
@@ -51,6 +75,9 @@ let configure verbose disable_xenctrl disable_xenlight =
       "# Do not edit";
       Printf.sprintf "ENABLE_XENLIGHT=--%s-xenlight" (if xenlight && not disable_xenlight then "enable" else "disable");
       Printf.sprintf "ENABLE_XENCTRL=--%s-xenctrl" (if disable_xenctrl then "disable" else "enable");
+      Printf.sprintf "ENABLE_XENGUEST42=--%s-xenguest42" (if xen_4_4 then "disable" else "enable");
+      Printf.sprintf "ENABLE_XENGUEST44=%s" (if xen_4_4 then "true" else "false");
+
     ] in
   output_file config_mk lines
 

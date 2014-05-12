@@ -1,7 +1,7 @@
 # OASIS_START
-# DO NOT EDIT (digest: f8f8288d8cd80782c2fe709f6473828c)
-# Ignore VCS directories, you can use the same kind of rule outside 
-# OASIS_START/STOP if you want to exclude directories that contains 
+# DO NOT EDIT (digest: 895fa8f30ba9f27874d720a82dbe2b2e)
+# Ignore VCS directories, you can use the same kind of rule outside
+# OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
 <**/.svn>: -traverse
 <**/.svn>: not_hygienic
@@ -24,15 +24,15 @@
 "lib/libxenctrl_stubs.a": oasis_library_xenctrl_cclib
 "lib/dllxenctrl_stubs.so": oasis_library_xenctrl_cclib
 <lib/xenctrl.{cma,cmxa}>: use_libxenctrl_stubs
-<lib/*.ml{,i}>: pkg_unix
-<lib/*.ml{,i}>: pkg_lwt
 <lib/*.ml{,i}>: pkg_bigarray
-"lib/xenmmap_stubs.c": pkg_unix
-"lib/xenmmap_stubs.c": pkg_lwt
+<lib/*.ml{,i}>: pkg_lwt
+<lib/*.ml{,i}>: pkg_unix
 "lib/xenmmap_stubs.c": pkg_bigarray
-"lib/xenctrl_stubs.c": pkg_unix
-"lib/xenctrl_stubs.c": pkg_lwt
+"lib/xenmmap_stubs.c": pkg_lwt
+"lib/xenmmap_stubs.c": pkg_unix
 "lib/xenctrl_stubs.c": pkg_bigarray
+"lib/xenctrl_stubs.c": pkg_lwt
+"lib/xenctrl_stubs.c": pkg_unix
 # Library xenlight
 "xenlight/xenlight.cmxs": use_xenlight
 <xenlight/xenlight.{cma,cmxa}>: oasis_library_xenlight_cclib
@@ -49,15 +49,35 @@
 "xenlight/libxentoollog_stubs.a": oasis_library_xentoollog_cclib
 "xenlight/dllxentoollog_stubs.so": oasis_library_xentoollog_cclib
 <xenlight/xentoollog.{cma,cmxa}>: use_libxentoollog_stubs
+# Executable xenguest
+<xenguest-4.2/xenguest_main.{native,byte}>: oasis_executable_xenguest_cclib
+"xenguest-4.2/libxenguest_stubs.lib": oasis_executable_xenguest_cclib
+"xenguest-4.2/dllxenguest_stubs.dll": oasis_executable_xenguest_cclib
+"xenguest-4.2/libxenguest_stubs.a": oasis_executable_xenguest_cclib
+"xenguest-4.2/dllxenguest_stubs.so": oasis_executable_xenguest_cclib
+<xenguest-4.2/xenguest_main.{native,byte}>: use_libxenguest_stubs
+<xenguest-4.2/xenguest_main.{native,byte}>: pkg_bigarray
+<xenguest-4.2/xenguest_main.{native,byte}>: pkg_lwt
+<xenguest-4.2/xenguest_main.{native,byte}>: pkg_unix
+<xenguest-4.2/xenguest_main.{native,byte}>: use_xenctrl
+<xenguest-4.2/*.ml{,i}>: pkg_bigarray
+<xenguest-4.2/*.ml{,i}>: pkg_lwt
+<xenguest-4.2/*.ml{,i}>: pkg_unix
+<xenguest-4.2/*.ml{,i}>: use_xenctrl
+"xenguest-4.2/xenguest_stubs.c": pkg_bigarray
+"xenguest-4.2/xenguest_stubs.c": pkg_lwt
+"xenguest-4.2/xenguest_stubs.c": pkg_unix
+"xenguest-4.2/xenguest_stubs.c": use_xenctrl
+<xenguest-4.2/xenguest_main.{native,byte}>: custom
 # Executable test_hvm_check_pvdriver
-<test/test_hvm_check_pvdriver.{native,byte}>: use_xenctrl
-<test/test_hvm_check_pvdriver.{native,byte}>: pkg_unix
-<test/test_hvm_check_pvdriver.{native,byte}>: pkg_lwt
 <test/test_hvm_check_pvdriver.{native,byte}>: pkg_bigarray
-<test/*.ml{,i}>: use_xenctrl
-<test/*.ml{,i}>: pkg_unix
-<test/*.ml{,i}>: pkg_lwt
+<test/test_hvm_check_pvdriver.{native,byte}>: pkg_lwt
+<test/test_hvm_check_pvdriver.{native,byte}>: pkg_unix
+<test/test_hvm_check_pvdriver.{native,byte}>: use_xenctrl
 <test/*.ml{,i}>: pkg_bigarray
+<test/*.ml{,i}>: pkg_lwt
+<test/*.ml{,i}>: pkg_unix
+<test/*.ml{,i}>: use_xenctrl
 <test/test_hvm_check_pvdriver.{native,byte}>: custom
 # OASIS_STOP
 <configure.*>: not_hygienic

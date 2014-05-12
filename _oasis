@@ -15,6 +15,10 @@ Flag xenctrl
   Description:        build the xenctrl bindings
   Default:            true
 
+Flag xenguest42
+  Description:        build the xenguest helper for xen-4.2
+  Default:            true
+
 Library xenctrl
   Build$:             flag(xenctrl)
   CompiledObject:     best
@@ -44,6 +48,17 @@ Library xentoollog
   Modules:            Xentoollog
   CSources:           xentoollog_stubs.c, caml_xentoollog.h
   CCLib:              -lxenctrl -lxenguest
+
+Executable xenguest
+  Build$:             flag(xenguest42)
+  CompiledObject:     best
+  Path:               xenguest-4.2
+  MainIs:             xenguest_main.ml
+  CSources:           xenguest_stubs.c
+  CCLib:              -lxenctrl -lxenguest
+  Custom:             true
+  Install:            false
+  BuildDepends:       xenctrl
 
 Executable test_hvm_check_pvdriver
   Build$:             flag(xenctrl)
