@@ -34,6 +34,7 @@
 
 #include "xg_internal.h"
 #include "config.h"
+#include "../config.h"
 
 /* The following boolean flags are all set by their value
    in the platform area of xenstore. The only value that
@@ -378,7 +379,9 @@ static int hvm_build_set_params(xc_interface *xch, int domid,
 
     xc_get_hvm_param(xch, domid, HVM_PARAM_STORE_PFN, store_mfn);
     xc_set_hvm_param(xch, domid, HVM_PARAM_PAE_ENABLED, f.pae);
+#ifdef HAVE_HVM_PARAM_VIRIDIAN
     xc_set_hvm_param(xch, domid, HVM_PARAM_VIRIDIAN, f.viridian);
+#endif
     xc_set_hvm_param(xch, domid, HVM_PARAM_STORE_EVTCHN, store_evtchn);
     xc_set_hvm_param(xch, domid, HVM_PARAM_HPET_ENABLED, f.hpet);
     xc_set_hvm_param(xch, domid, HVM_PARAM_NESTEDHVM, f.nested_hvm);
@@ -527,7 +530,9 @@ int stub_xc_domain_restore(xc_interface *xch, xs_handle *xsh, int fd, int domid,
 
     if ( hvm )
     {
+#ifdef HAVE_HVM_PARAM_VIRIDIAN
         xc_set_hvm_param(xch, domid, HVM_PARAM_VIRIDIAN, f.viridian);
+#endif
         xc_set_hvm_param(xch, domid, HVM_PARAM_HPET_ENABLED, f.hpet);
     }
 
