@@ -110,6 +110,7 @@ let disable_xenlight =
   Arg.(value & flag & info ["disable-xenlight"] ~docv:"DISABLE_XENLIGHT" ~doc)
 
 let configure verbose disable_xenctrl disable_xenlight =
+  check_arm_header verbose;
   let xenctrl  = find_header verbose "xenctrl.h" in
   let xenlight = find_header verbose "libxl.h" in
   let xen_4_4  = find_xen_4_4 verbose in
@@ -118,7 +119,6 @@ let configure verbose disable_xenctrl disable_xenlight =
     Printf.fprintf stderr "Failure: we can't build anything without xenctrl.h\n";
     exit 1;
   end;
-  check_arm_header verbose;
  
   (* Write config.mk *)
   let lines = 
