@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 648b24c0ee3ebb3595e7e344ae37f6e5)
+# DO NOT EDIT (digest: cc0f7dbde5e6a8b5a8850be06dc0badf)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -18,7 +18,6 @@
 <lib/*.ml{,i}>: oasis_library_xenctrl_ccopt
 "lib/xenmmap_stubs.c": oasis_library_xenctrl_ccopt
 "lib/xenctrl_stubs.c": oasis_library_xenctrl_ccopt
-"lib/xenguest_stubs.c": oasis_library_xenctrl_ccopt
 <lib/xenctrl.{cma,cmxa}>: oasis_library_xenctrl_cclib
 "lib/libxenctrl_stubs.lib": oasis_library_xenctrl_cclib
 "lib/dllxenctrl_stubs.dll": oasis_library_xenctrl_cclib
@@ -34,9 +33,6 @@
 "lib/xenctrl_stubs.c": pkg_bigarray
 "lib/xenctrl_stubs.c": pkg_lwt
 "lib/xenctrl_stubs.c": pkg_unix
-"lib/xenguest_stubs.c": pkg_bigarray
-"lib/xenguest_stubs.c": pkg_lwt
-"lib/xenguest_stubs.c": pkg_unix
 # Library xenlight
 "xenlight/xenlight.cmxs": use_xenlight
 <xenlight/xenlight.{cma,cmxa}>: oasis_library_xenlight_cclib
@@ -53,6 +49,26 @@
 "xenlight/libxentoollog_stubs.a": oasis_library_xentoollog_cclib
 "xenlight/dllxentoollog_stubs.so": oasis_library_xentoollog_cclib
 <xenlight/xentoollog.{cma,cmxa}>: use_libxentoollog_stubs
+# Library xenguest42
+"xenguest-4.2/xenguest42.cmxs": use_xenguest42
+<xenguest-4.2/xenguest42.{cma,cmxa}>: oasis_library_xenguest42_cclib
+"xenguest-4.2/libxenguest42_stubs.lib": oasis_library_xenguest42_cclib
+"xenguest-4.2/dllxenguest42_stubs.dll": oasis_library_xenguest42_cclib
+"xenguest-4.2/libxenguest42_stubs.a": oasis_library_xenguest42_cclib
+"xenguest-4.2/dllxenguest42_stubs.so": oasis_library_xenguest42_cclib
+<xenguest-4.2/xenguest42.{cma,cmxa}>: use_libxenguest42_stubs
+# Executable xenguest
+<xenguest-4.2/xenguest_main.{native,byte}>: pkg_bigarray
+<xenguest-4.2/xenguest_main.{native,byte}>: pkg_lwt
+<xenguest-4.2/xenguest_main.{native,byte}>: pkg_unix
+<xenguest-4.2/xenguest_main.{native,byte}>: use_xenctrl
+<xenguest-4.2/xenguest_main.{native,byte}>: use_xenguest42
+<xenguest-4.2/*.ml{,i}>: pkg_bigarray
+<xenguest-4.2/*.ml{,i}>: pkg_lwt
+<xenguest-4.2/*.ml{,i}>: pkg_unix
+<xenguest-4.2/*.ml{,i}>: use_xenctrl
+<xenguest-4.2/*.ml{,i}>: use_xenguest42
+<xenguest-4.2/xenguest_main.{native,byte}>: custom
 # Executable test_hvm_check_pvdriver
 <test/test_hvm_check_pvdriver.{native,byte}>: pkg_bigarray
 <test/test_hvm_check_pvdriver.{native,byte}>: pkg_lwt

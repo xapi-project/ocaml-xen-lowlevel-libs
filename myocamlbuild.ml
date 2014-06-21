@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: 66cbe4032be9922328c13ecc88095803) *)
+(* DO NOT EDIT (digest: 3054cd4f86c5c177ac078cec13a9adba) *)
 module OASISGettext = struct
 (* # 22 "src/oasis/OASISGettext.ml" *)
 
@@ -599,13 +599,15 @@ let package_default =
        [
           ("xenctrl", ["lib"], []);
           ("xenlight", ["xenlight"], []);
-          ("xentoollog", ["xenlight"], [])
+          ("xentoollog", ["xenlight"], []);
+          ("xenguest42", ["xenguest-4.2"], [])
        ];
      lib_c =
        [
           ("xenctrl", "lib", ["lib/mmap_stubs.h"]);
           ("xenlight", "xenlight", ["xenlight/caml_xentoollog.h"]);
-          ("xentoollog", "xenlight", ["xenlight/caml_xentoollog.h"])
+          ("xentoollog", "xenlight", ["xenlight/caml_xentoollog.h"]);
+          ("xenguest42", "xenguest-4.2", [])
        ];
      flags =
        [
@@ -628,8 +630,6 @@ let package_default =
                  S
                    [
                       A "-cclib";
-                      A "-L/usr/lib/xen-4.2/lib";
-                      A "-cclib";
                       A "-lxenctrl";
                       A "-cclib";
                       A "-lxenguest";
@@ -640,21 +640,13 @@ let package_default =
           (["oasis_library_xenctrl_cclib"; "ocamlmklib"; "c"],
             [
                (OASISExpr.EBool true,
-                 S
-                   [
-                      A "-L/usr/lib/xen-4.2/lib";
-                      A "-lxenctrl";
-                      A "-lxenguest";
-                      A "-lxenstore"
-                   ])
+                 S [A "-lxenctrl"; A "-lxenguest"; A "-lxenstore"])
             ]);
           (["oasis_library_xenlight_cclib"; "link"],
             [
                (OASISExpr.EBool true,
                  S
                    [
-                      A "-cclib";
-                      A "-L/usr/lib/xen-4.2/lib";
                       A "-cclib";
                       A "-lxenlight";
                       A "-cclib";
@@ -666,13 +658,7 @@ let package_default =
           (["oasis_library_xenlight_cclib"; "ocamlmklib"; "c"],
             [
                (OASISExpr.EBool true,
-                 S
-                   [
-                      A "-L/usr/lib/xen-4.2/lib";
-                      A "-lxenlight";
-                      A "-lxenctrl";
-                      A "-lxenguest"
-                   ])
+                 S [A "-lxenlight"; A "-lxenctrl"; A "-lxenguest"])
             ]);
           (["oasis_library_xentoollog_cclib"; "link"],
             [
@@ -680,14 +666,32 @@ let package_default =
                  S [A "-cclib"; A "-lxenctrl"; A "-cclib"; A "-lxenguest"])
             ]);
           (["oasis_library_xentoollog_cclib"; "ocamlmklib"; "c"],
-            [(OASISExpr.EBool true, S [A "-lxenctrl"; A "-lxenguest"])])
+            [(OASISExpr.EBool true, S [A "-lxenctrl"; A "-lxenguest"])]);
+          (["oasis_library_xenguest42_cclib"; "link"],
+            [
+               (OASISExpr.EBool true,
+                 S
+                   [
+                      A "-cclib";
+                      A "-lxenguest";
+                      A "-cclib";
+                      A "-lxenctrl";
+                      A "-cclib";
+                      A "-lxenstore"
+                   ])
+            ]);
+          (["oasis_library_xenguest42_cclib"; "ocamlmklib"; "c"],
+            [
+               (OASISExpr.EBool true,
+                 S [A "-lxenguest"; A "-lxenctrl"; A "-lxenstore"])
+            ])
        ];
-     includes = [("test", ["lib"])]
+     includes = [("xenguest-4.2", ["lib"]); ("test", ["lib"])]
   }
   ;;
 
 let dispatch_default = MyOCamlbuildBase.dispatch_default package_default;;
 
-# 692 "myocamlbuild.ml"
+# 696 "myocamlbuild.ml"
 (* OASIS_STOP *)
 Ocamlbuild_plugin.dispatch dispatch_default;;

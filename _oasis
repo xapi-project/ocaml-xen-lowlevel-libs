@@ -15,14 +15,18 @@ Flag xenctrl
   Description:        build the xenctrl bindings
   Default:            true
 
+Flag xenguest42
+  Description:        build the xenguest helper for xen-4.2
+  Default:            true
+
 Library xenctrl
   Build$:             flag(xenctrl)
   CompiledObject:     best
   Path:               lib
   Findlibname:        xenctrl
-  Modules:            Xenmmap, Xenctrl, Xenguest
-  CSources:           xenmmap_stubs.c, mmap_stubs.h, xenctrl_stubs.c, xenguest_stubs.c
-  CCLib:              -L/usr/lib/xen-4.2/lib -lxenctrl -lxenguest -lxenstore
+  Modules:            Xenmmap, Xenctrl
+  CSources:           xenmmap_stubs.c, mmap_stubs.h, xenctrl_stubs.c 
+  CCLib:              -lxenctrl -lxenguest -lxenstore
   CCOpt:              -Wno-unused-function -g -ggdb
   BuildDepends:       unix, lwt, bigarray
 
@@ -33,7 +37,7 @@ Library xenlight
   Findlibname:        xenlight
   Modules:            Xenlight
   CSources:           xenlight_stubs.c, caml_xentoollog.h
-  CCLib:              -L/usr/lib/xen-4.2/lib -lxenlight -lxenctrl -lxenguest
+  CCLib:              -lxenlight -lxenctrl -lxenguest
 
 Library xentoollog
   Build$:             flag(xenlight)
@@ -44,6 +48,24 @@ Library xentoollog
   Modules:            Xentoollog
   CSources:           xentoollog_stubs.c, caml_xentoollog.h
   CCLib:              -lxenctrl -lxenguest
+
+Library xenguest42
+  Build$:             flag(xenguest42)
+  CompiledObject:     best
+  Path:               xenguest-4.2
+  Findlibname:        xenguest42
+  Modules:            Xenguest
+  CSources:           xenguest_stubs.c
+  CCLib:              -lxenguest -lxenctrl -lxenstore
+
+Executable xenguest
+  Build$:             flag(xenguest42)
+  CompiledObject:     best
+  Path:               xenguest-4.2
+  MainIs:             xenguest_main.ml
+  Custom:             true
+  Install:            false
+  BuildDepends:       xenctrl, xenguest42
 
 Executable test_hvm_check_pvdriver
   Build$:             flag(xenctrl)
@@ -58,6 +80,6 @@ Document api
   Title: Xen low level bindings' documentation and API reference
   Type: ocamlbuild (0.3)
   BuildTools+: ocamldoc
-  XOcamlbuildModules: Xenctrl, Xenguest, Xenmmap, Xenlight, Xentoollog
+  XOcamlbuildModules: Xenctrl, Xenmmap, Xenlight, Xentoollog
   XOcamlbuildPath: doc
   Install: false

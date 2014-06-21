@@ -1,6 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: dd813b9ec83df34d2dac148063bac68a)
+# DO NOT EDIT (digest: b721949e15e8d355b0b5989d33d8107a)
 xenmmap_stubs.o
 xenctrl_stubs.o
-xenguest_stubs.o
 # OASIS_STOP

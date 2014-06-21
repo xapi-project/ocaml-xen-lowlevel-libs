@@ -17,6 +17,7 @@ setup.data
 setup.log
 api.docdir
 config.mk
+config.h
 configure
 test_hvm_check_pvdriver.native
 xenlight/_*
