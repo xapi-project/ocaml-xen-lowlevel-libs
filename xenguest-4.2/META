@@ -1,0 +1,11 @@
+# OASIS_START
+# DO NOT EDIT (digest: 5f7da89d51a2f75740412620b6e0e9e7)
+version = "0.9.8"
+description = "Xen low-level bindings"
+archive(byte) = "xenguest42.cma"
+archive(byte, plugin) = "xenguest42.cma"
+archive(native) = "xenguest42.cmxa"
+archive(native, plugin) = "xenguest42.cmxs"
+exists_if = "xenguest42.cma"
+# OASIS_STOP
+

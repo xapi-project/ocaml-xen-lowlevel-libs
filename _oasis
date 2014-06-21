@@ -49,16 +49,23 @@ Library xentoollog
   CSources:           xentoollog_stubs.c, caml_xentoollog.h
   CCLib:              -lxenctrl -lxenguest
 
+Library xenguest42
+  Build$:             flag(xenguest42)
+  CompiledObject:     best
+  Path:               xenguest-4.2
+  Findlibname:        xenguest42
+  Modules:            Xenguest
+  CSources:           xenguest_stubs.c
+  CCLib:              -lxenguest -lxenctrl -lxenstore
+
 Executable xenguest
   Build$:             flag(xenguest42)
   CompiledObject:     best
   Path:               xenguest-4.2
   MainIs:             xenguest_main.ml
-  CSources:           xenguest_stubs.c
-  CCLib:              -lxenctrl -lxenguest
   Custom:             true
   Install:            false
-  BuildDepends:       xenctrl
+  BuildDepends:       xenctrl, xenguest42
 
 Executable test_hvm_check_pvdriver
   Build$:             flag(xenctrl)

@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: ca5ec3d3c590a5b2aeb96b668e28a52d) *)
+(* DO NOT EDIT (digest: 3054cd4f86c5c177ac078cec13a9adba) *)
 module OASISGettext = struct
 (* # 22 "src/oasis/OASISGettext.ml" *)
 
@@ -599,14 +599,15 @@ let package_default =
        [
           ("xenctrl", ["lib"], []);
           ("xenlight", ["xenlight"], []);
-          ("xentoollog", ["xenlight"], [])
+          ("xentoollog", ["xenlight"], []);
+          ("xenguest42", ["xenguest-4.2"], [])
        ];
      lib_c =
        [
           ("xenctrl", "lib", ["lib/mmap_stubs.h"]);
           ("xenlight", "xenlight", ["xenlight/caml_xentoollog.h"]);
           ("xentoollog", "xenlight", ["xenlight/caml_xentoollog.h"]);
-          ("xenguest", "xenguest-4.2", [])
+          ("xenguest42", "xenguest-4.2", [])
        ];
      flags =
        [
@@ -666,13 +667,24 @@ let package_default =
             ]);
           (["oasis_library_xentoollog_cclib"; "ocamlmklib"; "c"],
             [(OASISExpr.EBool true, S [A "-lxenctrl"; A "-lxenguest"])]);
-          (["oasis_executable_xenguest_cclib"; "link"],
+          (["oasis_library_xenguest42_cclib"; "link"],
             [
                (OASISExpr.EBool true,
-                 S [A "-cclib"; A "-lxenctrl"; A "-cclib"; A "-lxenguest"])
+                 S
+                   [
+                      A "-cclib";
+                      A "-lxenguest";
+                      A "-cclib";
+                      A "-lxenctrl";
+                      A "-cclib";
+                      A "-lxenstore"
+                   ])
             ]);
-          (["oasis_executable_xenguest_cclib"; "ocamlmklib"; "c"],
-            [(OASISExpr.EBool true, S [A "-lxenctrl"; A "-lxenguest"])])
+          (["oasis_library_xenguest42_cclib"; "ocamlmklib"; "c"],
+            [
+               (OASISExpr.EBool true,
+                 S [A "-lxenguest"; A "-lxenctrl"; A "-lxenstore"])
+            ])
        ];
      includes = [("xenguest-4.2", ["lib"]); ("test", ["lib"])]
   }
@@ -680,6 +692,6 @@ let package_default =
 
 let dispatch_default = MyOCamlbuildBase.dispatch_default package_default;;
 
-# 684 "myocamlbuild.ml"
+# 696 "myocamlbuild.ml"
 (* OASIS_STOP *)
 Ocamlbuild_plugin.dispatch dispatch_default;;
