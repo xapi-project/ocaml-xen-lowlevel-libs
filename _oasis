@@ -52,6 +52,7 @@ Library xentoollog
 Library xenguest42
   Build$:             flag(xenguest42)
   CompiledObject:     best
+  Install:            false
   Path:               xenguest-4.2
   Findlibname:        xenguest42
   Modules:            Xenguest
