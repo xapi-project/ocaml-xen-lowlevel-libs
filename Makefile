@@ -36,7 +36,7 @@ doc: setup.data setup.bin
 
 install: setup.bin
 	@./setup.bin -install
-ifeq ($(ENABLE_XENGUEST42),--enable-xenguest42)
+ifeq ($(ENABLE_XENGUEST42)$(ENABLE_XENCTRL),--enable-xenguest42--enable-xenctrl)
 	mkdir -p $(BINDIR)
 	install -m 0755 _build/xenguest-4.2/xenguest_main.native $(BINDIR)/xenguest
 endif
