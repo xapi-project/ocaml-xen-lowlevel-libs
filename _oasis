@@ -50,7 +50,7 @@ Library xentoollog
   CCLib:              -lxenctrl -lxenguest
 
 Library xenguest42
-  Build$:             flag(xenguest42)
+  Build$:             flag(xenguest42) && flag(xenctrl)
   CompiledObject:     best
   Install:            false
   Path:               xenguest-4.2
@@ -60,7 +60,7 @@ Library xenguest42
   CCLib:              -lxenguest -lxenctrl -lxenstore
 
 Executable xenguest
-  Build$:             flag(xenguest42)
+  Build$:             flag(xenguest42) && flag(xenctrl)
   CompiledObject:     best
   Path:               xenguest-4.2
   MainIs:             xenguest_main.ml
