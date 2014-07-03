@@ -55,6 +55,7 @@ enum xenguest_opts {
     XG_OPT_MEM_START_MIB, /* int */
     XG_OPT_FORK, /* bool */
     XG_OPT_NO_INC_GENID, /* bool */
+    XG_OPT_SUPPORTS, /* str */
 };
 
 static int opt_mode = -1;
@@ -197,6 +198,7 @@ static void parse_options(int argc, char *const argv[])
         { "mem_start_mib", required_argument, NULL, XG_OPT_MEM_START_MIB, },
         { "fork", no_argument, NULL, XG_OPT_FORK, },
         { "no_incr_generationid", no_argument, NULL, XG_OPT_NO_INC_GENID, },
+        { "supports", required_argument, NULL, XG_OPT_SUPPORTS, },
         { NULL },
     };
 
@@ -287,6 +289,27 @@ static void parse_options(int argc, char *const argv[])
 
         case XG_OPT_MEM_START_MIB:
             opt_mem_start_mib = parse_int(optarg);
+            break;
+
+        case XG_OPT_SUPPORTS:
+            if ( !strcmp("migration-v2", optarg) )
+            {
+                if ( getenv("XG_MIGRATION_V2") )
+                {
+                    printf("true\n");
+                    exit(0);
+                }
+                else
+                {
+                    printf("false\n");
+                    exit(0);
+                }
+            }
+            else
+            {
+                printf("false\n");
+                exit(0);
+            }
             break;
 
         case XG_OPT_FAKE:
