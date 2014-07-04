@@ -490,6 +490,7 @@ CAMLprim value stub_xc_hvm_build_native(value xc_handle, value domid,
 	/* The xenguest interface changed and was backported to XCP: */
 #if defined(XENGUEST_HAS_HVM_BUILD_ARGS) || (__XEN_LATEST_INTERFACE_VERSION__ >= 0x00040200)
 	struct xc_hvm_build_args args;
+	memset(&args, 0, sizeof(struct xc_hvm_build_args));
 #endif
 	get_flags(&f, _D(domid));
 
