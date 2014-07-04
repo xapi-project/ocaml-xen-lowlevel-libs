@@ -1,9 +1,7 @@
-trunk (unreleased):
-* add xen-{event,grant}{,.unix} ocamlfind packages to merge with
-  Mirage
-* update to xen-4.4, remove xenguest bindings
-* work around broken arm libxen-dev packages which have a missing
-  (empty) header by creating it
+0.9.20 (4-Jul-2014):
+* fix for HVM domain building on xen 4.2 and 4.3
+* remove xen-{evtchn,gnt}: they now live in separate repos
+* support for xen 4.4
 
 0.9.8 (8-Aug-2013):
 * update Gnt interface to match mirage 0.9.4

@@ -1,6 +1,6 @@
 # OASIS_START
-# DO NOT EDIT (digest: fba456bf5fb7bf168186a9437ce33e2d)
-version = "0.9.8"
+# DO NOT EDIT (digest: ce5f6b77fd0cd8f726b76dc5207ffec9)
+version = "0.9.20"
 description = "Xen low-level bindings"
 archive(byte) = "xenlight.cma"
 archive(byte, plugin) = "xenlight.cma"
@@ -8,7 +8,7 @@ archive(native) = "xenlight.cmxa"
 archive(native, plugin) = "xenlight.cmxs"
 exists_if = "xenlight.cma"
 package "xentoollog" (
- version = "0.9.8"
+ version = "0.9.20"
  description = "Xen low-level bindings"
  archive(byte) = "xentoollog.cma"
  archive(byte, plugin) = "xentoollog.cma"
