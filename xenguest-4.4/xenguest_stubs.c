@@ -276,7 +276,13 @@ static void configure_vcpus(xc_interface *xch, int domid, struct flags f){
                 if (f.vcpu_affinity[i][j] == '1')
                     cpumap[j/8] |= 1 << (j&7);
             }
-            r = xc_vcpu_setaffinity(xch, domid, i, cpumap);
+            r = xc_vcpu_setaffinity(xch, domid, i,
+#ifdef HAVE_XEN_4_5
+                                    cpumap, cpumap, 0
+#else
+                                    cpumap
+#endif
+                                   );
             free(cpumap);
             if (r) {
                 failwith_oss_xc(xch, "xc_vcpu_setaffinity");
@@ -475,7 +481,12 @@ int stub_xc_domain_save(xc_interface *xch, xs_handle *xsh, int fd, int domid,
 
     r = xc_domain_save(xch, fd, domid,
                        max_iters, max_factors,
-                       flags, &callbacks, hvm, generation_id_addr);
+                       flags, &callbacks, hvm
+#ifndef HAVE_XEN_4_5
+                       ,generation_id_addr
+#endif
+                       );
+
     if (r)
         failwith_oss_xc(xch, "xc_domain_save");
 
@@ -542,9 +553,13 @@ int stub_xc_domain_restore(xc_interface *xch, xs_handle *xsh, int fd, int domid,
                           store_evtchn, store_mfn, 0,
                           console_evtchn, console_mfn, 0,
                           hvm, f.pae, /* int superpages */ 0,
+#ifndef HAVE_XEN_4_5
                           /* int no_incr_generation_id */ 0,
+#endif
                           /* int checkpointed_stream */0,
+#ifndef HAVE_XEN_4_5
                           /* unsigned long *vm_generationid_addr */NULL,
+#endif
                           &rcb);
 
     free_flags(&f);
