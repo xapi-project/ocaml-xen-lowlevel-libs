@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: 3054cd4f86c5c177ac078cec13a9adba) *)
+(* DO NOT EDIT (digest: a11ef8b98b239bec0bccf6a636063595) *)
 module OASISGettext = struct
 (* # 22 "src/oasis/OASISGettext.ml" *)
 
@@ -604,7 +604,7 @@ let package_default =
        ];
      lib_c =
        [
-          ("xenctrl", "lib", ["lib/mmap_stubs.h"]);
+          ("xenctrl", "lib", ["lib/mmap_stubs.h"; "lib/config.h"]);
           ("xenlight", "xenlight", ["xenlight/caml_xentoollog.h"]);
           ("xentoollog", "xenlight", ["xenlight/caml_xentoollog.h"]);
           ("xenguest42", "xenguest-4.2", [])
