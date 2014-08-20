@@ -1,3 +1,6 @@
+0.9.21 20-Aug-2014)
+* experimental support for xen 4.5 (currently in development)
+
 0.9.20 (4-Jul-2014):
 * fix for HVM domain building on xen 4.2 and 4.3
 * remove xen-{evtchn,gnt}: they now live in separate repos
