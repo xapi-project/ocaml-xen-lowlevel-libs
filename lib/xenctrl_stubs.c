@@ -32,6 +32,7 @@
 #include <xenctrl.h>
 
 #include "mmap_stubs.h"
+#include "config.h"
 
 #define PAGE_SHIFT		12
 #define PAGE_SIZE               (1UL << PAGE_SHIFT)
@@ -441,7 +442,13 @@ CAMLprim value stub_xc_vcpu_setaffinity(value xch, value domid,
 			c_cpumap[i/8] |= 1 << (i&7);
 	}
 	retval = xc_vcpu_setaffinity(_H(xch), _D(domid),
-	                             Int_val(vcpu), c_cpumap);
+	                             Int_val(vcpu),
+#ifdef HAVE_XEN_4_5
+                                     c_cpumap, c_cpumap, 0
+#else
+                                     c_cpumap
+#endif
+                                     );
 	free(c_cpumap);
 
 	if (retval < 0)
@@ -463,7 +470,13 @@ CAMLprim value stub_xc_vcpu_getaffinity(value xch, value domid,
 		failwith_xc(_H(xch));
 
 	retval = xc_vcpu_getaffinity(_H(xch), _D(domid),
-	                             Int_val(vcpu), c_cpumap);
+	                             Int_val(vcpu),
+#ifdef HAVE_XEN_4_5
+                                     c_cpumap, NULL, 0
+#else
+                                     c_cpumap
+#endif
+                                     );
 	free(c_cpumap);
 
 	if (retval < 0) {
