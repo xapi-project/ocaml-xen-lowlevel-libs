@@ -7,7 +7,8 @@ J=4
 
 include config.mk
 config.mk: configure
-	./configure
+	echo Please re-run configure
+	exit 1
 
 BINDIR ?= /usr/bin
 SBINDIR ?= /usr/sbin
