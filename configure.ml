@@ -120,7 +120,11 @@ let disable_xenlight =
   let doc = "Disable the xenlight library" in
   Arg.(value & flag & info ["disable-xenlight"] ~docv:"DISABLE_XENLIGHT" ~doc)
 
-let configure verbose disable_xenctrl disable_xenlight =
+let disable_xenguest =
+  let doc = "Don't build any xenguest binary" in
+  Arg.(value & flag & info ["disable-xenguest"] ~docv:"DISABLE_XENGUEST" ~doc)
+
+let configure verbose disable_xenctrl disable_xenlight disable_xenguest =
   check_arm_header verbose;
   let xenctrl  = find_header verbose "xenctrl.h" in
   let xenlight = find_xenlight verbose in
@@ -138,8 +142,8 @@ let configure verbose disable_xenctrl disable_xenlight =
       "# Do not edit";
       Printf.sprintf "ENABLE_XENLIGHT=--%s-xenlight" (if xenlight && not disable_xenlight then "enable" else "disable");
       Printf.sprintf "ENABLE_XENCTRL=--%s-xenctrl" (if disable_xenctrl then "disable" else "enable");
-      Printf.sprintf "ENABLE_XENGUEST42=--%s-xenguest42" (if xen_4_4 || xen_4_5 then "disable" else "enable");
-      Printf.sprintf "ENABLE_XENGUEST44=%s" (if xen_4_4 || xen_4_5 then "true" else "false");
+      Printf.sprintf "ENABLE_XENGUEST42=--%s-xenguest42" (if xen_4_4 || xen_4_5 || disable_xenguest then "disable" else "enable");
+      Printf.sprintf "ENABLE_XENGUEST44=%s" (if (xen_4_4 || xen_4_5) && not disable_xenguest then "true" else "false");
       Printf.sprintf "HAVE_XEN_4_5=%s" (if xen_4_5 then "true" else "false");
 
     ] in
@@ -159,7 +163,7 @@ let arg =
   let doc = "enable verbose printing" in
   Arg.(value & flag & info ["verbose"; "v"] ~doc)
 
-let configure_t = Term.(pure configure $ arg $ disable_xenctrl $ disable_xenlight)
+let configure_t = Term.(pure configure $ arg $ disable_xenctrl $ disable_xenlight $ disable_xenguest)
 
 let () = 
   match 
