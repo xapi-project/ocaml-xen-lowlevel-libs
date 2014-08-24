@@ -30,5 +30,6 @@ opam init
 opam install ${OPAM_PACKAGES}
 
 eval `opam config -env`
+./configure
 make
 make test

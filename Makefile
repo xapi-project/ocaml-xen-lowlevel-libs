@@ -9,9 +9,6 @@ include config.mk
 config.mk: configure
 	./configure
 
-configure: configure.ml
-	ocamlfind ocamlopt -package "cmdliner,unix" -linkpkg $< -o $@
-
 BINDIR ?= /usr/bin
 SBINDIR ?= /usr/sbin
 DESTDIR ?= /
