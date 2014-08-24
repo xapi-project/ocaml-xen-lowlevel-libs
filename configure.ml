@@ -84,27 +84,6 @@ let find_struct_member verbose structure member =
 
 let find_xenlight verbose = find_struct_member verbose "libxl_physinfo" "outstanding_pages"
 
-let find_xen_4_4 verbose =
-  let c_program = [
-    "#include <stdlib.h>";
-    "#include <xenctrl.h>";
-    "#include <xenguest.h>";
-    "int main(int argc, const char *argv){";
-    "  int r = xc_domain_restore(NULL, 0, 0,";
-    "          0, 0, 0,";
-    "          0, 0, 0,";
-    "          0, 0, /* int superpages */ 0,";
-    "          /* int no_incr_generation_id */ 0,";
-    "          /* int checkpointed_stream */0,";
-    "          /* unsigned long *vm_generationid_addr */NULL,";
-    "          NULL);";
-    "  return 0;";
-    "}";
-  ] in
-  let found = cc verbose c_program in
-  Printf.printf "Looking for xen-4.4: %s\n" (if found then "ok" else "missing");
-  found
-
 let find_xen_4_5 verbose =
   let c_program = [
     "#include <stdlib.h>";
@@ -145,7 +124,7 @@ let configure verbose disable_xenctrl disable_xenlight =
   check_arm_header verbose;
   let xenctrl  = find_header verbose "xenctrl.h" in
   let xenlight = find_xenlight verbose in
-  let xen_4_4  = find_xen_4_4 verbose in
+  let xen_4_4  = xenlight in
   let xen_4_5  = find_xen_4_5 verbose in
   let have_viridian = find_define verbose "HVM_PARAM_VIRIDIAN" in
   if not xenctrl then begin
