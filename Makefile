@@ -6,7 +6,7 @@ BINDIR?=/usr/lib/xcp/lib
 J=4
 
 include config.mk
-config.mk: configure
+config.mk:
 	echo Please re-run configure
 	exit 1
 
