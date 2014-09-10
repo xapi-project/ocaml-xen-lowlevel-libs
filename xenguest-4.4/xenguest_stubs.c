@@ -482,7 +482,7 @@ int stub_xc_domain_save(xc_interface *xch, xs_handle *xsh, int fd, int domid,
     r = xc_domain_save(xch, fd, domid,
                        max_iters, max_factors,
                        flags, &callbacks, hvm
-#ifndef HAVE_XEN_4_5
+#ifdef HAVE_XC_DOMAIN_SAVE_GENERATION_ID
                        ,generation_id_addr
 #endif
                        );
@@ -553,11 +553,11 @@ int stub_xc_domain_restore(xc_interface *xch, xs_handle *xsh, int fd, int domid,
                           store_evtchn, store_mfn, 0,
                           console_evtchn, console_mfn, 0,
                           hvm, f.pae, /* int superpages */ 0,
-#ifndef HAVE_XEN_4_5
+#ifdef HAVE_XC_DOMAIN_SAVE_GENERATION_ID
                           /* int no_incr_generation_id */ 0,
 #endif
                           /* int checkpointed_stream */0,
-#ifndef HAVE_XEN_4_5
+#ifdef HAVE_XC_DOMAIN_SAVE_GENERATION_ID
                           /* unsigned long *vm_generationid_addr */NULL,
 #endif
                           &rcb);
