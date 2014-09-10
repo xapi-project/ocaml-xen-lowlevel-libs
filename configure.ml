@@ -84,6 +84,23 @@ let find_struct_member verbose structure member =
 
 let find_xenlight verbose = find_struct_member verbose "libxl_physinfo" "outstanding_pages"
 
+(* Only xen-4.4 had this before it got removed *)
+let find_xc_domain_save_generation_id verbose =
+  let c_program = [
+    "#include <stdlib.h>";
+    "#include <xenctrl.h>";
+    "#include <xenguest.h>";
+    "int main(int argc, const char *argv){";
+    "  int r = xc_domain_save(/* xc_interface *xch*/NULL, /*int io_fd*/0, /*uint32_t dom*/0, /*uint32_t max_iters*/0,";
+    "              /*uint32_t max_factor*/0, /*uint32_t flags*/0,";
+    "              /*struct save_callbacks* callbacks*/NULL, /*int hvm*/0);";
+    "  return 0;";
+    "}";
+  ] in
+  let missing = cc verbose c_program in
+  Printf.printf "Looking for xc_domain_save generation_id: %s\n" (if missing then "missing" else "found");
+  not missing
+
 let find_xen_4_5 verbose =
   let c_program = [
     "#include <stdlib.h>";
@@ -130,6 +147,7 @@ let configure verbose disable_xenctrl disable_xenlight disable_xenguest =
   let xenlight = find_xenlight verbose in
   let xen_4_4  = xenlight in
   let xen_4_5  = find_xen_4_5 verbose in
+  let xc_domain_save_generation_id = find_xc_domain_save_generation_id verbose in
   let have_viridian = find_define verbose "HVM_PARAM_VIRIDIAN" in
   if not xenctrl then begin
     Printf.fprintf stderr "Failure: we can't build anything without xenctrl.h\n";
@@ -154,6 +172,7 @@ let configure verbose disable_xenctrl disable_xenlight disable_xenguest =
       "/* Do not edit */";
       (if have_viridian then "" else "/* ") ^ "#define HAVE_HVM_PARAM_VIRIDIAN" ^ (if have_viridian then "" else " */");
       (if xen_4_5 then "" else "/* ") ^ "#define HAVE_XEN_4_5" ^ (if xen_4_5 then "" else " */");
+      (if xc_domain_save_generation_id then "" else "/* ") ^ "#define HAVE_XC_DOMAIN_SAVE_GENERATION_ID" ^ (if xc_domain_save_generation_id then "" else " */");
     ] in
   output_file config_h lines;
   (try Unix.unlink ("lib/" ^ config_h) with _ -> ());
