@@ -1,3 +1,6 @@
+0.9.26 (10-Sep-2014)
+* improve configure to detect libxc backports
+
 0.9.22 (23-Aug-2014)
 * only build xenlight on xen-4.4 and xen-4.5 (xen-4.2 is too old)
 
