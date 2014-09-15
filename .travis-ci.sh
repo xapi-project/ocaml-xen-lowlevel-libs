@@ -16,7 +16,17 @@ echo "yes" | sudo add-apt-repository ppa:$ppa
 sudo apt-get update -qq
 sudo apt-get install -qq ocaml ocaml-native-compilers camlp4-extra opam
 
-sudo apt-get install -qq libxen-dev
+case "$XEN" in
+4.2)
+  sudo apt-get install libxen-dev=4.2.0*
+  ;;
+4.4)
+  sudo add-apt-repository "deb mirror://mirrors.ubuntu.com/mirrors.txt trusty main restricted universe"
+  sudo apt-get update -qq
+  sudo apt-get install libxen-dev=4.4.0*
+  ;;
+*) echo Unknown Xen version $XEN; exit 1 ;;
+esac
 
 export OPAMYES=1
 export OPAMVERBOSE=1
