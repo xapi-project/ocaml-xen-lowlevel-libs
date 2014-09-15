@@ -23,12 +23,12 @@ sudo apt-get install -qq ocaml ocaml-native-compilers camlp4-extra opam
 
 case "$XEN" in
 4.2)
-  sudo apt-get -t=precise install libxen-dev
+  sudo apt-get -t=precise install libxen-dev uuid-dev
   ;;
 4.4)
   sudo add-apt-repository "deb mirror://mirrors.ubuntu.com/mirrors.txt trusty main restricted universe"
   sudo apt-get update -qq
-  sudo apt-get -t=trusty install libxen-dev
+  sudo apt-get -t=trusty install libxen-dev uuid-dev
   ;;
 *) echo Unknown Xen version $XEN; exit 1 ;;
 esac
