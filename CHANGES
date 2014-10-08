@@ -1,3 +1,7 @@
+0.9.27 (8-Oct-2014)
+* Fix build on Fedora 21 (by removing -DBSD_SOURCE)
+* Fix 'configure' on OS X
+
 0.9.26 (10-Sep-2014)
 * improve configure to detect libxc backports
 
