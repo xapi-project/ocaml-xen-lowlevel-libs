@@ -1,7 +1,7 @@
 CFLAGS += -Werror
 CFLAGS += -I.
 CFLAGS += -lxenctrl -lxenguest -lxenstore
-CFLAGS += -D_GNU_SOURCE -D_BSD_SOURCE
+CFLAGS += -D_GNU_SOURCE
 
 PROGRAMS := xenguest
 
