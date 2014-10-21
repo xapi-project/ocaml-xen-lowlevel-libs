@@ -365,11 +365,14 @@ def ocaml_Val(ty, o, c, indent="", parent = None):
         s += "\t}"
     elif isinstance(ty,idl.Enumeration) and (parent is None):
         n = 0
+        s += "char buf[255];\n"
         s += "switch(%s) {\n" % c
         for e in ty.values:
             s += "    case %s: %s = Val_int(%d); break;\n" % (e.name, o, n)
             n += 1
-        s += "    default: failwith_xl(ERROR_FAIL, \"cannot convert value from %s (%d)\"); break;\n" % (ty.typename, c)
+        s += "    default:\n"
+        s += "        sprintf(buf, \"cannot convert value from %s (%%d)\", %s);\n" % (ty.typename, c)
+        s += "        failwith_xl(ERROR_FAIL, buf); break;\n"
         s += "}"
     elif isinstance(ty, idl.KeyedUnion):
         n = 0

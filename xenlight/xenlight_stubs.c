@@ -420,6 +420,7 @@ static value Val_error (libxl_error error_c)
 {
 	CAMLparam0();
 	CAMLlocal1(error_ocaml);
+	char buf[255];
 	switch(error_c) {
 	    case ERROR_NONSPECIFIC: error_ocaml = Val_int(0); break;
 	    case ERROR_VERSION: error_ocaml = Val_int(1); break;
@@ -435,7 +436,9 @@ static value Val_error (libxl_error error_c)
 	    case ERROR_OSEVENT_REG_FAIL: error_ocaml = Val_int(11); break;
 	    case ERROR_BUFFERFULL: error_ocaml = Val_int(12); break;
 	    case ERROR_UNKNOWN_CHILD: error_ocaml = Val_int(13); break;
-	    default: failwith_xl(ERROR_FAIL, "cannot convert value from libxl_error"); break;
+	    default:
+	        sprintf(buf, "cannot convert value from libxl_error (%d)", error_c);
+	        failwith_xl(ERROR_FAIL, buf); break;
 	}
 	CAMLreturn(error_ocaml);
 }
@@ -459,11 +462,14 @@ static value Val_domain_type (libxl_domain_type domain_type_c)
 {
 	CAMLparam0();
 	CAMLlocal1(domain_type_ocaml);
+	char buf[255];
 	switch(domain_type_c) {
 	    case LIBXL_DOMAIN_TYPE_INVALID: domain_type_ocaml = Val_int(0); break;
 	    case LIBXL_DOMAIN_TYPE_HVM: domain_type_ocaml = Val_int(1); break;
 	    case LIBXL_DOMAIN_TYPE_PV: domain_type_ocaml = Val_int(2); break;
-	    default: failwith_xl(ERROR_FAIL, "cannot convert value from libxl_domain_type"); break;
+	    default:
+	        sprintf(buf, "cannot convert value from libxl_domain_type (%d)", domain_type_c);
+	        failwith_xl(ERROR_FAIL, buf); break;
 	}
 	CAMLreturn(domain_type_ocaml);
 }
@@ -487,11 +493,14 @@ static value Val_device_model_version (libxl_device_model_version device_model_v
 {
 	CAMLparam0();
 	CAMLlocal1(device_model_version_ocaml);
+	char buf[255];
 	switch(device_model_version_c) {
 	    case LIBXL_DEVICE_MODEL_VERSION_UNKNOWN: device_model_version_ocaml = Val_int(0); break;
 	    case LIBXL_DEVICE_MODEL_VERSION_QEMU_XEN_TRADITIONAL: device_model_version_ocaml = Val_int(1); break;
 	    case LIBXL_DEVICE_MODEL_VERSION_QEMU_XEN: device_model_version_ocaml = Val_int(2); break;
-	    default: failwith_xl(ERROR_FAIL, "cannot convert value from libxl_device_model_version"); break;
+	    default:
+	        sprintf(buf, "cannot convert value from libxl_device_model_version (%d)", device_model_version_c);
+	        failwith_xl(ERROR_FAIL, buf); break;
 	}
 	CAMLreturn(device_model_version_ocaml);
 }
@@ -515,11 +524,14 @@ static value Val_console_type (libxl_console_type console_type_c)
 {
 	CAMLparam0();
 	CAMLlocal1(console_type_ocaml);
+	char buf[255];
 	switch(console_type_c) {
 	    case LIBXL_CONSOLE_TYPE_UNKNOWN: console_type_ocaml = Val_int(0); break;
 	    case LIBXL_CONSOLE_TYPE_SERIAL: console_type_ocaml = Val_int(1); break;
 	    case LIBXL_CONSOLE_TYPE_PV: console_type_ocaml = Val_int(2); break;
-	    default: failwith_xl(ERROR_FAIL, "cannot convert value from libxl_console_type"); break;
+	    default:
+	        sprintf(buf, "cannot convert value from libxl_console_type (%d)", console_type_c);
+	        failwith_xl(ERROR_FAIL, buf); break;
 	}
 	CAMLreturn(console_type_ocaml);
 }
@@ -546,6 +558,7 @@ static value Val_disk_format (libxl_disk_format disk_format_c)
 {
 	CAMLparam0();
 	CAMLlocal1(disk_format_ocaml);
+	char buf[255];
 	switch(disk_format_c) {
 	    case LIBXL_DISK_FORMAT_UNKNOWN: disk_format_ocaml = Val_int(0); break;
 	    case LIBXL_DISK_FORMAT_QCOW: disk_format_ocaml = Val_int(1); break;
@@ -553,7 +566,9 @@ static value Val_disk_format (libxl_disk_format disk_format_c)
 	    case LIBXL_DISK_FORMAT_VHD: disk_format_ocaml = Val_int(3); break;
 	    case LIBXL_DISK_FORMAT_RAW: disk_format_ocaml = Val_int(4); break;
 	    case LIBXL_DISK_FORMAT_EMPTY: disk_format_ocaml = Val_int(5); break;
-	    default: failwith_xl(ERROR_FAIL, "cannot convert value from libxl_disk_format"); break;
+	    default:
+	        sprintf(buf, "cannot convert value from libxl_disk_format (%d)", disk_format_c);
+	        failwith_xl(ERROR_FAIL, buf); break;
 	}
 	CAMLreturn(disk_format_ocaml);
 }
@@ -578,12 +593,15 @@ static value Val_disk_backend (libxl_disk_backend disk_backend_c)
 {
 	CAMLparam0();
 	CAMLlocal1(disk_backend_ocaml);
+	char buf[255];
 	switch(disk_backend_c) {
 	    case LIBXL_DISK_BACKEND_UNKNOWN: disk_backend_ocaml = Val_int(0); break;
 	    case LIBXL_DISK_BACKEND_PHY: disk_backend_ocaml = Val_int(1); break;
 	    case LIBXL_DISK_BACKEND_TAP: disk_backend_ocaml = Val_int(2); break;
 	    case LIBXL_DISK_BACKEND_QDISK: disk_backend_ocaml = Val_int(3); break;
-	    default: failwith_xl(ERROR_FAIL, "cannot convert value from libxl_disk_backend"); break;
+	    default:
+	        sprintf(buf, "cannot convert value from libxl_disk_backend (%d)", disk_backend_c);
+	        failwith_xl(ERROR_FAIL, buf); break;
 	}
 	CAMLreturn(disk_backend_ocaml);
 }
@@ -607,11 +625,14 @@ static value Val_nic_type (libxl_nic_type nic_type_c)
 {
 	CAMLparam0();
 	CAMLlocal1(nic_type_ocaml);
+	char buf[255];
 	switch(nic_type_c) {
 	    case LIBXL_NIC_TYPE_UNKNOWN: nic_type_ocaml = Val_int(0); break;
 	    case LIBXL_NIC_TYPE_VIF_IOEMU: nic_type_ocaml = Val_int(1); break;
 	    case LIBXL_NIC_TYPE_VIF: nic_type_ocaml = Val_int(2); break;
-	    default: failwith_xl(ERROR_FAIL, "cannot convert value from libxl_nic_type"); break;
+	    default:
+	        sprintf(buf, "cannot convert value from libxl_nic_type (%d)", nic_type_c);
+	        failwith_xl(ERROR_FAIL, buf); break;
 	}
 	CAMLreturn(nic_type_ocaml);
 }
@@ -638,6 +659,7 @@ static value Val_action_on_shutdown (libxl_action_on_shutdown action_on_shutdown
 {
 	CAMLparam0();
 	CAMLlocal1(action_on_shutdown_ocaml);
+	char buf[255];
 	switch(action_on_shutdown_c) {
 	    case LIBXL_ACTION_ON_SHUTDOWN_DESTROY: action_on_shutdown_ocaml = Val_int(0); break;
 	    case LIBXL_ACTION_ON_SHUTDOWN_RESTART: action_on_shutdown_ocaml = Val_int(1); break;
@@ -645,7 +667,9 @@ static value Val_action_on_shutdown (libxl_action_on_shutdown action_on_shutdown
 	    case LIBXL_ACTION_ON_SHUTDOWN_PRESERVE: action_on_shutdown_ocaml = Val_int(3); break;
 	    case LIBXL_ACTION_ON_SHUTDOWN_COREDUMP_DESTROY: action_on_shutdown_ocaml = Val_int(4); break;
 	    case LIBXL_ACTION_ON_SHUTDOWN_COREDUMP_RESTART: action_on_shutdown_ocaml = Val_int(5); break;
-	    default: failwith_xl(ERROR_FAIL, "cannot convert value from libxl_action_on_shutdown"); break;
+	    default:
+	        sprintf(buf, "cannot convert value from libxl_action_on_shutdown (%d)", action_on_shutdown_c);
+	        failwith_xl(ERROR_FAIL, buf); break;
 	}
 	CAMLreturn(action_on_shutdown_ocaml);
 }
@@ -673,6 +697,7 @@ static value Val_trigger (libxl_trigger trigger_c)
 {
 	CAMLparam0();
 	CAMLlocal1(trigger_ocaml);
+	char buf[255];
 	switch(trigger_c) {
 	    case LIBXL_TRIGGER_UNKNOWN: trigger_ocaml = Val_int(0); break;
 	    case LIBXL_TRIGGER_POWER: trigger_ocaml = Val_int(1); break;
@@ -681,7 +706,9 @@ static value Val_trigger (libxl_trigger trigger_c)
 	    case LIBXL_TRIGGER_INIT: trigger_ocaml = Val_int(4); break;
 	    case LIBXL_TRIGGER_RESET: trigger_ocaml = Val_int(5); break;
 	    case LIBXL_TRIGGER_S3RESUME: trigger_ocaml = Val_int(6); break;
-	    default: failwith_xl(ERROR_FAIL, "cannot convert value from libxl_trigger"); break;
+	    default:
+	        sprintf(buf, "cannot convert value from libxl_trigger (%d)", trigger_c);
+	        failwith_xl(ERROR_FAIL, buf); break;
 	}
 	CAMLreturn(trigger_ocaml);
 }
@@ -706,12 +733,15 @@ static value Val_tsc_mode (libxl_tsc_mode tsc_mode_c)
 {
 	CAMLparam0();
 	CAMLlocal1(tsc_mode_ocaml);
+	char buf[255];
 	switch(tsc_mode_c) {
 	    case LIBXL_TSC_MODE_DEFAULT: tsc_mode_ocaml = Val_int(0); break;
 	    case LIBXL_TSC_MODE_ALWAYS_EMULATE: tsc_mode_ocaml = Val_int(1); break;
 	    case LIBXL_TSC_MODE_NATIVE: tsc_mode_ocaml = Val_int(2); break;
 	    case LIBXL_TSC_MODE_NATIVE_PARAVIRT: tsc_mode_ocaml = Val_int(3); break;
-	    default: failwith_xl(ERROR_FAIL, "cannot convert value from libxl_tsc_mode"); break;
+	    default:
+	        sprintf(buf, "cannot convert value from libxl_tsc_mode (%d)", tsc_mode_c);
+	        failwith_xl(ERROR_FAIL, buf); break;
 	}
 	CAMLreturn(tsc_mode_ocaml);
 }
@@ -737,13 +767,16 @@ static value Val_timer_mode (libxl_timer_mode timer_mode_c)
 {
 	CAMLparam0();
 	CAMLlocal1(timer_mode_ocaml);
+	char buf[255];
 	switch(timer_mode_c) {
 	    case LIBXL_TIMER_MODE_UNKNOWN: timer_mode_ocaml = Val_int(0); break;
 	    case LIBXL_TIMER_MODE_DELAY_FOR_MISSED_TICKS: timer_mode_ocaml = Val_int(1); break;
 	    case LIBXL_TIMER_MODE_NO_DELAY_FOR_MISSED_TICKS: timer_mode_ocaml = Val_int(2); break;
 	    case LIBXL_TIMER_MODE_NO_MISSED_TICKS_PENDING: timer_mode_ocaml = Val_int(3); break;
 	    case LIBXL_TIMER_MODE_ONE_MISSED_TICK_PENDING: timer_mode_ocaml = Val_int(4); break;
-	    default: failwith_xl(ERROR_FAIL, "cannot convert value from libxl_timer_mode"); break;
+	    default:
+	        sprintf(buf, "cannot convert value from libxl_timer_mode (%d)", timer_mode_c);
+	        failwith_xl(ERROR_FAIL, buf); break;
 	}
 	CAMLreturn(timer_mode_ocaml);
 }
@@ -768,12 +801,15 @@ static value Val_bios_type (libxl_bios_type bios_type_c)
 {
 	CAMLparam0();
 	CAMLlocal1(bios_type_ocaml);
+	char buf[255];
 	switch(bios_type_c) {
 	    case LIBXL_BIOS_TYPE_UNKNOWN: bios_type_ocaml = Val_int(0); break;
 	    case LIBXL_BIOS_TYPE_ROMBIOS: bios_type_ocaml = Val_int(1); break;
 	    case LIBXL_BIOS_TYPE_SEABIOS: bios_type_ocaml = Val_int(2); break;
 	    case LIBXL_BIOS_TYPE_OVMF: bios_type_ocaml = Val_int(3); break;
-	    default: failwith_xl(ERROR_FAIL, "cannot convert value from libxl_bios_type"); break;
+	    default:
+	        sprintf(buf, "cannot convert value from libxl_bios_type (%d)", bios_type_c);
+	        failwith_xl(ERROR_FAIL, buf); break;
 	}
 	CAMLreturn(bios_type_ocaml);
 }
@@ -799,13 +835,16 @@ static value Val_scheduler (libxl_scheduler scheduler_c)
 {
 	CAMLparam0();
 	CAMLlocal1(scheduler_ocaml);
+	char buf[255];
 	switch(scheduler_c) {
 	    case LIBXL_SCHEDULER_UNKNOWN: scheduler_ocaml = Val_int(0); break;
 	    case LIBXL_SCHEDULER_SEDF: scheduler_ocaml = Val_int(1); break;
 	    case LIBXL_SCHEDULER_CREDIT: scheduler_ocaml = Val_int(2); break;
 	    case LIBXL_SCHEDULER_CREDIT2: scheduler_ocaml = Val_int(3); break;
 	    case LIBXL_SCHEDULER_ARINC653: scheduler_ocaml = Val_int(4); break;
-	    default: failwith_xl(ERROR_FAIL, "cannot convert value from libxl_scheduler"); break;
+	    default:
+	        sprintf(buf, "cannot convert value from libxl_scheduler (%d)", scheduler_c);
+	        failwith_xl(ERROR_FAIL, buf); break;
 	}
 	CAMLreturn(scheduler_ocaml);
 }
@@ -832,6 +871,7 @@ static value Val_shutdown_reason (libxl_shutdown_reason shutdown_reason_c)
 {
 	CAMLparam0();
 	CAMLlocal1(shutdown_reason_ocaml);
+	char buf[255];
 	switch(shutdown_reason_c) {
 	    case LIBXL_SHUTDOWN_REASON_UNKNOWN: shutdown_reason_ocaml = Val_int(0); break;
 	    case LIBXL_SHUTDOWN_REASON_POWEROFF: shutdown_reason_ocaml = Val_int(1); break;
@@ -839,7 +879,9 @@ static value Val_shutdown_reason (libxl_shutdown_reason shutdown_reason_c)
 	    case LIBXL_SHUTDOWN_REASON_SUSPEND: shutdown_reason_ocaml = Val_int(3); break;
 	    case LIBXL_SHUTDOWN_REASON_CRASH: shutdown_reason_ocaml = Val_int(4); break;
 	    case LIBXL_SHUTDOWN_REASON_WATCHDOG: shutdown_reason_ocaml = Val_int(5); break;
-	    default: failwith_xl(ERROR_FAIL, "cannot convert value from libxl_shutdown_reason"); break;
+	    default:
+	        sprintf(buf, "cannot convert value from libxl_shutdown_reason (%d)", shutdown_reason_c);
+	        failwith_xl(ERROR_FAIL, buf); break;
 	}
 	CAMLreturn(shutdown_reason_ocaml);
 }
@@ -862,10 +904,13 @@ static value Val_vga_interface_type (libxl_vga_interface_type vga_interface_type
 {
 	CAMLparam0();
 	CAMLlocal1(vga_interface_type_ocaml);
+	char buf[255];
 	switch(vga_interface_type_c) {
 	    case LIBXL_VGA_INTERFACE_TYPE_CIRRUS: vga_interface_type_ocaml = Val_int(0); break;
 	    case LIBXL_VGA_INTERFACE_TYPE_STD: vga_interface_type_ocaml = Val_int(1); break;
-	    default: failwith_xl(ERROR_FAIL, "cannot convert value from libxl_vga_interface_type"); break;
+	    default:
+	        sprintf(buf, "cannot convert value from libxl_vga_interface_type (%d)", vga_interface_type_c);
+	        failwith_xl(ERROR_FAIL, buf); break;
 	}
 	CAMLreturn(vga_interface_type_ocaml);
 }
@@ -888,10 +933,13 @@ static value Val_vendor_device (libxl_vendor_device vendor_device_c)
 {
 	CAMLparam0();
 	CAMLlocal1(vendor_device_ocaml);
+	char buf[255];
 	switch(vendor_device_c) {
 	    case LIBXL_VENDOR_DEVICE_NONE: vendor_device_ocaml = Val_int(0); break;
 	    case LIBXL_VENDOR_DEVICE_XENSERVER: vendor_device_ocaml = Val_int(1); break;
-	    default: failwith_xl(ERROR_FAIL, "cannot convert value from libxl_vendor_device"); break;
+	    default:
+	        sprintf(buf, "cannot convert value from libxl_vendor_device (%d)", vendor_device_c);
+	        failwith_xl(ERROR_FAIL, buf); break;
 	}
 	CAMLreturn(vendor_device_ocaml);
 }
@@ -2990,13 +3038,16 @@ static value Val_event_type (libxl_event_type event_type_c)
 {
 	CAMLparam0();
 	CAMLlocal1(event_type_ocaml);
+	char buf[255];
 	switch(event_type_c) {
 	    case LIBXL_EVENT_TYPE_DOMAIN_SHUTDOWN: event_type_ocaml = Val_int(0); break;
 	    case LIBXL_EVENT_TYPE_DOMAIN_DEATH: event_type_ocaml = Val_int(1); break;
 	    case LIBXL_EVENT_TYPE_DISK_EJECT: event_type_ocaml = Val_int(2); break;
 	    case LIBXL_EVENT_TYPE_OPERATION_COMPLETE: event_type_ocaml = Val_int(3); break;
 	    case LIBXL_EVENT_TYPE_DOMAIN_CREATE_CONSOLE_AVAILABLE: event_type_ocaml = Val_int(4); break;
-	    default: failwith_xl(ERROR_FAIL, "cannot convert value from libxl_event_type"); break;
+	    default:
+	        sprintf(buf, "cannot convert value from libxl_event_type (%d)", event_type_c);
+	        failwith_xl(ERROR_FAIL, buf); break;
 	}
 	CAMLreturn(event_type_ocaml);
 }
