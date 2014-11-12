@@ -38,13 +38,13 @@ Library xenlight
   Modules:            Xenlight
   CSources:           xenlight_stubs.c, caml_xentoollog.h
   CCLib:              -lxenlight -lxenctrl -lxenguest
+  BuildDepends:       xentoollog
 
 Library xentoollog
   Build$:             flag(xenlight)
   CompiledObject:     best
-  Path:               xenlight
+  Path:               xentoollog
   Findlibname:        xentoollog
-  Findlibparent:      xenlight
   Modules:            Xentoollog
   CSources:           xentoollog_stubs.c, caml_xentoollog.h
   CCLib:              -lxenctrl -lxenguest
@@ -76,11 +76,3 @@ Executable test_hvm_check_pvdriver
   Custom:             true
   Install:            false
   BuildDepends:       xenctrl
-
-Document api
-  Title: Xen low level bindings' documentation and API reference
-  Type: ocamlbuild (0.3)
-  BuildTools+: ocamldoc
-  XOcamlbuildModules: Xenctrl, Xenmmap, Xenlight, Xentoollog
-  XOcamlbuildPath: doc
-  Install: false

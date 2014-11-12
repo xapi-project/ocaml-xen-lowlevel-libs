@@ -1,0 +1,11 @@
+# OASIS_START
+# DO NOT EDIT (digest: 0de002bec9319ab50327476448da3eb9)
+version = "0.9.27"
+description = "Xen low-level bindings"
+archive(byte) = "xentoollog.cma"
+archive(byte, plugin) = "xentoollog.cma"
+archive(native) = "xentoollog.cmxa"
+archive(native, plugin) = "xentoollog.cmxs"
+exists_if = "xentoollog.cma"
+# OASIS_STOP
+

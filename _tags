@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: cc0f7dbde5e6a8b5a8850be06dc0badf)
+# DO NOT EDIT (digest: f6c047538f172bb38d227f6df44ea396)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -33,6 +33,14 @@
 "lib/xenctrl_stubs.c": pkg_bigarray
 "lib/xenctrl_stubs.c": pkg_lwt
 "lib/xenctrl_stubs.c": pkg_unix
+# Library xentoollog
+"xentoollog/xentoollog.cmxs": use_xentoollog
+<xentoollog/xentoollog.{cma,cmxa}>: oasis_library_xentoollog_cclib
+"xentoollog/libxentoollog_stubs.lib": oasis_library_xentoollog_cclib
+"xentoollog/dllxentoollog_stubs.dll": oasis_library_xentoollog_cclib
+"xentoollog/libxentoollog_stubs.a": oasis_library_xentoollog_cclib
+"xentoollog/dllxentoollog_stubs.so": oasis_library_xentoollog_cclib
+<xentoollog/xentoollog.{cma,cmxa}>: use_libxentoollog_stubs
 # Library xenlight
 "xenlight/xenlight.cmxs": use_xenlight
 <xenlight/xenlight.{cma,cmxa}>: oasis_library_xenlight_cclib
@@ -41,14 +49,8 @@
 "xenlight/libxenlight_stubs.a": oasis_library_xenlight_cclib
 "xenlight/dllxenlight_stubs.so": oasis_library_xenlight_cclib
 <xenlight/xenlight.{cma,cmxa}>: use_libxenlight_stubs
-# Library xentoollog
-"xenlight/xentoollog.cmxs": use_xentoollog
-<xenlight/xentoollog.{cma,cmxa}>: oasis_library_xentoollog_cclib
-"xenlight/libxentoollog_stubs.lib": oasis_library_xentoollog_cclib
-"xenlight/dllxentoollog_stubs.dll": oasis_library_xentoollog_cclib
-"xenlight/libxentoollog_stubs.a": oasis_library_xentoollog_cclib
-"xenlight/dllxentoollog_stubs.so": oasis_library_xentoollog_cclib
-<xenlight/xentoollog.{cma,cmxa}>: use_libxentoollog_stubs
+<xenlight/*.ml{,i}>: use_xentoollog
+"xenlight/xenlight_stubs.c": use_xentoollog
 # Library xenguest42
 "xenguest-4.2/xenguest42.cmxs": use_xenguest42
 <xenguest-4.2/xenguest42.{cma,cmxa}>: oasis_library_xenguest42_cclib
