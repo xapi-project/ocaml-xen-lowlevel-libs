@@ -10,6 +10,7 @@ build: [
   [make "install" "BINDIR=%{bin}%"]
 ]
 remove: [
+  ["./configure"]
   [make "uninstall"]
 ]
 depends: [
