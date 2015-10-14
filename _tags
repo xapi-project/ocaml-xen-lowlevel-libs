@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: dcd3ef160e8ae5b99cd33fed790be7b6)
+# DO NOT EDIT (digest: c086db3eadf98768e28fd59bb55bcc58)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -34,24 +34,24 @@ true: annot, bin_annot
 "lib/xenctrl_stubs.c": pkg_bigarray
 "lib/xenctrl_stubs.c": pkg_lwt
 "lib/xenctrl_stubs.c": pkg_unix
-# Library xentoollog
-"xentoollog/xentoollog.cmxs": use_xentoollog
-<xentoollog/xentoollog.{cma,cmxa}>: oasis_library_xentoollog_cclib
-"xentoollog/libxentoollog_stubs.lib": oasis_library_xentoollog_cclib
-"xentoollog/dllxentoollog_stubs.dll": oasis_library_xentoollog_cclib
-"xentoollog/libxentoollog_stubs.a": oasis_library_xentoollog_cclib
-"xentoollog/dllxentoollog_stubs.so": oasis_library_xentoollog_cclib
-<xentoollog/xentoollog.{cma,cmxa}>: use_libxentoollog_stubs
-# Library xenlight
-"xenlight/xenlight.cmxs": use_xenlight
-<xenlight/xenlight.{cma,cmxa}>: oasis_library_xenlight_cclib
-"xenlight/libxenlight_stubs.lib": oasis_library_xenlight_cclib
-"xenlight/dllxenlight_stubs.dll": oasis_library_xenlight_cclib
-"xenlight/libxenlight_stubs.a": oasis_library_xenlight_cclib
-"xenlight/dllxenlight_stubs.so": oasis_library_xenlight_cclib
-<xenlight/xenlight.{cma,cmxa}>: use_libxenlight_stubs
-<xenlight/*.ml{,i,y}>: use_xentoollog
-"xenlight/xenlight_stubs.c": use_xentoollog
+# Library xentoollog44
+"xentoollog-4.4/xentoollog44.cmxs": use_xentoollog44
+<xentoollog-4.4/xentoollog44.{cma,cmxa}>: oasis_library_xentoollog44_cclib
+"xentoollog-4.4/libxentoollog44_stubs.lib": oasis_library_xentoollog44_cclib
+"xentoollog-4.4/dllxentoollog44_stubs.dll": oasis_library_xentoollog44_cclib
+"xentoollog-4.4/libxentoollog44_stubs.a": oasis_library_xentoollog44_cclib
+"xentoollog-4.4/dllxentoollog44_stubs.so": oasis_library_xentoollog44_cclib
+<xentoollog-4.4/xentoollog44.{cma,cmxa}>: use_libxentoollog44_stubs
+# Library xenlight44
+"xenlight-4.4/xenlight44.cmxs": use_xenlight44
+<xenlight-4.4/xenlight44.{cma,cmxa}>: oasis_library_xenlight44_cclib
+"xenlight-4.4/libxenlight44_stubs.lib": oasis_library_xenlight44_cclib
+"xenlight-4.4/dllxenlight44_stubs.dll": oasis_library_xenlight44_cclib
+"xenlight-4.4/libxenlight44_stubs.a": oasis_library_xenlight44_cclib
+"xenlight-4.4/dllxenlight44_stubs.so": oasis_library_xenlight44_cclib
+<xenlight-4.4/xenlight44.{cma,cmxa}>: use_libxenlight44_stubs
+<xenlight-4.4/*.ml{,i,y}>: use_xentoollog44
+"xenlight-4.4/xenlight_stubs.c": use_xentoollog44
 # Library xenguest42
 "xenguest-4.2/xenguest42.cmxs": use_xenguest42
 <xenguest-4.2/xenguest42.{cma,cmxa}>: oasis_library_xenguest42_cclib

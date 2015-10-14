@@ -1,0 +1,12 @@
+# OASIS_START
+# DO NOT EDIT (digest: 36f1dc2adc05b66d378073ee0a4da003)
+version = "0.9.28"
+description = "Xen low-level bindings"
+requires = "xentoollog"
+archive(byte) = "xenlight44.cma"
+archive(byte, plugin) = "xenlight44.cma"
+archive(native) = "xenlight44.cmxa"
+archive(native, plugin) = "xenlight44.cmxs"
+exists_if = "xenlight44.cma"
+# OASIS_STOP
+
