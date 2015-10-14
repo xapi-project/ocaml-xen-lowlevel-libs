@@ -1,3 +1,6 @@
+0.9.29 (14-Oct-2015)
+* xenlight: add support for Xen-4.5
+
 0.9.28 (20-Nov-2014):
 * xenlight: improve error message when parsing an invalid enum
 * xentoollog: make this a toplevel ocamlfind package
