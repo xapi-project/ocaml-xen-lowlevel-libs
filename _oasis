@@ -7,8 +7,8 @@ License:     LGPL-2.1 with OCaml linking exception
 Plugins:     META (0.3)
 BuildTools:  ocamlbuild
 
-Flag xenlight44
-  Description:        build the xenlight bindings for xen-4.4
+Flag xenlight
+  Description:        build the xenlight bindings for xen
   Default:            true
 
 Flag xenctrl
@@ -30,23 +30,23 @@ Library xenctrl
   CCOpt:              -Wno-unused-function -g -ggdb
   BuildDepends:       unix, lwt, bigarray
 
-Library xenlight44
-  Build$:             flag(xenlight44)
+Library xenlight
+  Build$:             flag(xenlight)
   CompiledObject:     best
-  Path:               xenlight-4.4
+  Path:               xenlight
   Findlibname:        xenlight
   Modules:            Xenlight
-  CSources:           xenlight_stubs.c, caml_xentoollog.h
+  CSources:           xenlight_stubs.c, caml_xentoollog.h, caml_types.h
   CCLib:              -lxenlight -lxenctrl -lxenguest
   BuildDepends:       xentoollog
 
-Library xentoollog44
-  Build$:             flag(xenlight44)
+Library xentoollog
+  Build$:             flag(xenlight)
   CompiledObject:     best
-  Path:               xentoollog-4.4
+  Path:               xentoollog
   Findlibname:        xentoollog
   Modules:            Xentoollog
-  CSources:           xentoollog_stubs.c, caml_xentoollog.h
+  CSources:           xentoollog_stubs.c, caml_xentoollog.h, caml_levels.h
   CCLib:              -lxenctrl -lxenguest
 
 Library xenguest42
