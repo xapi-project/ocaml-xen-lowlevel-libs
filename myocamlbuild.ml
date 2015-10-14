@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: ea1ac9da767156053202faa58b513a28) *)
+(* DO NOT EDIT (digest: 2af0613a7d60613aa4826725ced13937) *)
 module OASISGettext = struct
 (* # 22 "src/oasis/OASISGettext.ml" *)
 
@@ -617,8 +617,12 @@ let package_default =
      lib_c =
        [
           ("xenctrl", "lib", ["lib/mmap_stubs.h"; "lib/config.h"]);
-          ("xentoollog", "xentoollog", ["xentoollog/caml_xentoollog.h"]);
-          ("xenlight", "xenlight", ["xenlight/caml_xentoollog.h"]);
+          ("xentoollog",
+            "xentoollog",
+            ["xentoollog/caml_xentoollog.h"; "xentoollog/caml_levels.h"]);
+          ("xenlight",
+            "xenlight",
+            ["xenlight/caml_xentoollog.h"; "xenlight/caml_types.h"]);
           ("xenguest42", "xenguest-4.2", [])
        ];
      flags =
@@ -711,6 +715,6 @@ let conf = {MyOCamlbuildFindlib.no_automatic_syntax = false}
 
 let dispatch_default = MyOCamlbuildBase.dispatch_default conf package_default;;
 
-# 715 "myocamlbuild.ml"
+# 719 "myocamlbuild.ml"
 (* OASIS_STOP *)
 Ocamlbuild_plugin.dispatch dispatch_default;;

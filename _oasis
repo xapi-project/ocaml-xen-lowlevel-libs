@@ -8,7 +8,7 @@ Plugins:     META (0.3)
 BuildTools:  ocamlbuild
 
 Flag xenlight
-  Description:        build the xenlight bindings
+  Description:        build the xenlight bindings for xen
   Default:            true
 
 Flag xenctrl
@@ -36,7 +36,7 @@ Library xenlight
   Path:               xenlight
   Findlibname:        xenlight
   Modules:            Xenlight
-  CSources:           xenlight_stubs.c, caml_xentoollog.h
+  CSources:           xenlight_stubs.c, caml_xentoollog.h, caml_types.h
   CCLib:              -lxenlight -lxenctrl -lxenguest
   BuildDepends:       xentoollog
 
@@ -46,7 +46,7 @@ Library xentoollog
   Path:               xentoollog
   Findlibname:        xentoollog
   Modules:            Xentoollog
-  CSources:           xentoollog_stubs.c, caml_xentoollog.h
+  CSources:           xentoollog_stubs.c, caml_xentoollog.h, caml_levels.h
   CCLib:              -lxenctrl -lxenguest
 
 Library xenguest42
