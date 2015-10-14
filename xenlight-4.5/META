@@ -1,6 +1,6 @@
 # OASIS_START
-# DO NOT EDIT (digest: 98fabed27993da5110edf8849bd3ff79)
-version = "0.9.28"
+# DO NOT EDIT (digest: a25895b42f6826f561751a10f5c38163)
+version = "0.9.29"
 description = "Xen low-level bindings"
 requires = "xentoollog"
 archive(byte) = "xenlight.cma"
