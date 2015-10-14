@@ -56,6 +56,7 @@ endif
 uninstall:
 	@ocamlfind remove xenctrl || true
 	@ocamlfind remove xenlight || true
+	@ocamlfind remove xentoollog || true
 ifeq ($(ENABLE_XENGUEST44),true)
 	(cd xenguest-4.4 && make uninstall BINDIR=$(BINDIR))
 endif
