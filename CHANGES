@@ -1,4 +1,4 @@
-0.9.30 (unreleased)
+0.9.30 (18-Oct-2015)
 * xenlight is now mandatory, which means we need Xen-4.4 headers or
   later
 
