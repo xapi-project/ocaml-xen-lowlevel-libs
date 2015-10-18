@@ -153,7 +153,10 @@ let configure verbose disable_xenctrl disable_xenlight disable_xenguest =
     Printf.fprintf stderr "Failure: we can't build anything without xenctrl.h\n";
     exit 1;
   end;
-
+  if not xenlight_4_4 then begin
+    Printf.fprintf stderr "Failure: we can't build anything without libxl and uuid\n";
+    exit 1;
+  end
   (try Unix.unlink "xenlight" with Unix.Unix_error(Unix.ENOENT, _, _) -> ());
   Unix.symlink ("xenlight-" ^ (if xen_4_5 then "4.5" else "4.4")) "xenlight";
  

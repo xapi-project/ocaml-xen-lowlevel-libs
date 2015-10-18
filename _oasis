@@ -7,20 +7,11 @@ License:     LGPL-2.1 with OCaml linking exception
 Plugins:     META (0.3)
 BuildTools:  ocamlbuild
 
-Flag xenlight
-  Description:        build the xenlight bindings for xen
-  Default:            true
-
-Flag xenctrl
-  Description:        build the xenctrl bindings
-  Default:            true
-
 Flag xenguest42
   Description:        build the xenguest helper for xen-4.2
   Default:            true
 
 Library xenctrl
-  Build$:             flag(xenctrl)
   CompiledObject:     best
   Path:               lib
   Findlibname:        xenctrl
@@ -31,7 +22,6 @@ Library xenctrl
   BuildDepends:       unix, lwt, bigarray
 
 Library xenlight
-  Build$:             flag(xenlight)
   CompiledObject:     best
   Path:               xenlight
   Findlibname:        xenlight
@@ -41,7 +31,6 @@ Library xenlight
   BuildDepends:       xentoollog
 
 Library xentoollog
-  Build$:             flag(xenlight)
   CompiledObject:     best
   Path:               xentoollog
   Findlibname:        xentoollog
@@ -50,7 +39,7 @@ Library xentoollog
   CCLib:              -lxenctrl -lxenguest
 
 Library xenguest42
-  Build$:             flag(xenguest42) && flag(xenctrl)
+  Build$:             flag(xenguest42)
   CompiledObject:     best
   Install:            false
   Path:               xenguest-4.2
@@ -60,7 +49,7 @@ Library xenguest42
   CCLib:              -lxenguest -lxenctrl -lxenstore
 
 Executable xenguest
-  Build$:             flag(xenguest42) && flag(xenctrl)
+  Build$:             flag(xenguest42)
   CompiledObject:     best
   Path:               xenguest-4.2
   MainIs:             xenguest_main.ml
@@ -69,7 +58,6 @@ Executable xenguest
   BuildDepends:       xenctrl, xenguest42
 
 Executable test_hvm_check_pvdriver
-  Build$:             flag(xenctrl)
   CompiledObject:     best
   Path:               test
   MainIs:             test_hvm_check_pvdriver.ml
