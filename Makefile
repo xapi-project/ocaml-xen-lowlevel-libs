@@ -21,7 +21,7 @@ setup.bin: setup.ml
 	@rm -f setup.cmx setup.cmi setup.o setup.cmo
 
 setup.data: setup.bin config.mk
-	@./setup.bin -configure $(ENABLE_XENLIGHT) $(ENABLE_XENCTRL) $(ENABLE_XENGUEST42)
+	@./setup.bin -configure $(ENABLE_XENCTRL) $(ENABLE_XENGUEST42)
 
 build: setup.data setup.bin
 	@./setup.bin -build -j $(J)
