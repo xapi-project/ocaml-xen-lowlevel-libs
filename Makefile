@@ -21,7 +21,7 @@ setup.bin: setup.ml
 	@rm -f setup.cmx setup.cmi setup.o setup.cmo
 
 setup.data: setup.bin config.mk
-	@./setup.bin -configure $(ENABLE_XENCTRL) $(ENABLE_XENGUEST42)
+	@./setup.bin -configure $(ENABLE_XENGUEST42)
 
 build: setup.data setup.bin
 	@./setup.bin -build -j $(J)
@@ -34,7 +34,7 @@ doc: setup.data setup.bin
 
 install: setup.bin
 	@./setup.bin -install
-ifeq ($(ENABLE_XENGUEST42)$(ENABLE_XENCTRL),--enable-xenguest42--enable-xenctrl)
+ifeq ($(ENABLE_XENGUEST42),--enable-xenguest42)
 	mkdir -p $(BINDIR)
 	install -m 0755 _build/xenguest-4.2/xenguest_main.native $(BINDIR)/xenguest
 endif
