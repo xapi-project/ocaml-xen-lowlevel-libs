@@ -18,7 +18,7 @@ let cc verbose c_program =
   let c_file = Filename.temp_file "configure" ".c" in
   let o_file = c_file ^ ".o" in
   output_file c_file c_program;
-  let found = Sys.command (Printf.sprintf "cc -c %s -o %s %s" c_file o_file (if verbose then "" else "2>/dev/null")) = 0 in
+  let found = Sys.command (Printf.sprintf "cc -Werror -c %s -o %s %s" c_file o_file (if verbose then "" else "2>/dev/null")) = 0 in
   if Sys.file_exists c_file then Sys.remove c_file;
   if Sys.file_exists o_file then Sys.remove o_file;
   found
@@ -116,6 +116,21 @@ let find_xen_4_5 verbose =
   Printf.printf "Looking for xen-4.5: %s\n" (if found then "ok" else "missing");
   found
 
+let find_xen_4_6 verbose =
+  let c_program = [
+    "#include <stdlib.h>";
+    "#include <xenctrl.h>";
+    "#include <xenguest.h>";
+    "int main(int argc, const char *argv){";
+    "  int r = xc_assign_device(NULL, 0, 0, 0);";
+    "  return 0;";
+    "}";
+  ] in
+  let found = cc verbose c_program in
+  Printf.printf "Looking for xen-4.6: %s\n" (if found then "ok" else "missing");
+  found
+
+
 let check_arm_header verbose =
   let lines = run verbose "arch" in
   let arch = List.hd lines in
@@ -147,6 +162,7 @@ let configure verbose disable_xenctrl disable_xenlight disable_xenguest =
   let xenlight_4_4 = find_xenlight_4_4 verbose in
   let xen_4_4  = xenlight_4_4 in
   let xen_4_5  = find_xen_4_5 verbose in
+  let xen_4_6  = find_xen_4_6 verbose in
   let xc_domain_save_generation_id = find_xc_domain_save_generation_id verbose in
   let have_viridian = find_define verbose "HVM_PARAM_VIRIDIAN" in
   if not xenctrl then begin
@@ -171,6 +187,7 @@ let configure verbose disable_xenctrl disable_xenlight disable_xenguest =
       Printf.sprintf "ENABLE_XENGUEST42=--%s-xenguest42" (if xen_4_4 || xen_4_5 || disable_xenguest then "disable" else "enable");
       Printf.sprintf "ENABLE_XENGUEST44=%s" (if (xen_4_4 || xen_4_5) && not disable_xenguest then "true" else "false");
       Printf.sprintf "HAVE_XEN_4_5=%s" (if xen_4_5 then "true" else "false");
+      Printf.sprintf "HAVE_XEN_4_6=%s" (if xen_4_6 then "true" else "false");
 
     ] in
   output_file config_mk lines;
@@ -180,6 +197,7 @@ let configure verbose disable_xenctrl disable_xenlight disable_xenguest =
       "/* Do not edit */";
       (if have_viridian then "" else "/* ") ^ "#define HAVE_HVM_PARAM_VIRIDIAN" ^ (if have_viridian then "" else " */");
       (if xen_4_5 then "" else "/* ") ^ "#define HAVE_XEN_4_5" ^ (if xen_4_5 then "" else " */");
+      (if xen_4_6 then "" else "/* ") ^ "#define HAVE_XEN_4_6" ^ (if xen_4_6 then "" else " */");
       (if xc_domain_save_generation_id then "" else "/* ") ^ "#define HAVE_XC_DOMAIN_SAVE_GENERATION_ID" ^ (if xc_domain_save_generation_id then "" else " */");
     ] in
   output_file config_h lines;
