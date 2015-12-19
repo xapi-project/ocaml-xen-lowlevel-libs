@@ -185,7 +185,8 @@ let configure verbose disable_xenctrl disable_xenlight disable_xenguest =
       "# Do not edit";
       Printf.sprintf "ENABLE_XENCTRL=--%s-xenctrl" (if disable_xenctrl then "disable" else "enable");
       Printf.sprintf "ENABLE_XENGUEST42=--%s-xenguest42" (if xen_4_4 || xen_4_5 || disable_xenguest then "disable" else "enable");
-      Printf.sprintf "ENABLE_XENGUEST44=%s" (if (xen_4_4 || xen_4_5) && not disable_xenguest then "true" else "false");
+      Printf.sprintf "ENABLE_XENGUEST44=%s" (if (xen_4_4 || xen_4_5) && (not xen_4_6) && not disable_xenguest then "true" else "false");
+      Printf.sprintf "ENABLE_XENGUEST46=%s" (if (xen_4_6) && not disable_xenguest then "true" else "false");
       Printf.sprintf "HAVE_XEN_4_5=%s" (if xen_4_5 then "true" else "false");
       Printf.sprintf "HAVE_XEN_4_6=%s" (if xen_4_6 then "true" else "false");
 
