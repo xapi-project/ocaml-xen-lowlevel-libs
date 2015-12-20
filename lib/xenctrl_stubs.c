@@ -1150,7 +1150,11 @@ CAMLprim value stub_xc_domain_assign_device(value xch, value domid, value desc)
 	func = Int_val(Field(desc, 3));
 	sbdf = encode_sbdf(domain, bus, dev, func);
 
-	ret = xc_assign_device(_H(xch), _D(domid), sbdf);
+	ret = xc_assign_device(_H(xch), _D(domid), sbdf
+#ifdef HAVE_XEN_4_6
+,0
+#endif
+);
 
 	if (ret < 0)
 		failwith_xc(_H(xch));
