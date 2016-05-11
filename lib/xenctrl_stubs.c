@@ -395,6 +395,41 @@ CAMLprim value stub_xc_vcpu_getinfo(value xch, value domid, value vcpu)
 	CAMLreturn(result);
 }
 
+CAMLprim value stub_xc_get_runstate_info(value xch, value domid)
+{
+#if defined(XENCTRL_HAS_GET_RUNSTATE_INFO)
+	CAMLparam2(xch, domid);
+	CAMLlocal1(result);
+	xc_runstate_info_t info;
+	int retval;
+
+	retval = xc_get_runstate_info(_H(xch), _D(domid), &info);
+	if (retval < 0)
+		failwith_xc(_H(xch));
+
+	/* Store
+	   0 : state (int32)
+	   1 : missed_changes (int32)
+	   2 : state_entry_time (int64)
+	   3-8 : times (int64s)
+	*/
+	result = caml_alloc_tuple(9);
+	Store_field(result, 0, caml_copy_int32(info.state));
+	Store_field(result, 1, caml_copy_int32(info.missed_changes));
+	Store_field(result, 2, caml_copy_int64(info.state_entry_time));
+	Store_field(result, 3, caml_copy_int64(info.time[0]));
+	Store_field(result, 4, caml_copy_int64(info.time[1]));
+	Store_field(result, 5, caml_copy_int64(info.time[2]));
+	Store_field(result, 6, caml_copy_int64(info.time[3]));
+	Store_field(result, 7, caml_copy_int64(info.time[4]));
+	Store_field(result, 8, caml_copy_int64(info.time[5]));
+
+	CAMLreturn(result);
+#else
+	caml_failwith("XENCTRL_HAS_GET_RUNSTATE_INFO not defined");
+#endif
+}
+
 CAMLprim value stub_xc_vcpu_context_get(value xch, value domid,
                                         value cpu)
 {
@@ -1119,6 +1154,29 @@ static uint32_t encode_sbdf(int domain, int bus, int dev, int func)
 		((uint32_t)func   &    0x7);
 }
 
+CAMLprim value stub_xc_hvm_check_pvdriver(value xch, value domid)
+{
+	CAMLparam2(xch, domid);
+	int ret;
+	unsigned long irq = 0;
+	xc_domaininfo_t info;
+
+	ret = xc_domain_getinfolist(_H(xch), _D(domid), 1, &info);
+	if (ret != 1 || info.domain != _D(domid)) {
+		caml_failwith("Domain does not exist.");
+	}
+
+	if (!(info.flags & XEN_DOMINF_hvm_guest)) {
+		caml_failwith("Domain is not HVM guest.");
+	}
+
+	xc_get_hvm_param(_H(xch), _D(domid), HVM_PARAM_CALLBACK_IRQ, &irq);
+	if (irq != 0)
+		CAMLreturn(Val_true);
+	else
+		CAMLreturn(Val_false);
+}
+
 CAMLprim value stub_xc_domain_test_assign_device(value xch, value domid, value desc)
 {
 	CAMLparam3(xch, domid, desc);
@@ -1181,41 +1239,6 @@ CAMLprim value stub_xc_domain_deassign_device(value xch, value domid, value desc
 	CAMLreturn(Val_unit);
 }
 
-CAMLprim value stub_xc_get_runstate_info(value xch, value domid)
-{
-#if defined(XENCTRL_HAS_GET_RUNSTATE_INFO)
-	CAMLparam2(xch, domid);
-	CAMLlocal1(result);
-	xc_runstate_info_t info;
-	int retval;
-
-	retval = xc_get_runstate_info(_H(xch), _D(domid), &info);
-	if (retval < 0)
-		failwith_xc(_H(xch));
-
-	/* Store
-	   0 : state (int32)
-	   1 : missed_changes (int32)
-	   2 : state_entry_time (int64)
-	   3-8 : times (int64s)
-	*/
-	result = caml_alloc_tuple(9);
-	Store_field(result, 0, caml_copy_int32(info.state));
-	Store_field(result, 1, caml_copy_int32(info.missed_changes));
-	Store_field(result, 2, caml_copy_int64(info.state_entry_time));
-	Store_field(result, 3, caml_copy_int64(info.time[0]));
-	Store_field(result, 4, caml_copy_int64(info.time[1]));
-	Store_field(result, 5, caml_copy_int64(info.time[2]));
-	Store_field(result, 6, caml_copy_int64(info.time[3]));
-	Store_field(result, 7, caml_copy_int64(info.time[4]));
-	Store_field(result, 8, caml_copy_int64(info.time[5]));
-
-	CAMLreturn(result);
-#else
-	caml_failwith("XENCTRL_HAS_GET_RUNSTATE_INFO not defined");
-#endif
-}
-
 CAMLprim value stub_xc_watchdog(value xch, value domid, value timeout)
 {
 	CAMLparam3(xch, domid, timeout);
@@ -1245,29 +1268,6 @@ CAMLprim value stub_xen_wmb()
 {
 	xen_wmb();
 	return Val_unit;
-}
-
-CAMLprim value stub_xc_hvm_check_pvdriver(value xch, value domid)
-{
-	CAMLparam2(xch, domid);
-	int ret;
-	unsigned long irq = 0;
-	xc_domaininfo_t info;
-
-	ret = xc_domain_getinfolist(_H(xch), _D(domid), 1, &info);
-	if (ret != 1 || info.domain != _D(domid)) {
-		caml_failwith("Domain does not exist.");
-	}
-
-	if (!(info.flags & XEN_DOMINF_hvm_guest)) {
-		caml_failwith("Domain is not HVM guest.");
-	}
-
-	xc_get_hvm_param(_H(xch), _D(domid), HVM_PARAM_CALLBACK_IRQ, &irq);
-	if (irq != 0)
-		CAMLreturn(Val_true);
-	else
-		CAMLreturn(Val_false);
 }
 
 /*
