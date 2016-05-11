@@ -45,14 +45,11 @@ int xc_dom_gnttab_seed(xc_interface *xch, domid_t domid,
 int xc_dom_kernel_max_size(struct xc_dom_image *dom, size_t sz);
 int xc_dom_ramdisk_max_size(struct xc_dom_image *dom, size_t sz);
 void xc_dom_release(struct xc_dom_image *dom);
+#define XC_DOM_DECOMPRESS_MAX (1024*1024*1024)
 
 #include <xen/hvm/hvm_info_table.h>
 #include <xen/hvm/params.h>
 #include <xen/hvm/e820.h>
-
-#ifdef XEN_SYSCTL_cpu_featureset_raw
-#include <xen/arch-x86/featureset.h>
-#endif
 
 #include "xg_internal.h"
 /*
@@ -166,115 +163,14 @@ int xenstore_puts(const char *key, const char *val)
 
 static uint32_t *featureset, nr_features;
 
-/*
- * Choose the featureset to use for a VM.
- *
- * The toolstack is expected to provide a featureset in the
- * platform/featureset xenstore key, fomatted as a bitmap of '-' delimited
- * 32bit hex-encoded words.  e.g.
- *
- *   aaaaaaaa-bbbbbbbb-cccccccc
- *
- * If no featureset is found, default to the host maximum.  It is important in
- * a heterogenous case to permit featuresets longer than this hosts maximum,
- * if they have been zero-extended to make a common longest length.
- */
 static int get_vm_featureset(bool hvm)
 {
-#ifdef XEN_SYSCTL_cpu_featureset_raw
-    char *platform = xenstore_gets("platform/featureset");
-    char *s = platform, *e;
-    unsigned int i = 0;
-    int rc = 0;
-
-    if ( !platform )
-    {
-        xg_info("No featureset provided - using host maximum\n");
-
-        return xc_get_cpu_featureset(xch,
-                                     hvm ? XEN_SYSCTL_cpu_featureset_hvm
-                                         : XEN_SYSCTL_cpu_featureset_pv,
-                                     &nr_features, featureset);
-    }
-    else
-        xg_info("Parsing '%s' as featureset\n", platform);
-
-    while ( *s != '\0' )
-    {
-        unsigned long val;
-
-        errno = 0;
-        val = strtoul(s, &e, 16);
-        if ( (errno != 0) ||            /* Error converting. */
-             (val > ~(uint32_t)0) ||    /* Value out of range. */
-             (e == s) ||                /* No digits found. */
-                                        /* Bad following characters. */
-             !(*e == '\0' || *e == '-' || *e == ':')
-            )
-        {
-            xg_err("Bad '%s' in featureset\n", s);
-            rc = -1;
-            break;
-        }
-
-        if ( i < nr_features )
-            featureset[i++] = val;
-        else if ( val != 0 )
-        {
-            xg_err("Requested featureset '%s' truncated on this host\n", platform);
-            rc = -1;
-            break;
-        }
-
-        s = e;
-        if ( *s == '-' || *s == ':' )
-            s++;
-    }
-
-    free(platform);
-    return rc;
-#else
     return 0;
-#endif
 }
 
 int construct_cpuid_policy(const struct flags *f, bool hvm)
 {
-#ifdef XEN_SYSCTL_cpu_featureset_raw
-    int rc = -1;
-
-    if ( xc_get_cpu_featureset(xch,
-                               XEN_SYSCTL_cpu_featureset_host,
-                               &nr_features, NULL) ||
-         nr_features == 0 )
-    {
-        xg_err("Failed to obtain featureset size %d %s\n",
-               errno, strerror(errno));
-        goto out;
-    }
-
-    featureset = calloc(nr_features, sizeof(*featureset));
-    if ( !featureset )
-    {
-        xg_err("Failed to allocate memory for featureset\n");
-        goto out;
-    }
-
-    if ( get_vm_featureset(hvm) )
-        goto out;
-
-    if ( !f->nx )
-        clear_bit(X86_FEATURE_NX, featureset);
-
-    rc = xc_cpuid_apply_policy(xch, domid, featureset, nr_features);
-
- out:
-    free(featureset);
-    featureset = NULL;
-    return rc;
-#else
     return 0;
-#endif
 }
 
 static int hvmloader_flag(const char *key)
@@ -282,7 +178,7 @@ static int hvmloader_flag(const char *key)
     /* Params going to hvmloader need to convert "true" -> '1' as Xapi gets
      * this wrong when migrating from older hosts. */
 
-    char *val = xenstore_gets(key);
+    char *val = xenstore_gets("%s",key);
     int ret = -1;
 
     if ( val )
