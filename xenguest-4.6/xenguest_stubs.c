@@ -29,10 +29,30 @@
 /*
 #include <xc_dom.h>
 */
+/* missing declarations from xc_dom.h */
+int xc_dom_loginit(xc_interface *xch);
+int xc_dom_gnttab_init(struct xc_dom_image *dom);
+int xc_dom_gnttab_hvm_seed(xc_interface *xch, domid_t domid,
+                           xen_pfn_t console_gmfn,
+                           xen_pfn_t xenstore_gmfn,
+                           domid_t console_domid,
+                           domid_t xenstore_domid);
+int xc_dom_gnttab_seed(xc_interface *xch, domid_t domid,
+                       xen_pfn_t console_gmfn,
+                       xen_pfn_t xenstore_gmfn,
+                       domid_t console_domid,
+                       domid_t xenstore_domid);
+int xc_dom_kernel_max_size(struct xc_dom_image *dom, size_t sz);
+int xc_dom_ramdisk_max_size(struct xc_dom_image *dom, size_t sz);
+void xc_dom_release(struct xc_dom_image *dom);
+
 #include <xen/hvm/hvm_info_table.h>
 #include <xen/hvm/params.h>
 #include <xen/hvm/e820.h>
+
+#ifdef XEN_SYSCTL_cpu_featureset_raw
 #include <xen/arch-x86/featureset.h>
+#endif
 
 #include "xg_internal.h"
 /*
@@ -177,6 +197,7 @@ static uint32_t *featureset, nr_features;
  */
 static int get_vm_featureset(bool hvm)
 {
+#ifdef XEN_SYSCTL_cpu_featureset_raw
     char *platform = xenstore_gets("platform/featureset");
     char *s = platform, *e;
     unsigned int i = 0;
@@ -228,10 +249,14 @@ static int get_vm_featureset(bool hvm)
 
     free(platform);
     return rc;
+#else
+    return 0;
+#endif
 }
 
 int construct_cpuid_policy(const struct flags *f, bool hvm)
 {
+#ifdef XEN_SYSCTL_cpu_featureset_raw
     int rc = -1;
 
     if ( xc_get_featureset(xch,
@@ -264,6 +289,9 @@ int construct_cpuid_policy(const struct flags *f, bool hvm)
     free(featureset);
     featureset = NULL;
     return rc;
+#else
+    return 0;
+#endif
 }
 
 static int hvmloader_flag(const char *key)
@@ -568,9 +596,11 @@ static int hvm_build_set_params(int store_evtchn, unsigned long *store_mfn,
     xc_set_hvm_param(xch, domid, HVM_PARAM_CONSOLE_EVTCHN, console_evtchn);
     xc_set_hvm_param(xch, domid, HVM_PARAM_TRIPLE_FAULT_REASON, SHUTDOWN_crash);
 
+#ifdef HAVE_CORES_PER_SOCKET
     if ( f.cores_per_socket > 0 )
         rc = xc_domain_set_cores_per_socket(xch, domid, f.cores_per_socket);
-
+#endif
+    
     return rc;
 }
 
@@ -948,9 +978,10 @@ int stub_xc_domain_restore(int fd, int store_evtchn, int console_evtchn,
             hvm_set_viridian_features(&f);
 
         xc_set_hvm_param(xch, domid, HVM_PARAM_HPET_ENABLED, f.hpet);
+#ifdef HAVE_CORES_PER_SOCKET
         if ( f.cores_per_socket > 0 )
             r = xc_domain_set_cores_per_socket(xch, domid, f.cores_per_socket);
-
+#endif
         if ( r )
             failwith_oss_xc("xc_domain_set_cores_per_socket");
     }
