@@ -207,10 +207,10 @@ static int get_vm_featureset(bool hvm)
     {
         xg_info("No featureset provided - using host maximum\n");
 
-        return xc_get_featureset(xch,
-                                 hvm ? XEN_SYSCTL_featureset_hvm
-                                     : XEN_SYSCTL_featureset_pv,
-                                 &nr_features, featureset);
+        return xc_get_cpu_featureset(xch,
+                                     hvm ? XEN_SYSCTL_cpu_featureset_hvm
+                                         : XEN_SYSCTL_cpu_featureset_pv,
+                                     &nr_features, featureset);
     }
     else
         xg_info("Parsing '%s' as featureset\n", platform);
@@ -259,9 +259,9 @@ int construct_cpuid_policy(const struct flags *f, bool hvm)
 #ifdef XEN_SYSCTL_cpu_featureset_raw
     int rc = -1;
 
-    if ( xc_get_featureset(xch,
-                           XEN_SYSCTL_featureset_host,
-                           &nr_features, NULL) ||
+    if ( xc_get_cpu_featureset(xch,
+                               XEN_SYSCTL_cpu_featureset_host,
+                               &nr_features, NULL) ||
          nr_features == 0 )
     {
         xg_err("Failed to obtain featureset size %d %s\n",
@@ -282,8 +282,7 @@ int construct_cpuid_policy(const struct flags *f, bool hvm)
     if ( !f->nx )
         clear_bit(X86_FEATURE_NX, featureset);
 
-    rc = xc_cpuid_apply_policy_with_featureset(xch, domid,
-                                               featureset, nr_features);
+    rc = xc_cpuid_apply_policy(xch, domid, featureset, nr_features);
 
  out:
     free(featureset);
