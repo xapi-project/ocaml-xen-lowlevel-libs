@@ -1239,6 +1239,143 @@ CAMLprim value stub_xc_domain_deassign_device(value xch, value domid, value desc
 	CAMLreturn(Val_unit);
 }
 
+CAMLprim value stub_xc_get_cpu_featureset(value xch, value idx)
+{
+	CAMLparam2(xch, idx);
+	CAMLlocal1(bitmap_val);
+
+#ifdef XEN_SYSCTL_cpu_featureset_raw
+	/* Safe, because of the global ocaml lock. */
+	static uint32_t fs_len;
+
+	if (fs_len == 0)
+	{
+		int ret = xc_get_cpu_featureset(_H(xch), 0, &fs_len, NULL);
+
+		if (ret || (fs_len == 0))
+			failwith_xc(_H(xch));
+	}
+
+	{
+		/* To/from hypervisor to retrieve actual featureset */
+		uint32_t fs[fs_len], len = fs_len;
+		unsigned int i;
+
+		int ret = xc_get_cpu_featureset(_H(xch), Int_val(idx), &len, fs);
+
+		if (ret)
+			failwith_xc(_H(xch));
+
+		bitmap_val = caml_alloc(len, 0);
+
+		for (i = 0; i < len; ++i)
+			Store_field(bitmap_val, i, caml_copy_int64(fs[i]));
+	}
+#else
+	caml_failwith("xc_get_cpu_featureset: Not implemented");
+#endif	
+	CAMLreturn(bitmap_val);
+}
+
+CAMLprim value stub_upgrade_oldstyle_featuremask(
+	value xch, value oldmask, value is_hvm)
+{
+	CAMLparam3(xch, oldmask, is_hvm);
+	CAMLlocal1(featureset);
+
+#ifdef XEN_SYSCTL_cpu_featureset_raw
+	uint32_t fs[4];
+	unsigned int i;
+
+	struct cached_mask {
+		uint32_t mask[4];
+		bool initialised;
+	};
+
+	/*
+	 * Safe, because of the global ocaml lock.  We cache the first 4 words
+	 * of the host pv and hvm featuresets.
+	 */
+	static struct cached_mask cache[2];
+	struct cached_mask *cached = &cache[!!Bool_val(is_hvm)];
+
+	if ( !cached->initialised )
+	{
+		int idx = Bool_val(is_hvm) ?
+			XEN_SYSCTL_cpu_featureset_hvm : XEN_SYSCTL_cpu_featureset_pv;
+		uint32_t len = 4;
+
+		int ret = xc_get_cpu_featureset(_H(xch), idx, &len, cached->mask);
+
+		if ( ret && errno != ENOBUFS )
+			failwith_xc(_H(xch));
+		cached->initialised = true;
+	}
+
+	/*
+	 * Oldsytle masks were in the order (1c, 1d, e1c, e1d)
+	 * Newstyle featuresets are (1d, 1c, e1d, e1c)
+	 */
+	fs[0] = Int64_val(Field(oldmask, 1));
+	fs[1] = Int64_val(Field(oldmask, 0));
+	fs[2] = Int64_val(Field(oldmask, 3));
+	fs[3] = Int64_val(Field(oldmask, 2));
+
+	/*
+	 * Oldstyle masks also had a semi-random set of features, some of
+	 * which are not interesting.  Mask them out to avoid false failures
+	 * when performing feature checks.
+	 */
+	for ( i = 0; i < 4; ++i )
+		fs[i] &= cached->mask[i];
+
+	featureset = caml_alloc(4, 0);
+	for ( i = 0; i < 4; ++i )
+		Store_field(featureset, i, caml_copy_int64(fs[i]));
+#else
+	caml_failwith("xc_get_cpu_featureset: Not implemented");
+#endif
+
+	CAMLreturn(featureset);
+}
+
+CAMLprim value stub_oldstyle_featuremask(value xch)
+{
+	CAMLparam1(xch);
+	CAMLlocal1(oldmask);
+
+#ifdef XEN_SYSCTL_cpu_featureset_raw
+	/* Safe, because of the global ocaml lock. */
+	static uint32_t fs[4];
+	static bool have_fs;
+
+	if (!have_fs)
+	{
+		unsigned int len = 4;
+		int ret = xc_get_cpu_featureset(
+			_H(xch), XEN_SYSCTL_cpu_featureset_raw, &len, fs);
+
+		if (ret && (errno != ENOBUFS))
+			failwith_xc(_H(xch));
+		have_fs = true;
+	}
+
+	/*
+	 * Newstyle featuresets are (1d, 1c, e1d, e1c)
+	 * Oldsytle masks were in the order (1c, 1d, e1c, e1d)
+	 */
+	oldmask = caml_alloc(4, 0);
+	Store_field(oldmask, 0, caml_copy_int64(fs[1]));
+	Store_field(oldmask, 1, caml_copy_int64(fs[0]));
+	Store_field(oldmask, 2, caml_copy_int64(fs[3]));
+	Store_field(oldmask, 3, caml_copy_int64(fs[2]));
+#else
+	caml_failwith("xc_get_cpu_featureset: Not implemented");
+#endif
+	
+	CAMLreturn(oldmask);
+}
+
 CAMLprim value stub_xc_watchdog(value xch, value domid, value timeout)
 {
 	CAMLparam3(xch, domid, timeout);
