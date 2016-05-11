@@ -187,7 +187,7 @@ let configure verbose disable_xenctrl disable_xenlight disable_xenguest =
   if not xenlight_4_4 then begin
     Printf.fprintf stderr "Failure: we can't build anything without libxl from Xen 4.4 or greater\n";
     exit 1;
-  end
+  end;
   (try Unix.unlink "xenlight" with Unix.Unix_error(Unix.ENOENT, _, _) -> ());
   Unix.symlink ("xenlight-" ^ (if xen_4_5 then "4.5" else "4.4")) "xenlight";
  
