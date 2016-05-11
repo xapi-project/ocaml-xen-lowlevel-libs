@@ -395,6 +395,41 @@ CAMLprim value stub_xc_vcpu_getinfo(value xch, value domid, value vcpu)
 	CAMLreturn(result);
 }
 
+CAMLprim value stub_xc_get_runstate_info(value xch, value domid)
+{
+#if defined(XENCTRL_HAS_GET_RUNSTATE_INFO)
+	CAMLparam2(xch, domid);
+	CAMLlocal1(result);
+	xc_runstate_info_t info;
+	int retval;
+
+	retval = xc_get_runstate_info(_H(xch), _D(domid), &info);
+	if (retval < 0)
+		failwith_xc(_H(xch));
+
+	/* Store
+	   0 : state (int32)
+	   1 : missed_changes (int32)
+	   2 : state_entry_time (int64)
+	   3-8 : times (int64s)
+	*/
+	result = caml_alloc_tuple(9);
+	Store_field(result, 0, caml_copy_int32(info.state));
+	Store_field(result, 1, caml_copy_int32(info.missed_changes));
+	Store_field(result, 2, caml_copy_int64(info.state_entry_time));
+	Store_field(result, 3, caml_copy_int64(info.time[0]));
+	Store_field(result, 4, caml_copy_int64(info.time[1]));
+	Store_field(result, 5, caml_copy_int64(info.time[2]));
+	Store_field(result, 6, caml_copy_int64(info.time[3]));
+	Store_field(result, 7, caml_copy_int64(info.time[4]));
+	Store_field(result, 8, caml_copy_int64(info.time[5]));
+
+	CAMLreturn(result);
+#else
+	caml_failwith("XENCTRL_HAS_GET_RUNSTATE_INFO not defined");
+#endif
+}
+
 CAMLprim value stub_xc_vcpu_context_get(value xch, value domid,
                                         value cpu)
 {
@@ -773,7 +808,11 @@ CAMLprim value stub_xc_domain_cpuid_apply_policy(value xch, value domid)
 #if defined(__i386__) || defined(__x86_64__)
 	int r;
 
-	r = xc_cpuid_apply_policy(_H(xch), _D(domid));
+	r = xc_cpuid_apply_policy(_H(xch), _D(domid)
+#ifdef XEN_SYSCTL_cpu_featureset_raw
+				  ,NULL,0
+#endif
+				  );
 	if (r < 0)
 		failwith_xc(_H(xch));
 #else
@@ -1119,6 +1158,29 @@ static uint32_t encode_sbdf(int domain, int bus, int dev, int func)
 		((uint32_t)func   &    0x7);
 }
 
+CAMLprim value stub_xc_hvm_check_pvdriver(value xch, value domid)
+{
+	CAMLparam2(xch, domid);
+	int ret;
+	unsigned long irq = 0;
+	xc_domaininfo_t info;
+
+	ret = xc_domain_getinfolist(_H(xch), _D(domid), 1, &info);
+	if (ret != 1 || info.domain != _D(domid)) {
+		caml_failwith("Domain does not exist.");
+	}
+
+	if (!(info.flags & XEN_DOMINF_hvm_guest)) {
+		caml_failwith("Domain is not HVM guest.");
+	}
+
+	xc_get_hvm_param(_H(xch), _D(domid), HVM_PARAM_CALLBACK_IRQ, &irq);
+	if (irq != 0)
+		CAMLreturn(Val_true);
+	else
+		CAMLreturn(Val_false);
+}
+
 CAMLprim value stub_xc_domain_test_assign_device(value xch, value domid, value desc)
 {
 	CAMLparam3(xch, domid, desc);
@@ -1181,39 +1243,141 @@ CAMLprim value stub_xc_domain_deassign_device(value xch, value domid, value desc
 	CAMLreturn(Val_unit);
 }
 
-CAMLprim value stub_xc_get_runstate_info(value xch, value domid)
+CAMLprim value stub_xc_get_cpu_featureset(value xch, value idx)
 {
-#if defined(XENCTRL_HAS_GET_RUNSTATE_INFO)
-	CAMLparam2(xch, domid);
-	CAMLlocal1(result);
-	xc_runstate_info_t info;
-	int retval;
+	CAMLparam2(xch, idx);
+	CAMLlocal1(bitmap_val);
 
-	retval = xc_get_runstate_info(_H(xch), _D(domid), &info);
-	if (retval < 0)
-		failwith_xc(_H(xch));
+#ifdef XEN_SYSCTL_cpu_featureset_raw
+	/* Safe, because of the global ocaml lock. */
+	static uint32_t fs_len;
 
-	/* Store
-	   0 : state (int32)
-	   1 : missed_changes (int32)
-	   2 : state_entry_time (int64)
-	   3-8 : times (int64s)
-	*/
-	result = caml_alloc_tuple(9);
-	Store_field(result, 0, caml_copy_int32(info.state));
-	Store_field(result, 1, caml_copy_int32(info.missed_changes));
-	Store_field(result, 2, caml_copy_int64(info.state_entry_time));
-	Store_field(result, 3, caml_copy_int64(info.time[0]));
-	Store_field(result, 4, caml_copy_int64(info.time[1]));
-	Store_field(result, 5, caml_copy_int64(info.time[2]));
-	Store_field(result, 6, caml_copy_int64(info.time[3]));
-	Store_field(result, 7, caml_copy_int64(info.time[4]));
-	Store_field(result, 8, caml_copy_int64(info.time[5]));
+	if (fs_len == 0)
+	{
+		int ret = xc_get_cpu_featureset(_H(xch), 0, &fs_len, NULL);
 
-	CAMLreturn(result);
+		if (ret || (fs_len == 0))
+			failwith_xc(_H(xch));
+	}
+
+	{
+		/* To/from hypervisor to retrieve actual featureset */
+		uint32_t fs[fs_len], len = fs_len;
+		unsigned int i;
+
+		int ret = xc_get_cpu_featureset(_H(xch), Int_val(idx), &len, fs);
+
+		if (ret)
+			failwith_xc(_H(xch));
+
+		bitmap_val = caml_alloc(len, 0);
+
+		for (i = 0; i < len; ++i)
+			Store_field(bitmap_val, i, caml_copy_int64(fs[i]));
+	}
 #else
-	caml_failwith("XENCTRL_HAS_GET_RUNSTATE_INFO not defined");
+	caml_failwith("xc_get_cpu_featureset: Not implemented");
+#endif	
+	CAMLreturn(bitmap_val);
+}
+
+CAMLprim value stub_upgrade_oldstyle_featuremask(
+	value xch, value oldmask, value is_hvm)
+{
+	CAMLparam3(xch, oldmask, is_hvm);
+	CAMLlocal1(featureset);
+
+#ifdef XEN_SYSCTL_cpu_featureset_raw
+	uint32_t fs[4];
+	unsigned int i;
+
+	struct cached_mask {
+		uint32_t mask[4];
+		bool initialised;
+	};
+
+	/*
+	 * Safe, because of the global ocaml lock.  We cache the first 4 words
+	 * of the host pv and hvm featuresets.
+	 */
+	static struct cached_mask cache[2];
+	struct cached_mask *cached = &cache[!!Bool_val(is_hvm)];
+
+	if ( !cached->initialised )
+	{
+		int idx = Bool_val(is_hvm) ?
+			XEN_SYSCTL_cpu_featureset_hvm : XEN_SYSCTL_cpu_featureset_pv;
+		uint32_t len = 4;
+
+		int ret = xc_get_cpu_featureset(_H(xch), idx, &len, cached->mask);
+
+		if ( ret && errno != ENOBUFS )
+			failwith_xc(_H(xch));
+		cached->initialised = true;
+	}
+
+	/*
+	 * Oldsytle masks were in the order (1c, 1d, e1c, e1d)
+	 * Newstyle featuresets are (1d, 1c, e1d, e1c)
+	 */
+	fs[0] = Int64_val(Field(oldmask, 1));
+	fs[1] = Int64_val(Field(oldmask, 0));
+	fs[2] = Int64_val(Field(oldmask, 3));
+	fs[3] = Int64_val(Field(oldmask, 2));
+
+	/*
+	 * Oldstyle masks also had a semi-random set of features, some of
+	 * which are not interesting.  Mask them out to avoid false failures
+	 * when performing feature checks.
+	 */
+	for ( i = 0; i < 4; ++i )
+		fs[i] &= cached->mask[i];
+
+	featureset = caml_alloc(4, 0);
+	for ( i = 0; i < 4; ++i )
+		Store_field(featureset, i, caml_copy_int64(fs[i]));
+#else
+	caml_failwith("xc_get_cpu_featureset: Not implemented");
 #endif
+
+	CAMLreturn(featureset);
+}
+
+CAMLprim value stub_oldstyle_featuremask(value xch)
+{
+	CAMLparam1(xch);
+	CAMLlocal1(oldmask);
+
+#ifdef XEN_SYSCTL_cpu_featureset_raw
+	/* Safe, because of the global ocaml lock. */
+	static uint32_t fs[4];
+	static bool have_fs;
+
+	if (!have_fs)
+	{
+		unsigned int len = 4;
+		int ret = xc_get_cpu_featureset(
+			_H(xch), XEN_SYSCTL_cpu_featureset_raw, &len, fs);
+
+		if (ret && (errno != ENOBUFS))
+			failwith_xc(_H(xch));
+		have_fs = true;
+	}
+
+	/*
+	 * Newstyle featuresets are (1d, 1c, e1d, e1c)
+	 * Oldsytle masks were in the order (1c, 1d, e1c, e1d)
+	 */
+	oldmask = caml_alloc(4, 0);
+	Store_field(oldmask, 0, caml_copy_int64(fs[1]));
+	Store_field(oldmask, 1, caml_copy_int64(fs[0]));
+	Store_field(oldmask, 2, caml_copy_int64(fs[3]));
+	Store_field(oldmask, 3, caml_copy_int64(fs[2]));
+#else
+	caml_failwith("xc_get_cpu_featureset: Not implemented");
+#endif
+	
+	CAMLreturn(oldmask);
 }
 
 CAMLprim value stub_xc_watchdog(value xch, value domid, value timeout)
@@ -1245,29 +1409,6 @@ CAMLprim value stub_xen_wmb()
 {
 	xen_wmb();
 	return Val_unit;
-}
-
-CAMLprim value stub_xc_hvm_check_pvdriver(value xch, value domid)
-{
-	CAMLparam2(xch, domid);
-	int ret;
-	unsigned long irq = 0;
-	xc_domaininfo_t info;
-
-	ret = xc_domain_getinfolist(_H(xch), _D(domid), 1, &info);
-	if (ret != 1 || info.domain != _D(domid)) {
-		caml_failwith("Domain does not exist.");
-	}
-
-	if (!(info.flags & XEN_DOMINF_hvm_guest)) {
-		caml_failwith("Domain is not HVM guest.");
-	}
-
-	xc_get_hvm_param(_H(xch), _D(domid), HVM_PARAM_CALLBACK_IRQ, &irq);
-	if (irq != 0)
-		CAMLreturn(Val_true);
-	else
-		CAMLreturn(Val_false);
 }
 
 /*

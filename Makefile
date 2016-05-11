@@ -28,6 +28,9 @@ build: setup.data setup.bin
 ifeq ($(ENABLE_XENGUEST44),true)
 	(cd xenguest-4.4 && make)
 endif
+ifeq ($(ENABLE_XENGUEST46),true)
+	(cd xenguest-4.6 && make)
+endif
 
 doc: setup.data setup.bin
 	@./setup.bin -doc -j $(J)
@@ -41,6 +44,9 @@ endif
 ifeq ($(ENABLE_XENGUEST44),true)
 	(cd xenguest-4.4 && make install BINDIR=$(BINDIR))
 endif
+ifeq ($(ENABLE_XENGUEST46),true)
+	(cd xenguest-4.6 && make install BINDIR=$(BINDIR))
+endif
 
 test: setup.bin build
 	@./setup.bin -test
@@ -52,6 +58,9 @@ reinstall: setup.bin
 ifeq ($(ENABLE_XENGUEST44),true)
 	(cd xenguest-4.4 && make install BINDIR=$(BINDIR))
 endif
+ifeq ($(ENABLE_XENGUEST46),true)
+	(cd xenguest-4.6 && make install BINDIR=$(BINDIR))
+endif
 
 uninstall:
 	@ocamlfind remove xenctrl || true
@@ -60,10 +69,16 @@ uninstall:
 ifeq ($(ENABLE_XENGUEST44),true)
 	(cd xenguest-4.4 && make uninstall BINDIR=$(BINDIR))
 endif
+ifeq ($(ENABLE_XENGUEST46),true)
+	(cd xenguest-4.6 && make uninstall BINDIR=$(BINDIR))
+endif
 
 clean:
 	@ocamlbuild -clean
 	@rm -f setup.data setup.log setup.bin
 ifeq ($(ENABLE_XENGUEST44),true)
 	(cd xenguest-4.4 && make clean)
+endif
+ifeq ($(ENABLE_XENGUEST46),true)
+	(cd xenguest-4.6 && make clean)
 endif
