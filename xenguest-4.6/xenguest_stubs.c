@@ -61,22 +61,6 @@ void xc_dom_release(struct xc_dom_image *dom);
 char *xs_domain_path = NULL;
 char *pci_passthrough_sbdf_list = NULL;
 
-#define XC_DOM_DECOMPRESS_MAX (1024*1024*1024) 
-#define ADDR (*(volatile int *) addr)
-
-static inline void clear_bit(int nr, volatile void *addr)
-{
-    asm volatile ( "lock; btrl %1,%0"
-                   : "+m" (ADDR) : "Ir" (nr) : "memory");
-}
-#define clear_bit(nr, addr) ({                          \
-    if ( bitop_bad_size(addr) ) __bitop_bad_size();     \
-    clear_bit(nr, addr);                                \
-})
-extern void __bitop_bad_size(void);
-#define bitop_bad_size(addr) (sizeof(*(addr)) < 4)
-
-
 /* The following boolean flags are all set by their value
    in the platform area of xenstore. The only value that
    is considered true is the string 'true' */
