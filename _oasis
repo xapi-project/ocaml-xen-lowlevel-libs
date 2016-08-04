@@ -20,6 +20,7 @@ Library xenctrl
   CCLib:              -lxenctrl -lxenguest -lxenstore
   CCOpt:              -Wno-unused-function -g -ggdb
   BuildDepends:       unix, lwt, bigarray
+  XMETAExtraLines:    xen_linkopts = "-lxenctrl_stubs"
 
 Library xenlight
   CompiledObject:     best
@@ -29,6 +30,7 @@ Library xenlight
   CSources:           xenlight_stubs.c, caml_xentoollog.h, caml_types.h
   CCLib:              -lxenlight -lxenctrl -lxenguest
   BuildDepends:       xentoollog
+  XMETAExtraLines:    xen_linkopts = "-lxenlight_stubs"
 
 Library xentoollog
   CompiledObject:     best
@@ -37,6 +39,7 @@ Library xentoollog
   Modules:            Xentoollog
   CSources:           xentoollog_stubs.c, caml_xentoollog.h, caml_levels.h
   CCLib:              -lxenctrl -lxenguest
+  XMETAExtraLines:    xen_linkopts = "-lxentoollog_stubs"
 
 Library xenguest42
   Build$:             flag(xenguest42)

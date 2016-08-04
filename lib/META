@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: afd60d61abdc4fefb6bbb9a52ba0d078)
+# DO NOT EDIT (digest: 792c2e2b61472891724e54d1e8c58521)
 version = "0.9.30"
 description = "Xen low-level bindings"
 requires = "unix lwt bigarray"
@@ -7,6 +7,7 @@ archive(byte) = "xenctrl.cma"
 archive(byte, plugin) = "xenctrl.cma"
 archive(native) = "xenctrl.cmxa"
 archive(native, plugin) = "xenctrl.cmxs"
+xen_linkopts = "-lxenctrl_stubs"
 exists_if = "xenctrl.cma"
 # OASIS_STOP
 
