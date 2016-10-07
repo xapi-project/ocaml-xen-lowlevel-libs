@@ -146,7 +146,7 @@ let check_cores_per_socket verbose =
 
 
 let check_arm_header verbose =
-  let lines = run verbose "arch" in
+  let lines = run verbose "uname -m" in
   let arch = List.hd lines in
   let arm = String.length arch >= 3 && String.sub arch 0 3 = "arm" in
   if arm then begin
