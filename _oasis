@@ -1,6 +1,6 @@
 OASISFormat: 0.3
 Name:        xen-lowlevel-libs
-Version:     0.9.30
+Version:     0.9.32
 Synopsis:    Xen low-level bindings
 Authors:     see xen-unstable.hg
 License:     LGPL-2.1 with OCaml linking exception

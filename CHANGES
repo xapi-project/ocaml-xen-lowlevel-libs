@@ -1,3 +1,10 @@
+0.9.32 (16-Nov-2016)
+* fixes for compiling on XenServer
+* fix META and static linking
+* add travis CI support for multiple distros
+* fix compilation on musl-based systems like alpine
+* add depexts for fedora, rhel and oraclelinux
+
 0.9.30 (18-Oct-2015)
 * xenlight is now mandatory, which means we need Xen-4.4 headers or
   later
