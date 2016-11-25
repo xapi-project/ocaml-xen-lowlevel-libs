@@ -144,6 +144,20 @@ let check_cores_per_socket verbose =
   Printf.printf "Looking for xc_domain_set_cores_per_socket: %s\n" (if found then "ok" else "missing");
   found
 
+let check_domain_create_has_config_param verbose =
+  let c_program = [
+    "#include <stdlib.h>";
+    "#include <xenctrl.h>";
+    "#include <xenguest.h>";
+    "int main(int argc, const char *argv){";
+    "  int r = xc_domain_create(0, 0, 0, 0, 0, 0);";
+    "  return 0;";
+    "}";
+  ] in
+  let found = cc verbose c_program in
+  Printf.printf "Looking for config parameter on xc_domain_create: %s\n" (if found then "ok" else "missing");
+  found
+
 
 let check_arm_header verbose =
   let lines = run verbose "uname -m" in
@@ -178,6 +192,7 @@ let configure verbose disable_xenctrl disable_xenlight disable_xenguest =
   let xen_4_5  = find_xen_4_5 verbose in
   let xen_4_6  = find_xen_4_6 verbose in
   let cores_per_socket = check_cores_per_socket verbose in
+  let domain_create_has_config = check_domain_create_has_config_param verbose in
   let xc_domain_save_generation_id = find_xc_domain_save_generation_id verbose in
   let have_viridian = find_define verbose "HVM_PARAM_VIRIDIAN" in
   if not xenctrl then begin
@@ -216,6 +231,7 @@ let configure verbose disable_xenctrl disable_xenlight disable_xenguest =
       (if xen_4_6 then "" else "/* ") ^ "#define HAVE_XEN_4_6" ^ (if xen_4_6 then "" else " */");
       (if xc_domain_save_generation_id then "" else "/* ") ^ "#define HAVE_XC_DOMAIN_SAVE_GENERATION_ID" ^ (if xc_domain_save_generation_id then "" else " */");
       (if cores_per_socket then "" else "/* ") ^ "#define HAVE_CORES_PER_SOCKET" ^ (if cores_per_socket then "" else " */");
+      (if domain_create_has_config then "" else "/*") ^ "#define DOMAIN_CREATE_HAS_CONFIG" ^ (if domain_create_has_config then "" else " */");
     ] in
   output_file config_h lines;
   (try Unix.unlink ("lib/" ^ config_h) with _ -> ());
