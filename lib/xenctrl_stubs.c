@@ -127,13 +127,6 @@ CAMLprim value stub_xc_interface_open(void)
 }
 
 
-CAMLprim value stub_xc_interface_is_fake(void)
-{
-	CAMLparam0();
-	int is_fake = xc_interface_is_fake();
-	CAMLreturn(Val_int(is_fake));
-}
-
 CAMLprim value stub_xc_interface_close(value xch)
 {
 	CAMLparam1(xch);
@@ -661,7 +654,7 @@ CAMLprim value stub_xc_pcpu_info(value xch, value nr_cpus)
 
 	if (Int_val(nr_cpus) < 1)
 		caml_invalid_argument("nr_cpus");
-	
+
 	info = calloc(Int_val(nr_cpus) + 1, sizeof(*info));
 	if (!info)
 		caml_raise_out_of_memory();
@@ -1282,7 +1275,7 @@ CAMLprim value stub_xc_get_cpu_featureset(value xch, value idx)
 	}
 #else
 	caml_failwith("xc_get_cpu_featureset: Not implemented");
-#endif	
+#endif
 	CAMLreturn(bitmap_val);
 }
 
@@ -1381,7 +1374,7 @@ CAMLprim value stub_oldstyle_featuremask(value xch)
 #else
 	caml_failwith("xc_get_cpu_featureset: Not implemented");
 #endif
-	
+
 	CAMLreturn(oldmask);
 }
 
