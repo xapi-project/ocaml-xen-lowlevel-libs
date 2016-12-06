@@ -120,7 +120,7 @@ external sizeof_xen_pfn: unit -> int = "stub_sizeof_xen_pfn"
 external interface_open: unit -> handle = "stub_xc_interface_open"
 external interface_close: handle -> unit = "stub_xc_interface_close"
 
-external is_fake: unit -> bool = "stub_xc_interface_is_fake"
+let is_fake: unit -> bool = fun () -> false
 
 let with_intf f =
 	let xc = interface_open () in
