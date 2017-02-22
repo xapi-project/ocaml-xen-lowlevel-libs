@@ -38,7 +38,7 @@ Library xentoollog
   Findlibname:        xentoollog
   Modules:            Xentoollog
   CSources:           xentoollog_stubs.c, caml_xentoollog.h, caml_levels.h
-  CCLib:              -lxenctrl -lxenguest
+  CCLib:              -lxenctrl -lxenguest -lxentoollog
   XMETAExtraLines:    xen_linkopts = "-lxentoollog_stubs"
 
 Library xenguest42
