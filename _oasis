@@ -11,6 +11,10 @@ Flag xenguest42
   Description:        build the xenguest helper for xen-4.2
   Default:            true
 
+Flag xentoollog
+  Description:        link with -lxentoollog, required for newer xen versions
+  Default:            true
+
 Library xenctrl
   CompiledObject:     best
   Path:               lib
@@ -38,7 +42,10 @@ Library xentoollog
   Findlibname:        xentoollog
   Modules:            Xentoollog
   CSources:           xentoollog_stubs.c, caml_xentoollog.h, caml_levels.h
-  CCLib:              -lxenctrl -lxenguest -lxentoollog
+  if flag(xentoollog)
+    CCLib:              -lxenctrl -lxenguest -lxentoollog
+  else
+    CCLib:              -lxenctrl -lxenguest
   XMETAExtraLines:    xen_linkopts = "-lxentoollog_stubs"
 
 Library xenguest42
