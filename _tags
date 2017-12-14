@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: dcd3ef160e8ae5b99cd33fed790be7b6)
+# DO NOT EDIT (digest: 40af9a2ed381915b91ae625e94375ce7)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -26,13 +26,10 @@ true: annot, bin_annot
 "lib/dllxenctrl_stubs.so": oasis_library_xenctrl_cclib
 <lib/xenctrl.{cma,cmxa}>: use_libxenctrl_stubs
 <lib/*.ml{,i,y}>: pkg_bigarray
-<lib/*.ml{,i,y}>: pkg_lwt
 <lib/*.ml{,i,y}>: pkg_unix
 "lib/xenmmap_stubs.c": pkg_bigarray
-"lib/xenmmap_stubs.c": pkg_lwt
 "lib/xenmmap_stubs.c": pkg_unix
 "lib/xenctrl_stubs.c": pkg_bigarray
-"lib/xenctrl_stubs.c": pkg_lwt
 "lib/xenctrl_stubs.c": pkg_unix
 # Library xentoollog
 "xentoollog/xentoollog.cmxs": use_xentoollog
@@ -62,12 +59,10 @@ true: annot, bin_annot
 <xenguest-4.2/xenguest42.{cma,cmxa}>: use_libxenguest42_stubs
 # Executable xenguest
 <xenguest-4.2/xenguest_main.{native,byte}>: pkg_bigarray
-<xenguest-4.2/xenguest_main.{native,byte}>: pkg_lwt
 <xenguest-4.2/xenguest_main.{native,byte}>: pkg_unix
 <xenguest-4.2/xenguest_main.{native,byte}>: use_xenctrl
 <xenguest-4.2/xenguest_main.{native,byte}>: use_xenguest42
 <xenguest-4.2/*.ml{,i,y}>: pkg_bigarray
-<xenguest-4.2/*.ml{,i,y}>: pkg_lwt
 <xenguest-4.2/*.ml{,i,y}>: pkg_unix
 <xenguest-4.2/*.ml{,i,y}>: use_xenctrl
 <xenguest-4.2/*.ml{,i,y}>: use_xenguest42
