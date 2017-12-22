@@ -15,6 +15,10 @@ Flag xentoollog
   Description:        link with -lxentoollog, required for newer xen versions
   Default:            true
 
+Flag test
+  Description:        compile test_hvm_check_provider
+  Default:            false
+
 Library xenctrl
   CompiledObject:     best
   Path:               lib
@@ -23,7 +27,7 @@ Library xenctrl
   CSources:           xenmmap_stubs.c, mmap_stubs.h, xenctrl_stubs.c, config.h
   CCLib:              -lxenctrl -lxenguest -lxenstore
   CCOpt:              -Wno-unused-function -g -ggdb
-  BuildDepends:       unix, lwt, bigarray
+  BuildDepends:       unix, bigarray
   XMETAExtraLines:    xen_linkopts = "-lxenctrl_stubs"
 
 Library xenlight
@@ -68,9 +72,10 @@ Executable xenguest
   BuildDepends:       xenctrl, xenguest42
 
 Executable test_hvm_check_pvdriver
+  Build$:             flag(test)
   CompiledObject:     best
   Path:               test
   MainIs:             test_hvm_check_pvdriver.ml
   Custom:             true
   Install:            false
-  BuildDepends:       xenctrl
+  BuildDepends:       xenctrl, lwt
