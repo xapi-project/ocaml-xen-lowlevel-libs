@@ -301,10 +301,6 @@ external pages_to_kib : int64 -> int64 = "stub_pages_to_kib"
 val pages_to_mib : int64 -> int64
 (** [pages_to_mib nb_pages] is the size of [nb_pages] in MiB. *)
 
-external sizeof_core_header : unit -> int = "stub_sizeof_core_header"
-external sizeof_vcpu_guest_context : unit -> int = "stub_sizeof_vcpu_guest_context"
-external sizeof_xen_pfn : unit -> int = "stub_sizeof_xen_pfn"
-
 (** {3 Memory barriers} *)
 
 external xen_mb : unit -> unit = "stub_xen_mb" "noalloc"
@@ -312,19 +308,3 @@ external xen_rmb : unit -> unit = "stub_xen_rmb" "noalloc"
 external xen_wmb : unit -> unit = "stub_xen_wmb" "noalloc"
 
 external hvm_check_pvdriver : handle -> domid -> bool = "stub_xc_hvm_check_pvdriver"
-
-(** {2 Domain debugging functions} *)
-
-type core_magic = Magic_hvm | Magic_pv
-
-type core_header = {
-  xch_magic : core_magic;
-  xch_nr_vcpus : int;
-  xch_nr_pages : nativeint;
-  xch_index_offset : int64;
-  xch_ctxt_offset : int64;
-  xch_pages_offset : int64;
-}
-
-external marshall_core_header : core_header -> string = "stub_marshall_core_header"
-val coredump : handle -> domid -> Unix.file_descr -> unit
