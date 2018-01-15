@@ -186,10 +186,6 @@ external domain_set_memmap_limit : handle -> domid -> int64 -> unit = "stub_xc_d
 external domain_memory_increase_reservation : handle -> domid -> int64 -> unit = "stub_xc_domain_memory_increase_reservation"
 external map_foreign_range : handle -> domid -> int -> nativeint -> Xenmmap.mmap_interface = "stub_map_foreign_range"
 
-external domain_get_pfn_list : handle -> domid -> nativeint -> nativeint array = "stub_xc_domain_get_pfn_list"
-(** DEPRECATED.  Avoid using this, as it does not correctly account
-    for PFNs without a backing MFN. *)
-
 type featureset_index = Featureset_raw | Featureset_host | Featureset_pv | Featureset_hvm
 external get_cpu_featureset : handle -> featureset_index -> int64 array = "stub_xc_get_cpu_featureset"
 external get_featureset : handle -> featureset_index -> int64 array = "stub_xc_get_cpu_featureset"
