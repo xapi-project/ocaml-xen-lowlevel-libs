@@ -186,10 +186,6 @@ external domain_set_memmap_limit : handle -> domid -> int64 -> unit = "stub_xc_d
 external domain_memory_increase_reservation : handle -> domid -> int64 -> unit = "stub_xc_domain_memory_increase_reservation"
 external map_foreign_range : handle -> domid -> int -> nativeint -> Xenmmap.mmap_interface = "stub_map_foreign_range"
 
-external domain_get_pfn_list : handle -> domid -> nativeint -> nativeint array = "stub_xc_domain_get_pfn_list"
-(** DEPRECATED.  Avoid using this, as it does not correctly account
-    for PFNs without a backing MFN. *)
-
 type featureset_index = Featureset_raw | Featureset_host | Featureset_pv | Featureset_hvm
 external get_cpu_featureset : handle -> featureset_index -> int64 array = "stub_xc_get_cpu_featureset"
 external get_featureset : handle -> featureset_index -> int64 array = "stub_xc_get_cpu_featureset"
@@ -301,10 +297,6 @@ external pages_to_kib : int64 -> int64 = "stub_pages_to_kib"
 val pages_to_mib : int64 -> int64
 (** [pages_to_mib nb_pages] is the size of [nb_pages] in MiB. *)
 
-external sizeof_core_header : unit -> int = "stub_sizeof_core_header"
-external sizeof_vcpu_guest_context : unit -> int = "stub_sizeof_vcpu_guest_context"
-external sizeof_xen_pfn : unit -> int = "stub_sizeof_xen_pfn"
-
 (** {3 Memory barriers} *)
 
 external xen_mb : unit -> unit = "stub_xen_mb" "noalloc"
@@ -312,19 +304,3 @@ external xen_rmb : unit -> unit = "stub_xen_rmb" "noalloc"
 external xen_wmb : unit -> unit = "stub_xen_wmb" "noalloc"
 
 external hvm_check_pvdriver : handle -> domid -> bool = "stub_xc_hvm_check_pvdriver"
-
-(** {2 Domain debugging functions} *)
-
-type core_magic = Magic_hvm | Magic_pv
-
-type core_header = {
-  xch_magic : core_magic;
-  xch_nr_vcpus : int;
-  xch_nr_pages : nativeint;
-  xch_index_offset : int64;
-  xch_ctxt_offset : int64;
-  xch_pages_offset : int64;
-}
-
-external marshall_core_header : core_header -> string = "stub_marshall_core_header"
-val coredump : handle -> domid -> Unix.file_descr -> unit

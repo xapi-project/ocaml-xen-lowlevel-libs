@@ -72,47 +72,6 @@ void failwith_xc(xc_interface *xch)
 	caml_raise_with_string(*caml_named_value("xc.error"), error_str);
 }
 
-CAMLprim value stub_sizeof_core_header(value unit)
-{
-	CAMLparam1(unit);
-	CAMLreturn(Val_int(sizeof(struct xc_core_header)));
-}
-
-CAMLprim value stub_sizeof_vcpu_guest_context(value unit)
-{
-	CAMLparam1(unit);
-	CAMLreturn(Val_int(sizeof(struct vcpu_guest_context)));
-}
-
-CAMLprim value stub_sizeof_xen_pfn(value unit)
-{
-	CAMLparam1(unit);
-	CAMLreturn(Val_int(sizeof(xen_pfn_t)));
-}
-
-#define XC_CORE_MAGIC     0xF00FEBED
-#define XC_CORE_MAGIC_HVM 0xF00FEBEE
-
-CAMLprim value stub_marshall_core_header(value header)
-{
-	CAMLparam1(header);
-	CAMLlocal1(s);
-	struct xc_core_header c_header;
-
-	c_header.xch_magic = (Field(header, 0))
-		? XC_CORE_MAGIC
-		: XC_CORE_MAGIC_HVM;
-	c_header.xch_nr_vcpus = Int_val(Field(header, 1));
-	c_header.xch_nr_pages = Nativeint_val(Field(header, 2));
-	c_header.xch_ctxt_offset = Int64_val(Field(header, 3));
-	c_header.xch_index_offset = Int64_val(Field(header, 4));
-	c_header.xch_pages_offset = Int64_val(Field(header, 5));
-
-	s = caml_alloc_string(sizeof(c_header));
-	memcpy(String_val(s), (char *) &c_header, sizeof(c_header));
-	CAMLreturn(s);
-}
-
 CAMLprim value stub_xc_interface_open(void)
 {
 	CAMLparam0();
@@ -1010,38 +969,6 @@ CAMLprim value stub_shadow_allocation_set(value xch, value domid,
 		failwith_xc(_H(xch));
 
 	CAMLreturn(Val_unit);
-}
-
-CAMLprim value stub_xc_domain_get_pfn_list(value xch, value domid,
-                                           value nr_pfns)
-{
-	CAMLparam3(xch, domid, nr_pfns);
-	CAMLlocal2(array, v);
-	unsigned long c_nr_pfns;
-	long ret, i;
-	uint64_t *c_array;
-
-	c_nr_pfns = Nativeint_val(nr_pfns);
-
-	c_array = malloc(sizeof(uint64_t) * c_nr_pfns);
-	if (!c_array)
-		caml_raise_out_of_memory();
-
-	ret = xc_get_pfn_list(_H(xch), _D(domid),
-			      c_array, c_nr_pfns);
-	if (ret < 0) {
-		free(c_array);
-		failwith_xc(_H(xch));
-	}
-
-	array = caml_alloc(ret, 0);
-	for (i = 0; i < ret; i++) {
-		v = caml_copy_nativeint(c_array[i]);
-		Store_field(array, i, v);
-	}
-	free(c_array);
-
-	CAMLreturn(array);
 }
 
 CAMLprim value stub_xc_domain_ioport_permission(value xch, value domid,
