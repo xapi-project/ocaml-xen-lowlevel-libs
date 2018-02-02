@@ -173,6 +173,20 @@ let check_domain_create_has_config_param verbose =
   Printf.printf "Looking for config parameter on xc_domain_create: %s\n" (if found then "ok" else "missing");
   found
 
+(* PVH param was in domain_create_info from 4.4.0 - 4.8.0 *)
+let check_for_missing_pvh_param verbose =
+  let c_program = [
+    "#include <libxl.h>";
+    "#include <libxl_utils.h>";
+    "libxl_domain_create_info *domain_create_info_c;";
+    "int main(int argc, char **argv) {";
+    "libxl_defbool t=domain_create_info_c -> pvh;";
+    "return 0;";
+    "}";
+  ] in
+  let present = cc verbose c_program in
+  Printf.printf "Looking for missing pvh param on domain_create_info_c: %s\n" (if present then "present" else "missing");
+  not present
 
 let check_arm_header verbose =
   let lines = run verbose "uname -m" in
@@ -191,14 +205,15 @@ let disable_xenguest =
   let doc = "Don't build any xenguest binary" in
   Arg.(value & flag & info ["disable-xenguest"] ~docv:"DISABLE_XENGUEST" ~doc)
 
-let choose_xenlight xen_4_4 xen_4_5 xen_4_6 xen_4_7 =
+let choose_xenlight xen_4_4 xen_4_5 xen_4_6 xen_4_7 xen_4_9 =
+  if xen_4_9 then "4.9" else
   if xen_4_7 then "4.7" else
   if xen_4_6 then "4.5" else
   if xen_4_5 then "4.5" else
     "4.4"
 
-let choose_xenguest disable_xenguest xen_4_4 xen_4_5 xen_4_6 xen_4_7 =
-  if xen_4_7 then None else
+let choose_xenguest disable_xenguest xen_4_4 xen_4_5 xen_4_6 xen_4_7 xen_4_9 =
+  if xen_4_7 || xen_4_9 then None else
   if xen_4_6 then Some "4.6" else
   if xen_4_5 then Some "4.4" else
   if xen_4_4 then Some "4.4" else
@@ -213,6 +228,7 @@ let configure verbose disable_xenguest =
   let xen_4_5  = find_xen_4_5 verbose in
   let xen_4_6  = find_xen_4_6 verbose in
   let xen_4_7  = check_domain_create_has_config_param verbose in
+  let xen_4_9  = check_for_missing_pvh_param verbose in
   let cores_per_socket = check_cores_per_socket verbose in
   let domain_create_has_config = xen_4_7 in
   let xc_domain_save_generation_id = find_xc_domain_save_generation_id verbose in
@@ -225,14 +241,14 @@ let configure verbose disable_xenguest =
     Printf.fprintf stderr "Failure: we can't build anything without libxl from Xen 4.4 or greater\n";
     exit 1;
   end;
-  let xenlight_ver = choose_xenlight xen_4_4 xen_4_5 xen_4_6 xen_4_7 in
+  let xenlight_ver = choose_xenlight xen_4_4 xen_4_5 xen_4_6 xen_4_7 xen_4_9 in
   (try Unix.unlink "xenlight" with Unix.Unix_error(Unix.ENOENT, _, _) -> ());
   Unix.symlink ("xenlight-" ^ xenlight_ver) "xenlight";
 
   (try Unix.unlink "xentoollog" with Unix.Unix_error(Unix.ENOENT, _, _) -> ());
   Unix.symlink ("xentoollog-" ^ xenlight_ver) "xentoollog";
 
-  let xenguest = choose_xenguest disable_xenguest xen_4_4 xen_4_5 xen_4_6 xen_4_7 in
+  let xenguest = choose_xenguest disable_xenguest xen_4_4 xen_4_5 xen_4_6 xen_4_7 xen_4_9 in
 
   let xentoollog = find_xentoollog verbose in
 

@@ -26,7 +26,7 @@ Library xenctrl
   Modules:            Xenmmap, Xenctrl
   CSources:           xenmmap_stubs.c, mmap_stubs.h, xenctrl_stubs.c, config.h
   CCLib:              -lxenctrl -lxenguest -lxenstore
-  CCOpt:              -Wno-unused-function -g -ggdb
+  CCOpt:              -Wno-unused-function -g -ggdb -Wno-format-truncation
   BuildDepends:       unix, bigarray
   XMETAExtraLines:    xen_linkopts = "-lxenctrl_stubs"
 
