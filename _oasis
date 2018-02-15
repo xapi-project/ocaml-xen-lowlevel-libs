@@ -37,6 +37,7 @@ Library xenlight
   Modules:            Xenlight
   CSources:           xenlight_stubs.c, caml_xentoollog.h, caml_types.h
   CCLib:              -lxenlight -lxenctrl -lxenguest
+  CCOpt:              -Wno-unused-function -g -ggdb -Wno-format-truncation
   BuildDepends:       xentoollog
   XMETAExtraLines:    xen_linkopts = "-lxenlight_stubs"
 
@@ -50,6 +51,7 @@ Library xentoollog
     CCLib:              -lxenctrl -lxenguest -lxentoollog
   else
     CCLib:              -lxenctrl -lxenguest
+  CCOpt:              -Wno-unused-function -g -ggdb -Wno-format-truncation
   XMETAExtraLines:    xen_linkopts = "-lxentoollog_stubs"
 
 Library xenguest42
@@ -61,6 +63,7 @@ Library xenguest42
   Modules:            Xenguest
   CSources:           xenguest_stubs.c
   CCLib:              -lxenguest -lxenctrl -lxenstore
+  CCOpt:              -Wno-unused-function -g -ggdb -Wno-format-truncation
 
 Executable xenguest
   Build$:             flag(xenguest42)
