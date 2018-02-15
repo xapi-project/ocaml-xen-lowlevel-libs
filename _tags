@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 40af9a2ed381915b91ae625e94375ce7)
+# DO NOT EDIT (digest: 7e846ce5be72adaf246169d94584fa55)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -33,6 +33,8 @@ true: annot, bin_annot
 "lib/xenctrl_stubs.c": pkg_unix
 # Library xentoollog
 "xentoollog/xentoollog.cmxs": use_xentoollog
+<xentoollog/*.ml{,i,y}>: oasis_library_xentoollog_ccopt
+"xentoollog/xentoollog_stubs.c": oasis_library_xentoollog_ccopt
 <xentoollog/xentoollog.{cma,cmxa}>: oasis_library_xentoollog_cclib
 "xentoollog/libxentoollog_stubs.lib": oasis_library_xentoollog_cclib
 "xentoollog/dllxentoollog_stubs.dll": oasis_library_xentoollog_cclib
@@ -41,6 +43,8 @@ true: annot, bin_annot
 <xentoollog/xentoollog.{cma,cmxa}>: use_libxentoollog_stubs
 # Library xenlight
 "xenlight/xenlight.cmxs": use_xenlight
+<xenlight/*.ml{,i,y}>: oasis_library_xenlight_ccopt
+"xenlight/xenlight_stubs.c": oasis_library_xenlight_ccopt
 <xenlight/xenlight.{cma,cmxa}>: oasis_library_xenlight_cclib
 "xenlight/libxenlight_stubs.lib": oasis_library_xenlight_cclib
 "xenlight/dllxenlight_stubs.dll": oasis_library_xenlight_cclib
@@ -51,6 +55,8 @@ true: annot, bin_annot
 "xenlight/xenlight_stubs.c": use_xentoollog
 # Library xenguest42
 "xenguest-4.2/xenguest42.cmxs": use_xenguest42
+<xenguest-4.2/*.ml{,i,y}>: oasis_library_xenguest42_ccopt
+"xenguest-4.2/xenguest_stubs.c": oasis_library_xenguest42_ccopt
 <xenguest-4.2/xenguest42.{cma,cmxa}>: oasis_library_xenguest42_cclib
 "xenguest-4.2/libxenguest42_stubs.lib": oasis_library_xenguest42_cclib
 "xenguest-4.2/dllxenguest42_stubs.dll": oasis_library_xenguest42_cclib

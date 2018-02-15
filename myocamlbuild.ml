@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: c13d38bc16436fbc406908cd5af703a4) *)
+(* DO NOT EDIT (digest: a6311a0bd87466a3f1d88bef3d040319) *)
 module OASISGettext = struct
 (* # 22 "src/oasis/OASISGettext.ml" *)
 
@@ -932,6 +932,21 @@ let package_default =
                (OASISExpr.EBool true,
                  S [A "-lxenctrl"; A "-lxenguest"; A "-lxenstore"])
             ]);
+          (["oasis_library_xentoollog_ccopt"; "compile"],
+            [
+               (OASISExpr.EBool true,
+                 S
+                   [
+                      A "-ccopt";
+                      A "-Wno-unused-function";
+                      A "-ccopt";
+                      A "-g";
+                      A "-ccopt";
+                      A "-ggdb";
+                      A "-ccopt";
+                      A "-Wno-format-truncation"
+                   ])
+            ]);
           (["oasis_library_xentoollog_cclib"; "link"],
             [
                (OASISExpr.EBool true, S []);
@@ -956,6 +971,21 @@ let package_default =
                (OASISExpr.ENot (OASISExpr.EFlag "xentoollog"),
                  S [A "-lxenctrl"; A "-lxenguest"])
             ]);
+          (["oasis_library_xenlight_ccopt"; "compile"],
+            [
+               (OASISExpr.EBool true,
+                 S
+                   [
+                      A "-ccopt";
+                      A "-Wno-unused-function";
+                      A "-ccopt";
+                      A "-g";
+                      A "-ccopt";
+                      A "-ggdb";
+                      A "-ccopt";
+                      A "-Wno-format-truncation"
+                   ])
+            ]);
           (["oasis_library_xenlight_cclib"; "link"],
             [
                (OASISExpr.EBool true,
@@ -973,6 +1003,21 @@ let package_default =
             [
                (OASISExpr.EBool true,
                  S [A "-lxenlight"; A "-lxenctrl"; A "-lxenguest"])
+            ]);
+          (["oasis_library_xenguest42_ccopt"; "compile"],
+            [
+               (OASISExpr.EBool true,
+                 S
+                   [
+                      A "-ccopt";
+                      A "-Wno-unused-function";
+                      A "-ccopt";
+                      A "-g";
+                      A "-ccopt";
+                      A "-ggdb";
+                      A "-ccopt";
+                      A "-Wno-format-truncation"
+                   ])
             ]);
           (["oasis_library_xenguest42_cclib"; "link"],
             [
@@ -1006,6 +1051,6 @@ let conf = {MyOCamlbuildFindlib.no_automatic_syntax = false}
 
 let dispatch_default = MyOCamlbuildBase.dispatch_default conf package_default;;
 
-# 1010 "myocamlbuild.ml"
+# 1055 "myocamlbuild.ml"
 (* OASIS_STOP *)
 Ocamlbuild_plugin.dispatch dispatch_default;;
