@@ -1,17 +1,12 @@
 language: c
 sudo: false
-services:
-  - docker
+service: docker
 install: wget https://raw.githubusercontent.com/ocaml/ocaml-ci-scripts/master/.travis-docker.sh
-script: bash ./.travis-docker.sh
+script: bash -ex .travis-docker.sh
 env:
- global:
-   - PACKAGE="xenctrl"
- matrix:
-   - DISTRO=ubuntu-16.04 OCAML_VERSION=4.03
-   - DISTRO=debian-stable OCAML_VERSION=4.04
-   # xen-devel is not available in the default CentOs repo and we cannot get it
-   # using PRE_INSTALL_HOOK because that is run after "opam depext":
-   # - DISTRO=centos-7 OCAML_VERSION=4.05
-   - DISTRO=debian-testing OCAML_VERSION=4.06
-   - DISTRO=fedora-29 OCAML_VERSION=4.07
+  global:
+    - PACKAGE="xenctrl"
+    - PINS="xenctrl:."
+    - BASE_REMOTE="https://github.com/xapi-project/xs-opam.git"
+  matrix:
+    - DISTRO="debian-9-ocaml-4.07"
