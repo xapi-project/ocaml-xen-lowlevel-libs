@@ -188,7 +188,6 @@ external map_foreign_range : handle -> domid -> int -> nativeint -> Xenmmap.mmap
 
 type featureset_index = Featureset_raw | Featureset_host | Featureset_pv | Featureset_hvm
 external get_cpu_featureset : handle -> featureset_index -> int64 array = "stub_xc_get_cpu_featureset"
-external get_featureset : handle -> featureset_index -> int64 array = "stub_xc_get_cpu_featureset"
 
 external upgrade_oldstyle_featuremask: handle -> int64 array -> bool -> int64 array = "stub_upgrade_oldstyle_featuremask"
 external oldstyle_featuremask: handle -> int64 array = "stub_oldstyle_featuremask"
